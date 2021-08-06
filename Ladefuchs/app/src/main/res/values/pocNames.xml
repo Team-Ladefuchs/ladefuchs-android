@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pocNames">
+        <item>Allego</item>
+        <item>EnBW</item>
+        <item>Fastned</item>
+        <item>Innogy</item>
+        <item>IONITY</item>
+        <item>Ladenetz</item>
+    </string-array>
+</resources>

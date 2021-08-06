@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#F2EBE1</color>
+    <color name="colorPrimaryDark">#CCC2AE</color>
+    <color name="colorAccent">#E96D3E</color>
+    <color name="colorAccentIntense">#DB2712</color>
+    <color name="PrimaryBackground">#EDE6D8</color>
+    <color name="TableColorDark">#CCC2AE</color>
+    <color name="TableColorLight">#F2EBE1</color>
+    <color name="TextColorLight">#FFFFFF</color>
+    <color name="TextColorDark">#25231F</color>
+    <color name="TextColorDisabled">#7B7B7B</color>
+    <color name="WheelCurtainColor">#0D000000</color>
+</resources>

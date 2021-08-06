@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">Ladefuchs</string>
+    <string name="title_home">About</string>
+    <string name="title_chargecards">Ladekarten</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="ladefuchs_logo_description">Ladefuchs Logo Description</string>
+    <string name="dc">DC</string>
+    <string name="ac">AC</string>
+    <string name="sdfsfsdfs">sdfsfsdfs</string>
+    <string name="footer">Deine Mudder lädt ihren Kona mit Streichkäse!</string>
+    <string name="settings_button">Settings Button</string>
+    <string name="table_header_dc">DC</string>
+    <string name="table_header_ac">AC</string>
+    <string name="pocHeader">An welcher Säule stehst Du?</string>
+    <string name="type_2_plug">Type 2 Plug</string>
+    <string name="ccs_plug">CCS Plug</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="illusfuchs_SL">Der kleine Fuchs wurde mit ♥️ illustriert von <a href="https://www.agli-design.de/">Aga</a> und <a href="http://www.casasola.de/">Marcel-André</a></string>
+    <string name="teamfuchs_header">Teamfuchs</string>
+    <string name="teamfuchs_sl">Wir sind schuld. Wirklich!</string>
+    <string name="flowinho">flowinho</string>
+    <string name="basti">basti</string>
+    <string name="androidfuchs">Androidfuchs</string>
+    <string name="malik">malik</string>
+    <string name="designfuchs">Designfuchs</string>
+    <string name="podcastfuchs">Podcastfuchs</string>
+    <string name="podcastfuchs_sl">Abonnieren Sie, sonst frieren Sie!</string>
+    <string name="datenfuchs">Datenfuchs</string>
+    <string name="datenfuchs_sl">Beste, schlaue Daten kommen direkt von</string>
+    <string name="illufuchs">Illufüchse</string>
+    <string name="apfelfuchs">Apfelfuchs</string>
+    <string name="android_at_ladefuchs_app">android@ladefuchs.app</string>
+    <string name="ios_at_ladefuchs_app">ios@ladefuchs.app</string>
+    <string name="malik_at_ladefuchs_app">malik@ladefuchs.app</string>
+    <string name="zurueck">Zurück</string>
+    <string name="avatarbild_flowinho">Avatarbild Flowinho</string>
+    <string name="avatar_basti">Avatar Basti</string>
+    <string name="audiodumo_logo">audiodumo Logo</string>
+    <string name="cleanelectric_logo">CleanElectric Logo</string>
+    <string name="bits_und_so_logo">Bits und so Logo</string>
+    <string name="chargeprice_logo">Chargeprice Logo</string>
+    <string name="bugtracker_icon">Bugtracker Icon</string>
+    <string name="avatar_malik">Avatar Malik</string>
+    <string name="twitter_flowinho"><a href="https://twitter.com/flowinho">@flowinho</a></string>
+    <string name="twitter_schlingel"><a href="https://twitter.com/schlingel">@schlingel</a></string>
+    <string name="twitter_twittlik"><a href="https://twitter.com/twittlik">@twittlik</a></string>
+    <string name="handcrafted">Handgefertigt aus ♥️ zur Elektromobilität in ⛪ Aachen, 🥨 München und 🏰 Ludwigsburg.</string>
+    <string name="imprint_header">Impressum</string>
+    <string name="imprint_text">Angaben gemäß § 5 TMG:\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck\n\nKontakt:\nTelefon: +49-8141-5092502\nE-Mail: info@schlingel.de\n\nVerantwortlich für den Inhalt nach § 55 Abs. 2 RStV:\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck\n\n\nQuelle: Impressum-Generator von anwalt.de</string>
+    <string name="impressum">Impressum</string>
+    <string name="dialog_ok">OK</string>
+</resources>

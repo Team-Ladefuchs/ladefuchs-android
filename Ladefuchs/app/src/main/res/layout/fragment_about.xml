@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/PrimaryBackground"
+    tools:context=".ui.about.AboutFragment">
+
+    <ImageView
+        android:id="@+id/ladefuchs_logo"
+        android:layout_width="67dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="172dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="172dp"
+        android:contentDescription="@string/ladefuchs_logo_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_ladefuchs_logo" />
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/PrimaryBackground"
+        android:contentDescription="@string/zurueck"
+        android:tint="@color/TextColorDark"
+        app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/abc_vector_test" />
+
+
+    <TextView
+        android:id="@+id/aboutus_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/TableColorDark"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/colorAccentIntense"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/einstellungen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo" />
+
+    <LinearLayout
+        android:id="@+id/einstellungen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/aboutus_title">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/einstellungenHeader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/einstellungenHeaderText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_black"
+                android:text="Einstellungen"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/disclosure_triangle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/disclosure_triangle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:foregroundTint="#000000"
+                android:src="@drawable/arrow_down"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/einstellungenHeaderText"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/colorAccent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/settingsFragment"
+            android:name="app.ladefuchs.android.ui.settings.SettingsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/scrollView"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/einstellungen" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/PrimaryBackground"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/handcrafted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/einstellungen">
+        <!--
+        <WebView
+            android:id="@+id/about_us"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" /> -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/teamfuchs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_black"
+                android:text="@string/teamfuchs_header"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/teamfuchsSL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bitter"
+                android:text="@string/teamfuchs_sl"
+                android:textAppearance="@style/AboutSubHeader" />
+    <!--
+                <LinearLayout
+                    android:id="@+id/team_flow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="clip_vertical"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/avatar_flow"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="24dp"
+                        android:contentDescription="@string/avatarbild_flowinho"
+                        android:src="@drawable/team_flow" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/flowinho"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_black"
+                            android:text="@string/flowinho"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/AboutHeader"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/flowinhoSL"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/apfelfuchs"
+
+                            android:textAppearance="@style/AboutSubHeader" />
+
+                        <TextView
+                            android:id="@+id/flowinhoSL2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/twitter_flowinho"
+                            android:textAppearance="@style/AboutSubHeaderSans"
+                            android:textColor="@color/TextColorDark" />
+
+                        <TextView
+                            android:id="@+id/flowinhoSL3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autoLink="email"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/ios_at_ladefuchs_app"
+                            android:textAppearance="@style/AboutSubHeaderSans"
+                            android:textColorLink="@color/TextColorDark" />
+                    </LinearLayout>
+                </LinearLayout>
+    -->
+                <LinearLayout
+                    android:id="@+id/team_basti"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="clip_vertical"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/avatar_basti"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="24dp"
+                        android:contentDescription="@string/avatar_basti"
+                        android:src="@drawable/team_basti" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/basti"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_black"
+                            android:text="@string/basti"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/AboutHeader"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/bastiSL"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/androidfuchs"
+                            android:textAppearance="@style/AboutSubHeader" />
+
+                        <TextView
+                            android:id="@+id/bastiSL2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/twitter_schlingel"
+                            android:textAppearance="@style/AboutSubHeaderSans" />
+
+                        <TextView
+                            android:id="@+id/bastiSL3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autoLink="email"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/android_at_ladefuchs_app"
+                            android:textAppearance="@style/AboutSubHeaderSans"
+                            android:textColorLink="@color/TextColorDark" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/team_malik"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="clip_vertical"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/avatar_malik"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="24dp"
+                        android:contentDescription="@string/avatar_malik"
+                        android:src="@drawable/team_malik" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/malik"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_black"
+                            android:text="@string/malik"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/AboutHeader"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/malikSL"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/designfuchs"
+                            android:textAppearance="@style/AboutSubHeader" />
+
+                        <TextView
+                            android:id="@+id/malikSL2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/twitter_twittlik"
+                            android:textAppearance="@style/AboutSubHeaderSans" />
+
+                        <TextView
+                            android:id="@+id/malikSL3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autoLink="email"
+                            android:fontFamily="@font/bitter"
+                            android:text="@string/malik_at_ladefuchs_app"
+                            android:textAppearance="@style/AboutSubHeaderSans"
+                            android:textColorLink="@color/TextColorDark" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/teamfuchs2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/roboto_black"
+                    android:text="@string/podcastfuchs"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/AboutHeader"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/teamfuchsSL2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/bitter"
+                    android:text="@string/podcastfuchs_sl"
+                    android:textAppearance="@style/AboutSubHeader" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:weightSum="99">
+
+
+                    <ImageView
+                        android:id="@+id/podcast_audiodump"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_weight="33"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:contentDescription="@string/audiodumo_logo"
+                        android:focusable="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/audiodump_600"
+                        android:tag="https://www.audiodump.de" />
+
+                    <ImageView
+                        android:id="@+id/podcast_cleanelectric"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_weight="33"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:contentDescription="@string/cleanelectric_logo"
+                        android:focusable="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/cleanelectric_600"
+                        android:tag="https://www.cleanelectric.de" />
+
+                    <ImageView
+                        android:id="@+id/podcast_bitsundso"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_weight="33"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:contentDescription="@string/bits_und_so_logo"
+                        android:focusable="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/bitsundso_600"
+                        android:tag="https://www.bitsundso.de" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/datenfuchs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/roboto_black"
+                    android:text="@string/datenfuchs"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/AboutHeader"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/datenfuchsSL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/bitter"
+                    android:text="@string/datenfuchs_sl"
+                    android:textAppearance="@style/AboutSubHeader" />
+
+                <ImageView
+                    android:id="@+id/chargeprice_logo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/chargeprice_logo"
+                    android:focusable="true"
+                    android:src="@drawable/chargeprice_logo"
+                    android:tag="https://chargeprice.app" />
+
+                <TextView
+                    android:id="@+id/illufuchs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/roboto_black"
+                    android:text="@string/illufuchs"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/AboutHeader"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/illufuchsSL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/bitter"
+                    android:text="@string/illusfuchs_SL"
+                    android:textAppearance="@style/AboutSubHeader" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"></View>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+        <!--
+            <ImageView
+                android:id="@+id/bug_icon"
+                android:layout_width="32dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/bugtracker_icon"
+                android:rotation="15"
+                app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_bug_icon" />
+        -->
+    <TextView
+        android:id="@+id/handcrafted"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/TableColorDark"
+        android:fontFamily="@font/roboto"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:text="@string/handcrafted"
+        android:textAlignment="center"
+        android:textColor="@color/TextColorDark"
+        app:layout_constraintBottom_toTopOf="@id/imprint_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scrollView" />
+
+    <Button
+        android:id="@+id/imprint_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/TableColorDark"
+        android:fontFamily="@font/roboto"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingBottom="5dp"
+        android:text="@string/impressum"
+        android:textAllCaps="false"
+        android:textColor="@color/TextColorDisabled"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@id/version_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/handcrafted" />
+
+    <TextView
+        android:id="@+id/version_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/TableColorDark"
+        android:fontFamily="@font/roboto"
+        android:textAlignment="center"
+        android:textColor="@color/TextColorDisabled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,74 @@
+[
+  {
+    "identifier": "alpiq_get_charge",
+    "name" : "Alpiq Get Charge",
+    "backgroundColor" : "FFFFFF",
+    "textColor" : "0B2F43",
+    "cardImageFile" : "",
+    "borderColor": "FF9402"
+  },
+  {
+    "identifier": "ewe_go",
+    "name" : "EWE Go",
+    "backgroundColor" : "F5F5F5",
+    "textColor" : "0E1013",
+    "cardImageFile" : "",
+    "borderColor": "FDEB19"
+  },
+  {
+    "identifier": "enbw_mobility",
+    "name" : "EnBW mobility+",
+    "backgroundColor" : "FFFFFF",
+    "textColor" : "060399",
+    "cardImageFile" : "",
+    "borderColor": "FF9900"
+  },
+  {
+    "identifier": "shell_recharge",
+    "name" : "Shell Recharge",
+    "backgroundColor" : "05B0B9",
+    "textColor" : "DD1D21",
+    "cardImageFile" : "",
+    "borderColor": "FBCE05"
+  },
+  {
+    "identifier": "eins_e_mobil",
+    "name" : "Eins E-Mobil",
+    "backgroundColor" : "0490D4",
+    "textColor" : "1C1E1B",
+    "cardImageFile" : "",
+    "borderColor": "E95E0F"
+  },
+  {
+    "identifier": "plugsurfing",
+    "name" : "Plugsurfing",
+    "backgroundColor" : "FFFFFF",
+    "textColor" : "000000",
+    "cardImageFile" : "",
+    "borderColor": "000000"
+  },
+  {
+    "identifier": "maingau",
+    "name" : "Maingau",
+    "backgroundColor" : "FFFFFF",
+    "textColor" : "000000",
+    "cardImageFile" : "",
+    "borderColor": "000000"
+  },
+  {
+    "identifier": "stadtwerke_munchen_swm_",
+    "name" : "Stadtwerke München",
+    "backgroundColor" : "EFF7FE",
+    "textColor" : "52AE32",
+    "cardImageFile" : "",
+    "borderColor": "000000"
+  },
+  {
+    "identifier": "default",
+    "name" : "default",
+    "backgroundColor" : "FFFFFF",
+    "textColor" : "000000",
+    "cardImageFile" : "",
+    "borderColor": "000000"
+  }
+]

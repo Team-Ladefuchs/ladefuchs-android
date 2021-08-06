@@ -1,0 +1,83 @@
+{
+  "cards": [
+    {
+      "identifier": "chargemap",
+      "provider": "Chargemap",
+      "name": "Chargemap",
+      "price": 0.511
+    },
+    {
+      "identifier": "stadtwerke_munchen_swm_",
+      "provider": "Stadtwerke München (SWM)",
+      "name": "Stadtwerke München (SWM)",
+      "price": 0.37
+    },
+    {
+      "identifier": "eins",
+      "provider": "eins",
+      "name": "E-Mobil",
+      "price": 0.4
+    },
+    {
+      "identifier": "adac",
+      "provider": "ADAC",
+      "name": "e-CHARGE",
+      "price": 0.2827
+    },
+    {
+      "identifier": "alpiq",
+      "provider": "Alpiq",
+      "name": "GET CHARGE",
+      "price": 0.89
+    },
+    {
+      "identifier": "ewe_swb",
+      "provider": "EWE / SWB",
+      "name": "EWE Go",
+      "price": 0.38
+    },
+    {
+      "identifier": "enbw",
+      "provider": "EnBW",
+      "name": "Standard",
+      "price": 0.3802
+    },
+    {
+      "identifier": "lichtblick_se",
+      "provider": "Lichtblick SE",
+      "name": "FahrStrom",
+      "price": 0.49
+    },
+    {
+      "identifier": "plugsurfing",
+      "provider": "Plugsurfing",
+      "name": "Plugsurfing",
+      "price": 0.44
+    },
+    {
+      "identifier": "shell_recharge_new_motion",
+      "provider": "Shell Recharge New Motion",
+      "name": "Shell Recharge New Motion",
+      "price": 0.68
+    },
+    {
+      "identifier": "stadtwerke_tubingen",
+      "provider": "Stadtwerke Tübingen",
+      "name": "Lade TüStrom",
+      "price": 0.44
+    },
+    {
+      "identifier": "maingau_energie",
+      "provider": "Maingau Energie",
+      "name": "EinfachStromLaden (Business)",
+      "price": 0.4679
+    },
+    {
+      "identifier": "maingau_energie",
+      "provider": "Maingau Energie",
+      "name": "EinfachStromLaden (Privat)",
+      "price": 0.3704
+    }
+  ],
+  "updated": 1602972002
+}

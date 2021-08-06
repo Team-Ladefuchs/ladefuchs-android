@@ -1,0 +1,47 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Maingau Preise">
+
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789,."
+            android:id="@+id/maingauAC"
+            app:key="maingauAC"
+            app:title="AC-Preis (ct/kWh)"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789,."
+            android:id="@+id/maingauDC"
+            app:key="maingauDC"
+            app:title="DC-Preis (ct/kWh)"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.takisoft.preferencex.EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789,."
+            android:id="@+id/maingauIonity"
+            app:key="maingauIonity"
+            app:title="IONITY-Preis (ct/kWh)"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Verfügbare Sondertarife">
+
+        <SwitchPreferenceCompat
+            android:visibility="visible"
+            app:key="specialEnbwAdac"
+            app:title="EnBW ADAC Tarif" />
+<!--
+        <SwitchPreferenceCompat
+            android:visibility="invisible"
+            app:key="specialEnbwHyundai"
+            app:title="EnBW Hyundai Tarif" />
+-->
+    </PreferenceCategory>
+
+</PreferenceScreen>

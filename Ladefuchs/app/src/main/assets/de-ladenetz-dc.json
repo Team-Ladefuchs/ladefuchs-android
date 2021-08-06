@@ -1,0 +1,79 @@
+[
+    {
+        "identifier": "stadtwerke_munchen_swm_",
+        "provider": "Stadtwerke M\u00fcnchen (SWM)",
+        "name": "Stadtwerke M\u00fcnchen (SWM)",
+        "price": 0.38,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "ewe_swb",
+        "provider": "EWE \/ SWB",
+        "name": "EWE Go",
+        "price": 0.49,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "stadtwerke_kaiserslautern",
+        "provider": "Stadtwerke Kaiserslautern",
+        "name": "SWK-Ladekarte",
+        "price": 0.45,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "adac",
+        "provider": "ADAC",
+        "name": "ADAC e-CHARGE",
+        "price": 0.52,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "enbw",
+        "provider": "EnBW",
+        "name": "mobility+ Standard",
+        "price": 0.55,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "lichtblick_se",
+        "provider": "Lichtblick SE",
+        "name": "FahrStrom Unterwegs Standard",
+        "price": 0.69,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "evway_route220_",
+        "provider": "evway (Route220)",
+        "name": "evway",
+        "price": 0.55,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "shell_recharge_new_motion",
+        "provider": "Shell Recharge New Motion",
+        "name": "Shell Recharge New Motion",
+        "price": 0.64,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "fairenergie",
+        "provider": "FairEnergie",
+        "name": "FairstromEmobil (App)",
+        "price": 0.49,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "stadtwerke_ilmenau",
+        "provider": "Stadtwerke Ilmenau",
+        "name": "Stadtwerke Ilmenau",
+        "price": 0.46,
+        "updated": 1627242363
+    },
+    {
+        "identifier": "maingau_energie",
+        "provider": "Maingau Energie",
+        "name": "EinfachStromLaden (Privat)",
+        "price": 0.48,
+        "updated": 1627242363
+    }
+]
