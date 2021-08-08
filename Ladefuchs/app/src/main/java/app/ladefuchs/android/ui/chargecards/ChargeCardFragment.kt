@@ -72,26 +72,14 @@ class CardMetadata(
     val borderColor: String
 )
 
+@Keep
+class Operators(
+    val name: String,
+    val displayName: String,
+    val identifier: String
+)
 
 class ChargeCardFragment : Fragment() {
-
-
-    private val pocOperatorList =  arrayOf(
-        "Allego",
-        "be.energised",
-        "be emobil",
-        "Comfortcharge",
-        "Elli",
-        "EnBW",
-        "E.ON",
-        "Fastned",
-        "Innogy",
-        "Ionity",
-        "Ladenetz",
-        "Ladeverbund+",
-        "New Motion"
-    )
-
     var hasPersonalizedMaingauPrices: Boolean = false
     var hasADACPrices: Boolean = false
     var cardWidth: Int = 0
@@ -100,6 +88,7 @@ class ChargeCardFragment : Fragment() {
     var shopPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
     val apiBaseURL: String = "https://api.ladefuchs.app/cards/"
+    var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
 
 
@@ -196,7 +185,7 @@ class ChargeCardFragment : Fragment() {
             }
             phraseView.text = currentPhrase
         }
-
+        retrieveOperatorList()
         //EasterEgg
         var easterEggClickCounter = 0
         view.findViewById<ImageView>(R.id.ladefuchs_logo).setOnClickListener {
@@ -249,28 +238,50 @@ class ChargeCardFragment : Fragment() {
 
     }
 
-    private fun checkShopPromoLevel(editor: SharedPreferences.Editor) {
-            val client = OkHttpClient()
-            val url = URL("https://api.ladefuchs.app/shop/promo")
-            var apiResponse: Float
-            printLog("Trying to get Promo Level", "network")
-            val request = Request.Builder()
-                .url(url)
-                .get()
-                .header("Authorization", "Bearer $apiToken")
-                .build()
-            Thread {
-                try {
-                    val response = client.newCall(request).execute()
-                    apiResponse = response.body!!.string().toFloat()
-                    printLog("PromoLevel from API: $apiResponse")
-                    editor.putFloat("shopPromo", apiResponse)
-                    editor.commit()
-                } catch (e: Exception) {
-            printLog("Couldn't get Store Promo Level", "error")
-            e.printStackTrace()
+    private fun retrieveOperatorList() {
+        val JSONUrl = apiBaseURL + "operators/enabled"
+        val JSONFileName = "operators.json"
+        // download the latest operator list
+        downloadJSONToInternalStorage(JSONUrl, JSONFileName, "", false)
+        // read list into pocOperatorList variable
+        printLog("Reading $JSONFileName")
+        var operators = activity?.assets?.open(JSONFileName)?.let {
+            Klaxon().parseArray<Operators>(
+                it
+            )
         }
-            }.start()
+        if(operators!=null){
+            var operatorDisplayNames: List<String> = mutableListOf()
+            for(element in operators){
+                operatorDisplayNames=operatorDisplayNames.plus(element.displayName)
+            }
+            pocOperatorList = operatorDisplayNames
+        }
+
+    }
+
+    private fun checkShopPromoLevel(editor: SharedPreferences.Editor) {
+        val client = OkHttpClient()
+        val url = URL("https://api.ladefuchs.app/shop/promo")
+        var apiResponse: Float
+        printLog("Trying to get Promo Level", "network")
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", "Bearer $apiToken")
+            .build()
+        Thread {
+            try {
+                val response = client.newCall(request).execute()
+                apiResponse = response.body!!.string().toFloat()
+                printLog("PromoLevel from API: $apiResponse")
+                editor.putFloat("shopPromo", apiResponse)
+                editor.commit()
+            } catch (e: Exception) {
+                printLog("Couldn't get Store Promo Level", "error")
+                e.printStackTrace()
+            }
+        }.start()
     }
 
 
@@ -289,35 +300,36 @@ class ChargeCardFragment : Fragment() {
     }
 
 
-    private fun downloadJSONToInternalStorage(JSONUrl: String, JSONFileName: String, pocOperator: String) {
+    private fun downloadJSONToInternalStorage(JSONUrl: String, JSONFileName: String, pocOperator: String, pocFile: Boolean = true) {
 
-            printLog("Downloading $JSONUrl", "network")
+        printLog("Downloading $JSONUrl", "network")
 
-            val client = OkHttpClient()
-            val url = URL(JSONUrl)
+        val client = OkHttpClient()
+        val url = URL(JSONUrl)
 
-            val request = Request.Builder()
-                .url(url)
-                .get()
-                .header("Authorization", "Bearer " + apiToken)
-                .build()
-            Thread {
-                try {
-                    val response = client.newCall(request).execute()
-                    storeJSONInInternalStorage(
-                        response.body!!.string().byteInputStream(),
-                        JSONFileName
-                    )
-
-                    activity?.runOnUiThread{
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", "Bearer " + apiToken)
+            .build()
+        Thread {
+            try {
+                val response = client.newCall(request).execute()
+                storeJSONInInternalStorage(
+                    response.body!!.string().byteInputStream(),
+                    JSONFileName
+                )
+                if (pocFile){
+                    activity?.runOnUiThread {
                         printLog("Refreshing UI")
                         getPrices(pocOperator, launchedAfterDownload = true, forceDownload = false)
                     }
-                } catch (e: Exception) {
-                    printLog("Couldn't download JSON Data from $JSONUrl", "error")
-                    e.printStackTrace()
                 }
-            }.start()
+            } catch (e: Exception) {
+                printLog("Couldn't download JSON Data from $JSONUrl", "error")
+                e.printStackTrace()
+            }
+        }.start()
     }
 
     private fun getScreenWidth(): Int {
@@ -551,7 +563,6 @@ class ChargeCardFragment : Fragment() {
         val pocOperatorClean = pocOperator.replace(" ","")
         var JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         printLog("Loading $JSONFileName")
-
         var JSONFile : File? = File(activity?.getFileStreamPath(JSONFileName).toString())
         val JSONFileExists = JSONFile?.exists()
         if (!JSONFileExists!!) {
@@ -605,9 +616,9 @@ class ChargeCardFragment : Fragment() {
         val acPrice = prefs.getString("maingauAC", "")
         val dcPrice = prefs.getString("maingauDC", "")
 
-            if (ionityPrice!!.isNotEmpty() || acPrice!!.isNotEmpty() || dcPrice!!.isNotEmpty()) {
-                this.hasPersonalizedMaingauPrices = true
-            }
+        if (ionityPrice!!.isNotEmpty() || acPrice!!.isNotEmpty() || dcPrice!!.isNotEmpty()) {
+            this.hasPersonalizedMaingauPrices = true
+        }
 
         var maingauPrice = ChargeCards(
             identifier = "",
@@ -658,20 +669,20 @@ class ChargeCardFragment : Fragment() {
         return maingauPrice
     }
 
-   private fun drawChargeCard(
-       textToDraw: String = "N/A",
-       textSize: Float = 8F,
-       textColor: Int = Color.BLACK,
-       rectangleColor: Int = Color.LTGRAY,
-       backgroundColor: Int = Color.WHITE,
-       paintStroke: Boolean = false
-   ):Bitmap?{
-       val scaleFactor = 2
-       val cornerRadius = 25F * scaleFactor
-       val strokeWidth = 3F * scaleFactor
-       val textCardWidth = cardWidth * scaleFactor
-       val textCardHeight = cardHeight * scaleFactor
-       val cardTextSize = textSize * scaleFactor
+    private fun drawChargeCard(
+        textToDraw: String = "N/A",
+        textSize: Float = 8F,
+        textColor: Int = Color.BLACK,
+        rectangleColor: Int = Color.LTGRAY,
+        backgroundColor: Int = Color.WHITE,
+        paintStroke: Boolean = false
+    ):Bitmap?{
+        val scaleFactor = 2
+        val cornerRadius = 25F * scaleFactor
+        val strokeWidth = 3F * scaleFactor
+        val textCardWidth = cardWidth * scaleFactor
+        val textCardHeight = cardHeight * scaleFactor
+        val cardTextSize = textSize * scaleFactor
 
         val bitmap = Bitmap.createBitmap(
             textCardWidth,
@@ -690,31 +701,31 @@ class ChargeCardFragment : Fragment() {
             canvas.height - strokeWidth
         )
 
-       if (paintStroke) {
-           canvas.drawRoundRect(
-               rectF,
-               cornerRadius,
-               cornerRadius,
-               Paint().apply { color = rectangleColor })
-       }
+        if (paintStroke) {
+            canvas.drawRoundRect(
+                rectF,
+                cornerRadius,
+                cornerRadius,
+                Paint().apply { color = rectangleColor })
+        }
 
         val fillPaint = Paint()
         val strokePaint = Paint()
 
         // fill
-       fillPaint.style = Paint.Style.FILL
-       fillPaint.color = manipulateColor(backgroundColor, 1.25f)
+        fillPaint.style = Paint.Style.FILL
+        fillPaint.color = manipulateColor(backgroundColor, 1.25f)
 
         // stroke
-       strokePaint.style = Paint.Style.STROKE
-       strokePaint.color = rectangleColor
-       strokePaint.strokeWidth = strokeWidth
+        strokePaint.style = Paint.Style.STROKE
+        strokePaint.color = rectangleColor
+        strokePaint.strokeWidth = strokeWidth
 
         // Second rectangle
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, fillPaint)    // fill
-       if(paintStroke) {
-           canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, strokePaint)  // stroke
-       }
+        if(paintStroke) {
+            canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, strokePaint)  // stroke
+        }
 
         // text paint to draw text
         val textPaint = TextPaint().apply {
@@ -725,7 +736,7 @@ class ChargeCardFragment : Fragment() {
         }
         textPaint.typeface = Typeface.create("Roboto",Typeface.BOLD)
 
-       //calculating if breaking is needed in order to correctly position text on the Y Axis
+        //calculating if breaking is needed in order to correctly position text on the Y Axis
         val numOfChars = textPaint.breakText(
             textToDraw,
             true,
@@ -733,9 +744,9 @@ class ChargeCardFragment : Fragment() {
             null
         )
 
-       val textLines = ceil(textToDraw.length.toDouble() / numOfChars.toDouble())
+        val textLines = ceil(textToDraw.length.toDouble() / numOfChars.toDouble())
 
-       var textPositionYOffset = canvas.height.toDouble() / 2.0 - (textLines * cardTextSize.toDouble()/2.0 + 2.0 * strokeWidth.toDouble())
+        var textPositionYOffset = canvas.height.toDouble() / 2.0 - (textLines * cardTextSize.toDouble()/2.0 + 2.0 * strokeWidth.toDouble())
 
         // draw multiline card
         canvas.drawMultilineText(
