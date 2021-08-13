@@ -513,9 +513,11 @@ class ChargeCardFragment : Fragment() {
                     )
                 CardHolderView.orientation = LinearLayout.HORIZONTAL
                 if (i % 2 == 0) {
-                    CardHolderView.setBackgroundColor(Color.parseColor("#EDE6D8"))
+                    //TableColorLight
+                    CardHolderView.setBackgroundColor(Color.parseColor("#F2EBE1"))
                 } else {
-                    CardHolderView.setBackgroundColor(Color.parseColor("#B2A288"))
+                    // TableColorDark
+                    CardHolderView.setBackgroundColor(Color.parseColor("#CEC0AC"))
                 }
                 CardHolderView.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
 
