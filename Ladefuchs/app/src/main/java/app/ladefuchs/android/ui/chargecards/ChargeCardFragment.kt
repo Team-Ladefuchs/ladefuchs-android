@@ -220,6 +220,9 @@ class ChargeCardFragment : Fragment() {
 
         //Loading the pocList into the Picker Library
         val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
+        //Switch to a more 3D, iOS-style Look
+        wheelPicker.setAtmospheric(true)
+        wheelPicker.isCurved = true
         wheelPicker.data = pocOperatorList.toMutableList()
         wheelPicker.setOnItemSelectedListener(WheelPicker.OnItemSelectedListener { picker, data, position ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
