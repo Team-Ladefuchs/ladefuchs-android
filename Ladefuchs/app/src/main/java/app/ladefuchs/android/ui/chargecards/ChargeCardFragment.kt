@@ -220,6 +220,9 @@ class ChargeCardFragment : Fragment() {
 
         //Loading the pocList into the Picker Library
         val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
+        //Switch to a more 3D, iOS-style Look
+        wheelPicker.setAtmospheric(true)
+        wheelPicker.isCurved = true
         wheelPicker.data = pocOperatorList.toMutableList()
         wheelPicker.setOnItemSelectedListener(WheelPicker.OnItemSelectedListener { picker, data, position ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
@@ -510,9 +513,11 @@ class ChargeCardFragment : Fragment() {
                     )
                 CardHolderView.orientation = LinearLayout.HORIZONTAL
                 if (i % 2 == 0) {
-                    CardHolderView.setBackgroundColor(Color.parseColor("#EDE6D8"))
+                    //TableColorLight
+                    CardHolderView.setBackgroundColor(Color.parseColor("#F2EBE1"))
                 } else {
-                    CardHolderView.setBackgroundColor(Color.parseColor("#B2A288"))
+                    // TableColorDark
+                    CardHolderView.setBackgroundColor(Color.parseColor("#CEC0AC"))
                 }
                 CardHolderView.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
 
