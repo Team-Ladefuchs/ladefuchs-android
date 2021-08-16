@@ -1,0 +1,67 @@
+[
+  {
+    "name": "allego",
+    "displayName": "Allego",
+    "identifier": "cpo-allego"
+  },
+  {
+    "name": "enbw",
+    "displayName": "EnBW",
+    "identifier": "cpo-enbw"
+  },
+  {
+    "name": "fastned",
+    "displayName": "Fastned",
+    "identifier": "cpo-fastned"
+  },
+  {
+    "name": "ionity",
+    "displayName": "Ionity",
+    "identifier": "cpo-ionity"
+  },
+  {
+    "name": "ladenetz",
+    "displayName": "Ladenetz",
+    "identifier": "cpo-ladenetz"
+  },
+  {
+    "name": "innogy",
+    "displayName": "Innogy",
+    "identifier": "cpo-innogy"
+  },
+  {
+    "name": "beemobil",
+    "displayName": "be emobil",
+    "identifier": "cpo-beemobil"
+  },
+  {
+    "name": "be.energised",
+    "displayName": "be.ENERGISED",
+    "identifier": "cpo-beenergised"
+  },
+  {
+    "name": "e.on",
+    "displayName": "E.ON",
+    "identifier": "cpo-eon"
+  },
+  {
+    "name": "elli",
+    "displayName": "Elli",
+    "identifier": "cpo-elli"
+  },
+  {
+    "name": "comfortcharge",
+    "displayName": "Comfort Charge",
+    "identifier": "cpo-comfortcharge"
+  },
+  {
+    "name": "ladeverbund+",
+    "displayName": "Ladeverbund+",
+    "identifier": "cpo-ladeverbundplus"
+  },
+  {
+    "name": "newmotion",
+    "displayName": "New Motion",
+    "identifier": "cpo-newmotion"
+  }
+]
