@@ -577,9 +577,20 @@ class ChargeCardFragment : Fragment() {
             }
         }
         chargeCards = chargeCards.toMutableList()
-        // remove all chargeCards that were deselected
-        chargeCards.removeAll{ !selectedChargeCards.contains(it.identifier) }
+        //Get available chargecards as string list and transform them back to a real list/set
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        var selectedChargeCards:Set<String> =
+            prefs.getString("selectedChargeCards", "")!!
+                .removePrefix("[") // Remove leading bracket from string
+                .removeSuffix("]") // Remove trailing bracket from string
+                .replace("\\s".toRegex(), "") // strip spaces
+                .split(',').toSet() // transform back to list and then to set for more efficient contains
 
+        // if the user hasn't selected any chargeCards keep all
+        if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size>1){
+            // remove all chargeCards that were deselected
+            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards}
+        }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
         if (maingauPrices.name.isNotEmpty() && pocOperatorClean.toLowerCase() != "ladeverbund+") {
             chargeCards.add(maingauPrices)
