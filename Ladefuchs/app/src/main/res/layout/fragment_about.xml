@@ -332,26 +332,85 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/teamfuchs2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto_black"
-                    android:text="@string/podcastfuchs"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/AboutHeader"
-                    android:textStyle="bold" />
+            <LinearLayout
+                android:id="@+id/team_thorsten"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/teamfuchsSL2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/bitter"
-                    android:text="@string/podcastfuchs_sl"
-                    android:textAppearance="@style/AboutSubHeader" />
+                <ImageView
+                    android:id="@+id/avatar_thorsten"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatar_thorsten"
+                    android:src="@drawable/team_thorsten" />
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/thorsten"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/thorsten"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/thorstenSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/androidfuchs"
+                        android:textAppearance="@style/AboutSubHeader" />
+
+                    <TextView
+                        android:id="@+id/thorstenSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/twitter_thorsten"
+                        android:textAppearance="@style/AboutSubHeaderSans" />
+
+                    <TextView
+                        android:id="@+id/thorstenSL3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/android_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/teamfuchs2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_black"
+                android:text="@string/podcastfuchs"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/teamfuchsSL2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bitter"
+                android:text="@string/podcastfuchs_sl"
+                android:textAppearance="@style/AboutSubHeader" />
+
+            <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:weightSum="99">
