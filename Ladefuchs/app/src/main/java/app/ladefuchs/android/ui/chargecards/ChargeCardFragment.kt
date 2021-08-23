@@ -80,7 +80,7 @@ class Operators(
 )
 
 class ChargeCardFragment : Fragment() {
-    var hasPersonalizedMaingauPrices: Boolean = false
+    var hasCustomerMaingauPrices: Boolean = false
     var hasADACPrices: Boolean = false
     var cardWidth: Int = 0
     var cardHeight: Int = 0
@@ -110,39 +110,15 @@ class ChargeCardFragment : Fragment() {
         //Get Preferences
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         hasADACPrices = prefs.getBoolean("specialEnbwAdac", false)
+        hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
-        //Validate Maingau Prices and reset them if corrupt
-        val ionityPrice = prefs.getString("maingauIonity", "")
-        val acPrice = prefs.getString("maingauAC", "")
-        val dcPrice = prefs.getString("maingauDC", "")
         var editor = prefs.edit()
 
         //Check if we should do Store Promo
         shopPromo = prefs.getFloat("shopPromo", 0.0F)
         checkShopPromoLevel(editor)
 
-        try {
-            acPrice?.toFloat()
-        } catch (e: NumberFormatException) {
-            editor.putString("maingauAC", null)
-            editor.commit()
-        }
-
-        try {
-            dcPrice?.toFloat()
-        } catch (e: NumberFormatException) {
-            editor.putString("maingauDC", null)
-            editor.commit()
-        }
-
-        try {
-            ionityPrice?.toFloat()
-        } catch (e: NumberFormatException) {
-            editor.putString("maingauIonity", null)
-            editor.commit()
-        }
-
-        view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
+                view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
             findNavController().navigate(R.id.action_navigation_chargecards_to_navigation_about)
         }
 
@@ -302,7 +278,6 @@ class ChargeCardFragment : Fragment() {
         }
     }
 
-
     private fun downloadJSONToInternalStorage(JSONUrl: String, JSONFileName: String, pocOperator: String, pocFile: Boolean = true) {
 
         printLog("Downloading $JSONUrl", "network")
@@ -383,19 +358,19 @@ class ChargeCardFragment : Fragment() {
             ) as LinearLayout
 
         chargeCardsColumn.removeAllViews()
-        chargeCards.forEach {
+        chargeCards.forEach { currentCard ->
 
-            var cardIdentifier = "card_" + it.identifier
-            var cardProviderIdentifier = "card_" + it.provider
+            var cardIdentifier = "card_" + currentCard.identifier
+            var cardProviderIdentifier = "card_" + currentCard.provider
 
             //Skip ADAC card if not enabled
-            if (it.identifier == "adac" && !hasADACPrices) {
+            if (currentCard.identifier == "adac" && !hasADACPrices) {
                 printLog("ADAC prices will be skipped")
                 return@forEach
             }
 
             //Skip Maingau Prices if personalized proces are available
-            if (it.identifier == "maingau_energie" && hasPersonalizedMaingauPrices == true) {
+            if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices == true) {
                 return@forEach
             }
 
@@ -404,6 +379,7 @@ class ChargeCardFragment : Fragment() {
                 cardMeta = cardMetadata?.find { it.identifier == "default"}
             }
 
+
             // Creating a Holder for Card and Price, to lay them out next to each other
             var CardHolderView: LinearLayout = LinearLayout(context)
             chargeCardsColumn.addView(CardHolderView)
@@ -411,10 +387,10 @@ class ChargeCardFragment : Fragment() {
             CardHolderView.orientation = LinearLayout.HORIZONTAL
 
             var backgroundUri:String
-            if (i % 2 == 0) {
-                backgroundUri = "@drawable/border_light_bg_$columnSide"
+            backgroundUri = if (i % 2 == 0) {
+                "@drawable/border_light_bg_$columnSide"
             } else {
-                backgroundUri = "@drawable/border_dark_bg_$columnSide"
+                "@drawable/border_dark_bg_$columnSide"
             }
 
             CardHolderView.setBackgroundResource(
@@ -472,9 +448,9 @@ class ChargeCardFragment : Fragment() {
                 imageCardView.requestLayout()
 
             } else {
-                var cardText = it.name
-                if (it.provider != it.name) {
-                    cardText = it.provider
+                var cardText = currentCard.name
+                if (currentCard.provider != currentCard.name) {
+                    cardText = currentCard.provider
                 }
                 val cardBitmap = drawChargeCard(
                     textToDraw = cardText,
@@ -499,12 +475,12 @@ class ChargeCardFragment : Fragment() {
                 (priceNumberFormat as DecimalFormat).decimalFormatSymbols
             decimalFormatSymbols.currencySymbol = ""
             priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
-            (priceNumberFormat.format(it.price).trim { it <= ' ' })
+            (priceNumberFormat.format(currentCard.price).trim { it <= ' ' })
 
             // Creating the TextView that will hold the Price
             val textviewPrice: TextView = TextView(context)
             CardHolderView.addView(textviewPrice)
-            textviewPrice.text = priceNumberFormat.format(it.price).trim { it <= ' ' }
+            textviewPrice.text = priceNumberFormat.format(currentCard.price).trim { it <= ' ' }
             textviewPrice.setTextAppearance(R.style.TableTextView)
             textviewPrice.gravity = Gravity.CENTER
             textviewPrice.width = cardWidth
@@ -539,7 +515,6 @@ class ChargeCardFragment : Fragment() {
                 CardHolderView.addView(textview)
 
                 textview.text = ("")
-
                 textview.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
                 textview.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
                 textview.setTextAppearance(R.style.TableTextViewDisabled)
@@ -615,15 +590,13 @@ class ChargeCardFragment : Fragment() {
     }
 
     private fun getMaingauPrices(type: String, pocOperator: String): ChargeCards {
-        //Load Prices from prefs
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val ionityPrice = prefs.getString("maingauIonity", "")
-        val acPrice = prefs.getString("maingauAC", "")
-        val dcPrice = prefs.getString("maingauDC", "")
+        //Load Pricetoggle from prefs
+        val hasMaingauCustomerPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
-        if (ionityPrice!!.isNotEmpty() || acPrice!!.isNotEmpty() || dcPrice!!.isNotEmpty()) {
-            this.hasPersonalizedMaingauPrices = true
-        }
+        var maingauIonityPrice: Float = 0.75F
+        var maingauAcPrice: Float = 0.3F
+        var maingauDcPrice: Float = 0.4F
 
         var maingauPrice = ChargeCards(
             identifier = "",
@@ -632,43 +605,36 @@ class ChargeCardFragment : Fragment() {
             price = 0.0f,
             updated = System.currentTimeMillis() / 1000L
         )
-        when {
-            pocOperator.toLowerCase() == "ionity" && type == "dc" && ionityPrice.isNotEmpty() -> {
-                maingauPrice =  ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = ionityPrice.replace(
-                        ",",
-                        "."
-                    ).toFloat() / 100,
-                    updated = System.currentTimeMillis() / 1000L
-                )
-            }
-            type == "ac" && pocOperator.toLowerCase() != "ionity" && acPrice!!.isNotEmpty() -> {
+        if(hasMaingauCustomerPrices) {
+            when {
+                pocOperator.toLowerCase() == "ionity" && type == "dc" -> {
+                    maingauPrice = ChargeCards(
+                        identifier = "maingau_personalized",
+                        name = "Einfach Strom Laden",
+                        provider = "Maingau",
+                        price = maingauIonityPrice,
+                        updated = System.currentTimeMillis() / 1000L
+                    )
+                }
+                type == "ac" && pocOperator.toLowerCase() != "ionity" -> {
 
-                maingauPrice =  ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = acPrice.replace(
-                        ",",
-                        "."
-                    ).toFloat() / 100,
-                    updated = System.currentTimeMillis() / 1000L
-                )
-            }
-            type == "dc" && pocOperator.toLowerCase() != "ionity" && dcPrice!!.isNotEmpty() -> {
-                maingauPrice =  ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = dcPrice.replace(
-                        ",",
-                        "."
-                    ).toFloat() / 100,
-                    updated = System.currentTimeMillis() / 1000L
-                )
+                    maingauPrice = ChargeCards(
+                        identifier = "maingau_personalized",
+                        name = "Einfach Strom Laden",
+                        provider = "Maingau",
+                        price = maingauAcPrice,
+                        updated = System.currentTimeMillis() / 1000L
+                    )
+                }
+                type == "dc" && pocOperator.toLowerCase() != "ionity" -> {
+                    maingauPrice = ChargeCards(
+                        identifier = "maingau_personalized",
+                        name = "Einfach Strom Laden",
+                        provider = "Maingau",
+                        price = maingauDcPrice,
+                        updated = System.currentTimeMillis() / 1000L
+                    )
+                }
             }
         }
         return maingauPrice
