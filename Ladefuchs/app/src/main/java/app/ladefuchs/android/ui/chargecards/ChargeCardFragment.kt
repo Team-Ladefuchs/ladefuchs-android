@@ -180,7 +180,7 @@ class ChargeCardFragment : Fragment() {
         getPrices(
             currentPoc,
             launchedAfterDownload = false,
-            forceDownload = true
+            forceDownload = false
         )
 
         //Loading the pocList into the Picker Library
