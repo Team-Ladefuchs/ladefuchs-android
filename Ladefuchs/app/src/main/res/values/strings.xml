@@ -66,4 +66,6 @@
     <string name="imprint_text">Angaben gemäß § 5 TMG:\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck\n\nKontakt:\nTelefon: +49-8141-5092502\nE-Mail: info@schlingel.de\n\nVerantwortlich für den Inhalt nach § 55 Abs. 2 RStV:\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck\n\n\nQuelle: Impressum-Generator von anwalt.de</string>
     <string name="impressum">Impressum</string>
     <string name="dialog_ok">OK</string>
+    <string name="dialog_chargecard_list_preference">Bitte wähle die Ladekarten aus, welche angezeigt werden sollen</string>
+    <string name="chargecard_title">Wähle deine Karten</string>
 </resources>

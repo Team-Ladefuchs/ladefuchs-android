@@ -542,30 +542,55 @@ class ChargeCardFragment : Fragment() {
         var country = "de"
         val pocOperatorClean = pocOperator.replace(" ","")
         var JSONFileName = "$country-$pocOperatorClean-$currentType.json"
-        printLog("Loading $JSONFileName")
-        var JSONFile : File? = File(activity?.getFileStreamPath(JSONFileName).toString())
-        val JSONFileExists = JSONFile?.exists()
-        if (!JSONFileExists!!) {
-            val bundledJSON = activity?.assets?.open(JSONFileName)
-            if (bundledJSON != null) {
-                storeJSONInInternalStorage(bundledJSON, JSONFileName)
-            }
-            JSONFile = File(activity?.getFileStreamPath(JSONFileName).toString())
-        }
         var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
-        try {
-            chargeCards = JSONFile?.let { Klaxon().parseArray<ChargeCards>(it) }!!
-        } catch (e: Exception) {
-            //e.printStackTrace()
-        }
-        chargeCards = chargeCards.toMutableList()
 
+        // check whether forceDownload was activated
+        if(!forceDownload) {
+            var JSONFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
+            val JSONFileExists = JSONFile?.exists()
+            if (!JSONFileExists!!) {
+                val bundledJSON = activity?.assets?.open(JSONFileName)
+                if (bundledJSON != null) {
+                    storeJSONInInternalStorage(bundledJSON, JSONFileName)
+                }
+                printLog("Loading $JSONFileName")
+                JSONFile = File(activity?.getFileStreamPath(JSONFileName).toString())
+            }
+            try {
+                chargeCards = JSONFile?.let { Klaxon().parseArray<ChargeCards>(it) }!!
+            } catch (e: Exception) {
+                //e.printStackTrace()
+            }
+        }
         if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload) {
             val JSONUrl = apiBaseURL + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
-        }
+            // load the freshly downloaded JSON file
+            var JSONFile = File(activity?.getFileStreamPath(JSONFileName).toString())
 
+            try {
+                printLog("Reloading chargeCards after Download")
+                chargeCards = JSONFile?.let { Klaxon().parseArray<ChargeCards>(it) }!!
+            } catch (e: Exception) {
+                //e.printStackTrace()
+            }
+        }
+        chargeCards = chargeCards.toMutableList()
+        //Get available chargecards as string list and transform them back to a real list/set
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        var selectedChargeCards:Set<String> =
+            prefs.getString("selectedChargeCards", "")!!
+                .removePrefix("[") // Remove leading bracket from string
+                .removeSuffix("]") // Remove trailing bracket from string
+                .replace("\\s".toRegex(), "") // strip spaces
+                .split(',').toSet() // transform back to list and then to set for more efficient contains
+
+        // if the user hasn't selected any chargeCards keep all
+        if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size>1){
+            // remove all chargeCards that were deselected
+            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards}
+        }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
         if (maingauPrices.name.isNotEmpty() && pocOperatorClean.toLowerCase() != "ladeverbund+") {
             chargeCards.add(maingauPrices)
