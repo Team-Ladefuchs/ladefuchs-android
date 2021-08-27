@@ -234,7 +234,7 @@ class ChargeCardFragment : Fragment() {
             for(element in operators){
                 operatorDisplayNames=operatorDisplayNames.plus(element.displayName)
             }
-            pocOperatorList = operatorDisplayNames
+            pocOperatorList = operatorDisplayNames.sortedBy { it?.toLowerCase() }
         }
 
     }
