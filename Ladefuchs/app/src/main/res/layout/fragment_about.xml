@@ -29,27 +29,11 @@
         android:background="@color/PrimaryBackground"
         android:contentDescription="@string/zurueck"
         android:tint="@color/TextColorDark"
-        app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
+        app:layout_constraintBottom_toTopOf="@+id/einstellungen"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/abc_vector_test" />
 
-
-    <TextView
-        android:id="@+id/aboutus_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
-        android:fontFamily="sans-serif-black"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="@color/colorAccentIntense"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/einstellungen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo" />
 
     <LinearLayout
         android:id="@+id/einstellungen"
@@ -62,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/aboutus_title">
+        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/einstellungenHeader"
