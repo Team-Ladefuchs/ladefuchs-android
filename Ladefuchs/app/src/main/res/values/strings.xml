@@ -68,4 +68,9 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_chargecard_list_preference">Bitte wähle die Ladekarten aus, welche angezeigt werden sollen</string>
     <string name="chargecard_title">Wähle deine Karten</string>
+    <string name="onboarding1">Wähle den Anbieter der Ladesäule, an der Du stehst.</string>
+    <string name="onboarding2">Die günstigste Ladekarte findest Du oben in der Liste.</string>
+    <string name="onboarding3">Hier kannst Du deine persönlichen Ladetarife und weitere Ladesäulen-Betreiber hinzufügen.</string>
+    <string name="onboarding_phrase">Wickel Dein Kabel auf und häng es über den Ladeport, dann bleibt’s sauber.
+</string>
 </resources>

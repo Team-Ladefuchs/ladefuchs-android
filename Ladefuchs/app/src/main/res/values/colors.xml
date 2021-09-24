@@ -11,4 +11,5 @@
     <color name="TextColorDark">#25231F</color>
     <color name="TextColorDisabled">#7B7B7B</color>
     <color name="WheelCurtainColor">#0D000000</color>
+    <color name="OnboardingBackground">#BF000000</color>
 </resources>

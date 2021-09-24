@@ -20,20 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_ladefuchs_logo" />
 
-    <ImageButton
-        android:id="@+id/aboutButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="40dp"
-        android:background="@color/PrimaryBackground"
-        android:contentDescription="@string/settings_button"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_settings_black_18dp"
-        app:layout_constraintBottom_toTopOf="@+id/chargeCardsTableHeader"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <LinearLayout
         android:id="@+id/chargeCardsTableHeader"
@@ -259,6 +246,45 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        android:id="@+id/onboarding_3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/onboarding_overlay3"
+        android:visibility="invisible"
+        />
+    <ImageButton
+        android:id="@+id/aboutButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/circle_bg"
+        android:padding="10dp"
+        android:contentDescription="@string/settings_button"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_settings_black_18dp"
+        app:layout_constraintBottom_toTopOf="@+id/chargeCardsTableHeader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/onboarding_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/onboarding_overlay1"
+        android:visibility="invisible"
+        />
+
+    <include
+        android:id="@+id/onboarding_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/onboarding_overlay2"
+        android:visibility="invisible"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
