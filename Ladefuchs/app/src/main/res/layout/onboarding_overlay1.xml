@@ -26,12 +26,29 @@
         android:id="@+id/onboarding_text_1"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:fontFamily="monospace"
+        android:layout_marginBottom="40dp"
+        android:fontFamily="@font/bitter"
+        android:textStyle="italic"
         android:text="@string/onboarding1"
         android:textColor="@color/colorPrimary"
         android:textSize="17sp"
-        android:paddingBottom="5dp"
         app:layout_constraintBottom_toBottomOf="@id/overlay1_1"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/step_one"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/step_bg"
+        android:fontFamily="@font/roboto_black"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/onboarding_text_1"
+        app:layout_constraintRight_toLeftOf="@id/onboarding_text_1"
+        app:layout_constraintTop_toTopOf="@id/onboarding_text_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
