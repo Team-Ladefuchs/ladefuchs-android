@@ -67,5 +67,5 @@
     <string name="impressum">Impressum</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_chargecard_list_preference">Bitte wähle die Ladekarten aus, die angezeigt werden sollen</string>
-    <string name="chargecard_title">Wähle <u> deine Karten</u></string>
+    <string name="chargecard_title">Wähle <u>deine Karten</u></string>
 </resources>
