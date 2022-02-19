@@ -369,7 +369,7 @@ class ChargeCardFragment : Fragment() {
                 return@forEach
             }
 
-            //Skip Maingau Prices if personalized proces are available
+            //Skip Maingau Prices if personalized processes are available
             if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices == true) {
                 return@forEach
             }
@@ -589,7 +589,7 @@ class ChargeCardFragment : Fragment() {
         // if the user hasn't selected any chargeCards keep all
         if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size>1){
             // remove all chargeCards that were deselected
-            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards}
+            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards && x.identifier != "adac"}
         }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
         if (maingauPrices.name.isNotEmpty() && pocOperatorClean.toLowerCase() != "ladeverbund+") {
