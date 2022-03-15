@@ -26,7 +26,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             "EWE Go",
             "FahrStrom Unterwegs Standard",
             "FairstromEmobil (App)",
-            "Fastened",
+            "Fastned",
             "GEW E-Tankkarte",
             "IONITY",
             "InCharge",
