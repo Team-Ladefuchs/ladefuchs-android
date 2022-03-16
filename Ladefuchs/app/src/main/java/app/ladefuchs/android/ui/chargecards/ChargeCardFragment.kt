@@ -552,13 +552,15 @@ class ChargeCardFragment : Fragment() {
         val pocOperatorClean = pocOperator.replace(" ","")
         var JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
+        var forceInitialDownload = forceDownload
 
         // check whether forceDownload was activated
         if(!forceDownload) {
             var JSONFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
             val JSONFileExists = JSONFile?.exists()
             if (!JSONFileExists!!) {
-                val bundledJSON = activity?.assets?.open(JSONFileName)
+                val bundledJSON = activity?.assets?.open("skeleton.json")
+                forceInitialDownload = true
                 if (bundledJSON != null) {
                     storeJSONInInternalStorage(bundledJSON, JSONFileName)
                 }
@@ -571,7 +573,7 @@ class ChargeCardFragment : Fragment() {
                 //e.printStackTrace()
             }
         }
-        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload) {
+        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
             val JSONUrl = apiBaseURL + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
@@ -618,7 +620,6 @@ class ChargeCardFragment : Fragment() {
             Klaxon().parseArray<CardMetadata>(
                 it
             )
-
         }
         return cardMetadata
     }
