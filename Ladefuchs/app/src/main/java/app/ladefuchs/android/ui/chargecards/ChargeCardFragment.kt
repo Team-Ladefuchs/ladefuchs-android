@@ -87,7 +87,7 @@ class ChargeCardFragment : Fragment() {
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
-    val apiBaseURL: String = "https://api.ladefuchs.app/cards/"
+    val apiBaseURL: String = "https://api.ladefuchs.app/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
 
@@ -224,10 +224,23 @@ class ChargeCardFragment : Fragment() {
         downloadJSONToInternalStorage(JSONUrl, JSONFileName, "", false)
         // read list into pocOperatorList variable
         printLog("Reading $JSONFileName")
-        var operators = activity?.assets?.open(JSONFileName)?.let {
-            Klaxon().parseArray<Operators>(
-                it
-            )
+        var operators:List<Operators>? = null
+        try {
+            operators = File(activity?.getFileStreamPath(JSONFileName).toString()).let {
+                Klaxon().parseArray<Operators>(
+                    it
+                )
+            }
+        }
+        catch(e: Exception){
+
+        }
+        if(operators != null) {
+            operators = activity?.assets?.open(JSONFileName)?.let {
+                Klaxon().parseArray<Operators>(
+                    it
+                )
+            }
         }
         if(operators!=null){
             var operatorDisplayNames: List<String> = mutableListOf()
@@ -241,7 +254,7 @@ class ChargeCardFragment : Fragment() {
 
     private fun checkShopPromoLevel(editor: SharedPreferences.Editor) {
         val client = OkHttpClient()
-        val url = URL("https://api.ladefuchs.app/shop/promo")
+        val url = URL(apiBaseURL+ "shop/promo")
         var apiResponse: Float
         printLog("Trying to get Promo Level", "network")
         val request = Request.Builder()
@@ -563,7 +576,7 @@ class ChargeCardFragment : Fragment() {
             }
         }
         if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload) {
-            val JSONUrl = apiBaseURL + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
+            val JSONUrl = apiBaseURL + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
             // load the freshly downloaded JSON file
