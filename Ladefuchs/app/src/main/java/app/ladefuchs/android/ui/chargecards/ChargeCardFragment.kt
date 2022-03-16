@@ -329,6 +329,7 @@ class ChargeCardFragment : Fragment() {
         forceDownload: Boolean = false
     ): String {
         //Load Prices JSON from File
+        printLog("Getting prices for $pocOperator")
         var chargeCardsAC = readPrices(pocOperator, "ac", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
         var chargeCardsDC = readPrices(pocOperator, "dc", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
         if (chargeCardsAC != null || chargeCardsDC != null) {
@@ -549,7 +550,9 @@ class ChargeCardFragment : Fragment() {
 
         //Load Prices JSON from File
         var country = "de"
-        val pocOperatorClean = pocOperator.replace(" ","")
+        val replaceRule = Regex("[^A-Za-z0-9.+-]")
+        val pocOperatorClean = replaceRule.replace(pocOperator, "")
+        printLog("Getting Prices for $pocOperatorClean")
         var JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
         var forceInitialDownload = forceDownload
