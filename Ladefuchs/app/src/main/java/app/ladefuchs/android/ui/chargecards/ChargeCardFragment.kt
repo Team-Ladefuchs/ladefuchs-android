@@ -226,15 +226,11 @@ class ChargeCardFragment : Fragment() {
         printLog("Reading $JSONFileName")
         var operators:List<Operators>? = null
         try {
-            operators = File(activity?.getFileStreamPath(JSONFileName).toString()).let {
-                Klaxon().parseArray<Operators>(
-                    it
-                )
-            }
+            val operatorsFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
+            operators = operatorsFile?.let { Klaxon().parseArray<Operators>(it) }!!
         }
         catch(e: Exception){
-
-        }
+           }
         if(operators == null) {
             operators = activity?.assets?.open(JSONFileName)?.let {
                 Klaxon().parseArray<Operators>(
