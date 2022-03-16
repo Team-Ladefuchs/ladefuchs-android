@@ -235,7 +235,7 @@ class ChargeCardFragment : Fragment() {
         catch(e: Exception){
 
         }
-        if(operators != null) {
+        if(operators == null) {
             operators = activity?.assets?.open(JSONFileName)?.let {
                 Klaxon().parseArray<Operators>(
                     it
