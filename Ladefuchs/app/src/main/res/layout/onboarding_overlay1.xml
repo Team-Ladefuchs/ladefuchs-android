@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/overlay_1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/overlay1_1"
+        android:layout_width="match_parent"
+        android:layout_height="540dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@color/OnboardingBackground" />
+
+    <ImageView
+        android:id="@+id/overlay1_2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="175dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="@color/OnboardingBackground"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/onboarding_text_1"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/bitter"
+        android:textStyle="italic"
+        android:text="@string/onboarding1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="17sp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/step_one"
+        app:layout_constraintTop_toTopOf="@id/step_one"
+        app:layout_constraintLeft_toRightOf="@id/step_one"
+        android:layout_width="0dp"/>
+
+    <TextView
+        android:id="@+id/step_one"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/step_bg"
+        android:fontFamily="@font/roboto_black"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/overlay1_1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

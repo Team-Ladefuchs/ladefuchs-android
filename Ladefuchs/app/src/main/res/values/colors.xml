@@ -3,7 +3,7 @@
     <color name="colorPrimary">#F2EBE1</color>
     <color name="colorPrimaryDark">#CEC0AC</color>
     <color name="colorAccent">#E96D3E</color>
-    <color name="colorAccentIntense">#DB2712</color>
+    <color name="colorAccentIntense">#D23D26</color>
     <color name="PrimaryBackground">#EDE6D8</color>
     <color name="TableColorDark">#CEC0AC</color>
     <color name="TableColorLight">#F2EBE1</color>
@@ -11,4 +11,5 @@
     <color name="TextColorDark">#25231F</color>
     <color name="TextColorDisabled">#7B7B7B</color>
     <color name="WheelCurtainColor">#0D000000</color>
+    <color name="OnboardingBackground">#D9000000</color>
 </resources>

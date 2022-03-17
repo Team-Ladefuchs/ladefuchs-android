@@ -18,21 +18,21 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.*
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import android.widget.ImageView.ScaleType
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.withTranslation
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
+import app.ladefuchs.android.R.id.*
 import com.aigestudio.wheelpicker.WheelPicker
 import com.beust.klaxon.Klaxon
 import com.makeramen.roundedimageview.RoundedImageView
@@ -48,6 +48,9 @@ import java.text.NumberFormat
 import kotlin.math.ceil
 import kotlin.random.Random.Default.nextFloat
 import kotlin.random.Random.Default.nextInt
+
+
+
 //import com.tylerthrailkill.helpers.prettyprint.pp
 
 @Keep
@@ -90,7 +93,7 @@ class ChargeCardFragment : Fragment() {
     val apiBaseURL: String = "https://api.ladefuchs.app/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
-
+    var firstStart: Boolean = true
 
     private lateinit var chargeCardViewModel: ChargeCardViewModel
 
@@ -100,7 +103,8 @@ class ChargeCardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         context
-
+        val prefs =  PreferenceManager.getDefaultSharedPreferences(context)
+        this.firstStart = prefs.getBoolean("firstStart", true)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chargecards, container, false)
     }
@@ -112,14 +116,19 @@ class ChargeCardFragment : Fragment() {
         hasADACPrices = prefs.getBoolean("specialEnbwAdac", false)
         hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
-        var editor = prefs.edit()
+        if(firstStart){
+            shopPromo=0.0F
+        }
+        else {
+            val editor = prefs.edit()
 
-        //Check if we should do Store Promo
-        shopPromo = prefs.getFloat("shopPromo", 0.0F)
-        checkShopPromoLevel(editor)
+            //Check if we should do Store Promo
+            shopPromo = prefs.getFloat("shopPromo", 0.0F)
+            checkShopPromoLevel(editor)
+        }
 
                 view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_chargecards_to_navigation_about)
+            findNavController().navigate(action_navigation_chargecards_to_navigation_about)
         }
 
         //calculating Card Dimensions
@@ -214,7 +223,9 @@ class ChargeCardFragment : Fragment() {
             getPrices(currentPoc, launchedAfterDownload = false, forceDownload = true)
             swipetorefresh.isRefreshing = false
         }
-
+        if (firstStart) {
+            onboarding()
+        }
     }
 
     private fun retrieveOperatorList() {
@@ -272,7 +283,6 @@ class ChargeCardFragment : Fragment() {
         }.start()
     }
 
-
     private fun storeJSONInInternalStorage(inputStream: InputStream, internalStorageFileName: String) {
         val outputStream = activity?.openFileOutput(internalStorageFileName, Context.MODE_PRIVATE)
         val buffer = ByteArray(1024)
@@ -321,6 +331,10 @@ class ChargeCardFragment : Fragment() {
 
     private fun getScreenWidth(): Int {
         return Resources.getSystem().displayMetrics.widthPixels
+    }
+
+    private fun getScreenHeight(): Int {
+        return Resources.getSystem().displayMetrics.heightPixels
     }
 
     private fun getPrices(
@@ -976,6 +990,33 @@ class ChargeCardFragment : Fragment() {
         }
     }
 
+    private fun onboarding(step: Int = 1) {
+        phraseView.text = getString(R.string.onboarding_phrase)
+        var curOverlay: ConstraintLayout? = null;
+        when (step) {
+            1 -> {
+                curOverlay = this.view?.findViewById<ConstraintLayout>(R.id.onboarding_1)
+            }
+            2 -> {
+                this.view?.findViewById<ConstraintLayout>(R.id.onboarding_1)?.visibility = View.GONE
+                curOverlay = this.view?.findViewById<ConstraintLayout>(R.id.onboarding_2)
+            }
+            3 -> {
+                this.view?.findViewById<ConstraintLayout>(R.id.onboarding_2)?.visibility = View.GONE
+                curOverlay = this.view?.findViewById<ConstraintLayout>(R.id.onboarding_3)
+            }
+            4 -> {
+                this.view?.findViewById<ConstraintLayout>(R.id.onboarding_3)?.visibility = View.GONE
+                val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                edit.putBoolean("firstStart", false).apply()
+                return
+            }
+        }
+        curOverlay?.visibility = View.VISIBLE
+        curOverlay?.setOnClickListener {
+                onboarding(step+1)
+        }
+    }
 
 
 }

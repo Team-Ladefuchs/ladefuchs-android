@@ -29,4 +29,11 @@
             app:dialogTitle="@string/dialog_chargecard_list_preference"/>
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="Optionen">
+    <SwitchPreferenceCompat
+        android:visibility="visible"
+        app:key="firstStart"
+        app:title="Onboarding anzeigen" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
