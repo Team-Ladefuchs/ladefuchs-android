@@ -90,7 +90,7 @@ class ChargeCardFragment : Fragment() {
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
-    val apiBaseURL: String = "https://api.ladefuchs.app/cards/"
+    val apiBaseURL: String = "https://api.ladefuchs.app/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
     var firstStart: Boolean = true
@@ -235,24 +235,33 @@ class ChargeCardFragment : Fragment() {
         downloadJSONToInternalStorage(JSONUrl, JSONFileName, "", false)
         // read list into pocOperatorList variable
         printLog("Reading $JSONFileName")
-        var operators = activity?.assets?.open(JSONFileName)?.let {
-            Klaxon().parseArray<Operators>(
-                it
-            )
+        var operators:List<Operators>? = null
+        try {
+            val operatorsFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
+            operators = operatorsFile?.let { Klaxon().parseArray<Operators>(it) }!!
+        }
+        catch(e: Exception){
+           }
+        if(operators == null) {
+            operators = activity?.assets?.open(JSONFileName)?.let {
+                Klaxon().parseArray<Operators>(
+                    it
+                )
+            }
         }
         if(operators!=null){
             var operatorDisplayNames: List<String> = mutableListOf()
             for(element in operators){
                 operatorDisplayNames=operatorDisplayNames.plus(element.displayName)
             }
-            pocOperatorList = operatorDisplayNames
+            pocOperatorList = operatorDisplayNames.sortedBy { it?.toLowerCase() }
         }
 
     }
 
     private fun checkShopPromoLevel(editor: SharedPreferences.Editor) {
         val client = OkHttpClient()
-        val url = URL("https://api.ladefuchs.app/shop/promo")
+        val url = URL(apiBaseURL+ "shop/promo")
         var apiResponse: Float
         printLog("Trying to get Promo Level", "network")
         val request = Request.Builder()
@@ -334,6 +343,7 @@ class ChargeCardFragment : Fragment() {
         forceDownload: Boolean = false
     ): String {
         //Load Prices JSON from File
+        printLog("Getting prices for $pocOperator")
         var chargeCardsAC = readPrices(pocOperator, "ac", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
         var chargeCardsDC = readPrices(pocOperator, "dc", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
         if (chargeCardsAC != null || chargeCardsDC != null) {
@@ -383,7 +393,7 @@ class ChargeCardFragment : Fragment() {
                 return@forEach
             }
 
-            //Skip Maingau Prices if personalized proces are available
+            //Skip Maingau Prices if personalized processes are available
             if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices == true) {
                 return@forEach
             }
@@ -554,16 +564,20 @@ class ChargeCardFragment : Fragment() {
 
         //Load Prices JSON from File
         var country = "de"
-        val pocOperatorClean = pocOperator.replace(" ","")
+        val replaceRule = Regex("[^A-Za-z0-9.+-]")
+        val pocOperatorClean = replaceRule.replace(pocOperator, "")
+        printLog("Getting Prices for $pocOperatorClean")
         var JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
+        var forceInitialDownload = forceDownload
 
         // check whether forceDownload was activated
         if(!forceDownload) {
             var JSONFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
             val JSONFileExists = JSONFile?.exists()
             if (!JSONFileExists!!) {
-                val bundledJSON = activity?.assets?.open(JSONFileName)
+                val bundledJSON = activity?.assets?.open("skeleton.json")
+                forceInitialDownload = true
                 if (bundledJSON != null) {
                     storeJSONInInternalStorage(bundledJSON, JSONFileName)
                 }
@@ -576,8 +590,8 @@ class ChargeCardFragment : Fragment() {
                 //e.printStackTrace()
             }
         }
-        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload) {
-            val JSONUrl = apiBaseURL + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
+        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
+            val JSONUrl = apiBaseURL + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
             // load the freshly downloaded JSON file
@@ -603,7 +617,7 @@ class ChargeCardFragment : Fragment() {
         // if the user hasn't selected any chargeCards keep all
         if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size>1){
             // remove all chargeCards that were deselected
-            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards}
+            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards && x.identifier != "adac"}
         }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
         if (maingauPrices.name.isNotEmpty() && pocOperatorClean.toLowerCase() != "ladeverbund+") {
@@ -623,7 +637,6 @@ class ChargeCardFragment : Fragment() {
             Klaxon().parseArray<CardMetadata>(
                 it
             )
-
         }
         return cardMetadata
     }
