@@ -647,8 +647,8 @@ class ChargeCardFragment : Fragment() {
         val hasMaingauCustomerPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
         var maingauIonityPrice: Float = 0.75F
-        var maingauAcPrice: Float = 0.3F
-        var maingauDcPrice: Float = 0.4F
+        var maingauAcPrice: Float = 0.49F
+        var maingauDcPrice: Float = 0.59F
 
         var maingauPrice = ChargeCards(
             identifier = "",
