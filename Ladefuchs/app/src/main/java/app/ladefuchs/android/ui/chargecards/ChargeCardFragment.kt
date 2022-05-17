@@ -12,27 +12,30 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.text.LineBreaker
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.*
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import android.widget.ImageView.ScaleType
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.withTranslation
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
-import app.ladefuchs.android.R.id.*
+import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
 import com.aigestudio.wheelpicker.WheelPicker
 import com.beust.klaxon.Klaxon
 import com.makeramen.roundedimageview.RoundedImageView
@@ -40,7 +43,9 @@ import kotlinx.android.synthetic.main.fragment_chargecards.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -50,8 +55,7 @@ import kotlin.random.Random.Default.nextFloat
 import kotlin.random.Random.Default.nextInt
 
 
-
-//import com.tylerthrailkill.helpers.prettyprint.pp
+//import com.tylerthrailkill.helpers.prettyprint
 
 @Keep
 class ChargeCards(
@@ -90,7 +94,11 @@ class ChargeCardFragment : Fragment() {
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
-    val apiBaseURL: String = "https://api.ladefuchs.app/"
+    var apiBaseURL: String = "https://api.ladefuchs.app/"
+    var apiVersionPath: String = ""
+    val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
+    val apiVersionBetaPath: String = "v2/"
+    val apiImageBasePath: String = "images/cards/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
     var firstStart: Boolean = true
@@ -115,6 +123,9 @@ class ChargeCardFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         hasADACPrices = prefs.getBoolean("specialEnbwAdac", false)
         hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
+
+        //apiBaseURL = apiBaseBetaURL
+        //apiVersionPath = apiVersionBetaPath
 
         if(firstStart){
             shopPromo=0.0F
@@ -283,7 +294,7 @@ class ChargeCardFragment : Fragment() {
         }.start()
     }
 
-    private fun storeJSONInInternalStorage(inputStream: InputStream, internalStorageFileName: String) {
+    private fun storeFileInInternalStorage(inputStream: InputStream, internalStorageFileName: String) {
         val outputStream = activity?.openFileOutput(internalStorageFileName, Context.MODE_PRIVATE)
         val buffer = ByteArray(1024)
         inputStream.use {
@@ -293,14 +304,13 @@ class ChargeCardFragment : Fragment() {
                 outputStream?.write(buffer, 0, byeCount)
             }
             outputStream?.close()
-            printLog("Writing File: " + internalStorageFileName)
+            printLog("Writing File: " + internalStorageFileName + " to " + requireContext().filesDir.toString())
         }
     }
 
     private fun downloadJSONToInternalStorage(JSONUrl: String, JSONFileName: String, pocOperator: String, pocFile: Boolean = true) {
 
         printLog("Downloading $JSONUrl", "network")
-
         val client = OkHttpClient()
         val url = URL(JSONUrl)
 
@@ -312,7 +322,7 @@ class ChargeCardFragment : Fragment() {
         Thread {
             try {
                 val response = client.newCall(request).execute()
-                storeJSONInInternalStorage(
+                storeFileInInternalStorage(
                     response.body!!.string().byteInputStream(),
                     JSONFileName
                 )
@@ -324,6 +334,36 @@ class ChargeCardFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 printLog("Couldn't download JSON Data from $JSONUrl", "error")
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+    private fun downloadImageToInternalStorage(ImageUrl: String, ImageFileName: String ) {
+
+        printLog("Downloading $ImageUrl", "network")
+        val url: URL = URL(ImageUrl)
+        val storagePath: String = requireContext().filesDir.toString() + "/" + ImageFileName
+        Thread {
+            try {
+                val input = url.openStream()
+                try {
+                    printLog("Getting Image")
+                    val output: OutputStream = FileOutputStream(storagePath)
+                    try {
+                        val buffer = ByteArray(1024)
+                        var bytesRead = 0
+                        while (input.read(buffer, 0, buffer.size).also { bytesRead = it } >= 0) {
+                            output.write(buffer, 0, bytesRead)
+                        }
+                    } finally {
+                        output.close()
+                    }
+                } finally {
+                    input.close()
+                }
+            }  catch (e: Exception) {
+                printLog("Couldn't open stream $ImageUrl", "error")
                 e.printStackTrace()
             }
         }.start()
@@ -364,6 +404,7 @@ class ChargeCardFragment : Fragment() {
     ) {
 
         val cardMetadata = readCardMetadata()
+        val viewNeedsRefresh: Boolean = false
 
         // Define Views to attach Card Tables to and required Variables
         var columnSide = "left"
@@ -445,8 +486,10 @@ class ChargeCardFragment : Fragment() {
                     context?.packageName
                 )
             }
+            val cardImage = File(requireContext().filesDir.toString() + "/card_" + currentCard.identifier + ".jpg" )
+            printLog(cardImage.toString())
 
-            if (resourceIdentifier != 0 && resourceIdentifier != null) {
+            if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImage.exists()) {
                 CardHolderView.removeView(imageView)
                 val imageCardView = RoundedImageView(context)
                 CardHolderView.addView(imageCardView)
@@ -465,13 +508,24 @@ class ChargeCardFragment : Fragment() {
                     imageCardView.borderColor = Color.DKGRAY
                 }
                 imageCardView.mutateBackground(true)
-                imageCardView.setBackgroundResource(resourceIdentifier)
+
+                if (cardImage.exists()) {
+                    printLog("Setting " + cardImage.absolutePath.toString() + " as background for card: " + cardProviderIdentifier)
+                    printLog("drawable: " + Drawable.createFromPath(cardImage.absolutePath).toString())
+                    val cardImageDrawable: Drawable = Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                        if (cardImageDrawable != null) {
+                            imageCardView.background = Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                        }
+                } else {
+                    resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
+                }
                 imageCardView.isOval = false
                 imageCardView.tileModeX = Shader.TileMode.CLAMP
                 imageCardView.tileModeY = Shader.TileMode.CLAMP
                 imageCardView.requestLayout()
 
             } else {
+                downloadImageToInternalStorage(apiBaseURL + apiImageBasePath + currentCard.identifier + ".jpg", "card_"+currentCard.identifier+".jpg")
                 var cardText = currentCard.name
                 if (currentCard.provider != currentCard.name) {
                     cardText = currentCard.provider
@@ -579,7 +633,7 @@ class ChargeCardFragment : Fragment() {
                 val bundledJSON = activity?.assets?.open("skeleton.json")
                 forceInitialDownload = true
                 if (bundledJSON != null) {
-                    storeJSONInInternalStorage(bundledJSON, JSONFileName)
+                    storeFileInInternalStorage(bundledJSON, JSONFileName)
                 }
                 printLog("Loading $JSONFileName")
                 JSONFile = File(activity?.getFileStreamPath(JSONFileName).toString())
@@ -591,7 +645,7 @@ class ChargeCardFragment : Fragment() {
             }
         }
         if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
-            val JSONUrl = apiBaseURL + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
+            val JSONUrl = apiBaseURL + apiVersionPath + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
             // load the freshly downloaded JSON file
