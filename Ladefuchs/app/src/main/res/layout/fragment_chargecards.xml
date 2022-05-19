@@ -21,6 +21,17 @@
         app:srcCompat="@drawable/ic_ladefuchs_logo" />
 
 
+    <ImageView
+        android:id="@+id/nerd_glasses"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/glasses"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/chargeCardsTableHeader"

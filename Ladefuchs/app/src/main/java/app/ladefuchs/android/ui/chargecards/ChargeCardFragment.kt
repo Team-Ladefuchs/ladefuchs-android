@@ -97,7 +97,7 @@ class ChargeCardFragment : Fragment() {
     var apiBaseURL: String = "https://api.ladefuchs.app/"
     var apiVersionPath: String = ""
     val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
-    val apiVersionBetaPath: String = "v2/"
+    val apiVersionBetaPath: String = ""
     val apiImageBasePath: String = "images/cards/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].toLowerCase()
@@ -124,9 +124,6 @@ class ChargeCardFragment : Fragment() {
         hasADACPrices = prefs.getBoolean("specialEnbwAdac", false)
         hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
-        //apiBaseURL = apiBaseBetaURL
-        //apiVersionPath = apiVersionBetaPath
-
         if(firstStart){
             shopPromo=0.0F
         }
@@ -138,7 +135,7 @@ class ChargeCardFragment : Fragment() {
             checkShopPromoLevel(editor)
         }
 
-                view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
+        view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
             findNavController().navigate(action_navigation_chargecards_to_navigation_about)
         }
 
@@ -189,8 +186,12 @@ class ChargeCardFragment : Fragment() {
             if (easterEggClickCounter == 42) {
                 phraseView.text = "EY! LASS DEN FUCHS IN RUHE! WAS HAT ER DIR GETAN?! FERKEL!"
                 easterEggClickCounter = 0
-            } else if (easterEggClickCounter == 3) {
-                //showCardDetails("Title", "Test\n This is sometthing Nice.")
+            } else if (easterEggClickCounter == 10) {
+                phraseView.text = "Der Fuchs benutzt jetzt ne Weile die Beta API, was soll schon schief gehen."
+                apiBaseURL = apiBaseBetaURL
+                apiVersionPath = apiVersionBetaPath
+                val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
+                nerdGlasses.visibility = View.VISIBLE
                 //easterEggClickCounter = 0
             }
 
@@ -265,7 +266,7 @@ class ChargeCardFragment : Fragment() {
             for(element in operators){
                 operatorDisplayNames=operatorDisplayNames.plus(element.displayName)
             }
-            pocOperatorList = operatorDisplayNames.sortedBy { it?.toLowerCase() }
+            pocOperatorList = operatorDisplayNames.sortedBy { it?.lowercase() }
         }
 
     }
