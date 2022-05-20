@@ -93,6 +93,8 @@ class AboutFragment : Fragment() {
         val thorstenSL2 = view.findViewById(R.id.thorstenSL2) as TextView
         thorstenSL2.movementMethod = LinkMovementMethod.getInstance()
 
+        val dominicSL2 = view.findViewById(R.id.dominicSL) as TextView
+        dominicSL2.movementMethod = LinkMovementMethod.getInstance()
         // On Click Listeners for Images
         val chargePriceLogo = view.findViewById(R.id.chargeprice_logo) as ImageView
         chargePriceLogo.setOnClickListener {
