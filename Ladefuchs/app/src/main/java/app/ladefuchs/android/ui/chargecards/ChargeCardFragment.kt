@@ -100,7 +100,7 @@ class ChargeCardFragment : Fragment() {
     val apiVersionBetaPath: String = ""
     val apiImageBasePath: String = "images/cards/"
     var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
-    var currentPoc: String = pocOperatorList[0].toLowerCase()
+    var currentPoc: String = pocOperatorList[0].lowercase()
     var firstStart: Boolean = true
 
     private lateinit var chargeCardViewModel: ChargeCardViewModel
