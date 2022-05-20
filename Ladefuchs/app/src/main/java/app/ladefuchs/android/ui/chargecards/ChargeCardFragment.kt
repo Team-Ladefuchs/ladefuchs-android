@@ -209,7 +209,7 @@ class ChargeCardFragment : Fragment() {
                     nerdGlasses.visibility = View.VISIBLE
                 } else {
                     phraseView.text =
-                        "Der Fuchs benutzt hat den Sicherheitsgurt wieder angelegt."
+                        "Der Fuchs hat den API-Sicherheitsgurt wieder angelegt."
                     apiBaseURL = apiBaseRegularURL
                     apiVersionPath = apiVersionRegularPath
                     nerdGlasses.visibility = View.INVISIBLE
@@ -218,8 +218,7 @@ class ChargeCardFragment : Fragment() {
                     putBoolean("useBetaAPI", useBetaAPI)
                     apply()
                 }
-
-                //easterEggClickCounter = 0
+                easterEggClickCounter = 0
             }
 
         }
@@ -240,11 +239,11 @@ class ChargeCardFragment : Fragment() {
         wheelPicker.setOnItemSelectedListener(WheelPicker.OnItemSelectedListener { picker, data, position ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
             getPrices(
-                data.toString().toLowerCase(),
+                data.toString().lowercase(),
                 launchedAfterDownload = false,
                 forceDownload = false
             )
-            currentPoc = data.toString().toLowerCase()
+            currentPoc = data.toString().lowercase()
 
         })
 
@@ -436,11 +435,11 @@ class ChargeCardFragment : Fragment() {
 
         // Define Views to attach Card Tables to and required Variables
         var columnSide = "left"
-        if (currentType.toLowerCase() == "dc") {
+        if (currentType.lowercase() == "dc") {
             columnSide = "right"
         }
         var i = 0
-        val columnName = "chargeCardsTableHolder" + currentType.toUpperCase()
+        val columnName = "chargeCardsTableHolder" + currentType.uppercase()
         val chargeCardsColumn =
             view?.findViewById<LinearLayout>(
                 resources.getIdentifier(
@@ -594,8 +593,8 @@ class ChargeCardFragment : Fragment() {
         }
 
         //Filling Column with empty Cells if necessary
-        if(i <= maxListLength-1) {
-            while (i <= maxListLength-1) {
+        if(i < maxListLength-1) {
+            while (i < maxListLength-1) {
                 // Creating a Holder for Card and Price, to lay them out next to each other
                 var CardHolderView: LinearLayout = LinearLayout(context)
                 chargeCardsColumn.addView(CardHolderView)
@@ -673,7 +672,7 @@ class ChargeCardFragment : Fragment() {
             }
         }
         if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
-            val JSONUrl = apiBaseURL + apiVersionPath + "cards/" + country.toLowerCase() + "/" + pocOperatorClean.toLowerCase() + "/" + currentType.toLowerCase()
+            val JSONUrl = apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
             // load the freshly downloaded JSON file
@@ -702,7 +701,7 @@ class ChargeCardFragment : Fragment() {
             chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards && x.identifier != "adac"}
         }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
-        if (maingauPrices.name.isNotEmpty() && pocOperatorClean.toLowerCase() != "ladeverbund+") {
+        if (maingauPrices.name.isNotEmpty() && pocOperatorClean.lowercase() != "ladeverbund+") {
             chargeCards.add(maingauPrices)
         }
 
@@ -741,7 +740,7 @@ class ChargeCardFragment : Fragment() {
         )
         if(hasMaingauCustomerPrices) {
             when {
-                pocOperator.toLowerCase() == "ionity" && type == "dc" -> {
+                pocOperator.lowercase() == "ionity" && type == "dc" -> {
                     maingauPrice = ChargeCards(
                         identifier = "maingau_personalized",
                         name = "Einfach Strom Laden",
@@ -750,7 +749,7 @@ class ChargeCardFragment : Fragment() {
                         updated = System.currentTimeMillis() / 1000L
                     )
                 }
-                type == "ac" && pocOperator.toLowerCase() != "ionity" -> {
+                type == "ac" && pocOperator.lowercase() != "ionity" -> {
 
                     maingauPrice = ChargeCards(
                         identifier = "maingau_personalized",
@@ -760,7 +759,7 @@ class ChargeCardFragment : Fragment() {
                         updated = System.currentTimeMillis() / 1000L
                     )
                 }
-                type == "dc" && pocOperator.toLowerCase() != "ionity" -> {
+                type == "dc" && pocOperator.lowercase() != "ionity" -> {
                     maingauPrice = ChargeCards(
                         identifier = "maingau_personalized",
                         name = "Einfach Strom Laden",
