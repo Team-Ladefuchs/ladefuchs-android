@@ -202,12 +202,14 @@ class ChargeCardFragment : Fragment() {
                 useBetaAPI = !useBetaAPI
                 if(useBetaAPI) {
                     phraseView.text =
-                        "Der Fuchs benutzt jetzt ne Weile die Beta API, was soll schon schief gehen."
+                        "Der Fuchs benutzt jetzt die Beta API, was soll schon schief gehen."
                     apiBaseURL = apiBaseBetaURL
                     apiVersionPath = apiVersionBetaPath
                     val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
                     nerdGlasses.visibility = View.VISIBLE
                 } else {
+                    phraseView.text =
+                        "Der Fuchs benutzt hat den Sicherheitsgurt wieder angelegt."
                     apiBaseURL = apiBaseRegularURL
                     apiVersionPath = apiVersionRegularPath
                     nerdGlasses.visibility = View.INVISIBLE
