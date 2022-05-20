@@ -89,12 +89,15 @@ class Operators(
 class ChargeCardFragment : Fragment() {
     var hasCustomerMaingauPrices: Boolean = false
     var hasADACPrices: Boolean = false
+    var useBetaAPI: Boolean = false
     var cardWidth: Int = 0
     var cardHeight: Int = 0
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
     var apiBaseURL: String = "https://api.ladefuchs.app/"
+    var apiBaseRegularURL: String = "https://api.ladefuchs.app/"
+    var apiVersionRegularPath: String = ""
     var apiVersionPath: String = ""
     val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
     val apiVersionBetaPath: String = ""
@@ -123,6 +126,15 @@ class ChargeCardFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         hasADACPrices = prefs.getBoolean("specialEnbwAdac", false)
         hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
+        useBetaAPI = prefs.getBoolean("useBetaAPI", false)
+
+        //Set API type
+        val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
+        if(useBetaAPI) {
+            apiBaseURL = apiBaseBetaURL
+            apiVersionPath = apiVersionBetaPath
+            nerdGlasses.visibility = View.VISIBLE
+        }
 
         if(firstStart){
             shopPromo=0.0F
@@ -187,11 +199,24 @@ class ChargeCardFragment : Fragment() {
                 phraseView.text = "EY! LASS DEN FUCHS IN RUHE! WAS HAT ER DIR GETAN?! FERKEL!"
                 easterEggClickCounter = 0
             } else if (easterEggClickCounter == 10) {
-                phraseView.text = "Der Fuchs benutzt jetzt ne Weile die Beta API, was soll schon schief gehen."
-                apiBaseURL = apiBaseBetaURL
-                apiVersionPath = apiVersionBetaPath
-                val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
-                nerdGlasses.visibility = View.VISIBLE
+                useBetaAPI = !useBetaAPI
+                if(useBetaAPI) {
+                    phraseView.text =
+                        "Der Fuchs benutzt jetzt ne Weile die Beta API, was soll schon schief gehen."
+                    apiBaseURL = apiBaseBetaURL
+                    apiVersionPath = apiVersionBetaPath
+                    val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
+                    nerdGlasses.visibility = View.VISIBLE
+                } else {
+                    apiBaseURL = apiBaseRegularURL
+                    apiVersionPath = apiVersionRegularPath
+                    nerdGlasses.visibility = View.INVISIBLE
+                }
+                with (prefs.edit()) {
+                    putBoolean("useBetaAPI", useBetaAPI)
+                    apply()
+                }
+
                 //easterEggClickCounter = 0
             }
 
