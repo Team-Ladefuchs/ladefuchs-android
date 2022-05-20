@@ -36,6 +36,7 @@
     <string name="basti">basti</string>
     <string name="androidfuchs">Androidfuchs</string>
     <string name="malik">malik</string>
+    <string name="dominic">dominic</string>
     <string name="thorsten">thorsten</string>
     <string name="designfuchs">Designfuchs</string>
     <string name="podcastfuchs">Podcastfuchs</string>
@@ -44,9 +45,11 @@
     <string name="datenfuchs_sl">Beste, schlaue Daten kommen direkt von</string>
     <string name="illufuchs">Illufüchse</string>
     <string name="apfelfuchs">Apfelfuchs</string>
+    <string name="apifuchs">Apifuchs</string>
     <string name="android_at_ladefuchs_app">android@ladefuchs.app</string>
     <string name="ios_at_ladefuchs_app">ios@ladefuchs.app</string>
     <string name="malik_at_ladefuchs_app">malik@ladefuchs.app</string>
+    <string name="api_at_ladefuchs_app">api@ladefuchs.app</string>
     <string name="zurueck">Zurück</string>
     <string name="avatarbild_flowinho">Avatarbild Flowinho</string>
     <string name="avatar_basti">Avatar Basti</string>
@@ -57,6 +60,7 @@
     <string name="bugtracker_icon">Bugtracker Icon</string>
     <string name="avatar_malik">Avatar Malik</string>
     <string name="avatar_thorsten">Avatar Thorsten</string>
+    <string name="avatar_dominic">Avatar Dominic</string>
     <string name="twitter_flowinho"><a href="https://twitter.com/flowinho">@flowinho</a></string>
     <string name="twitter_schlingel"><a href="https://twitter.com/schlingel">@schlingel</a></string>
     <string name="twitter_twittlik"><a href="https://twitter.com/twittlik">@twittlik</a></string>

@@ -375,6 +375,57 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/team_dominic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/avatar_dominic"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatar_dominic"
+                    android:src="@drawable/team_dominic" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/dominic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/dominic"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/dominicSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/apifuchs"
+                        android:textAppearance="@style/AboutSubHeader" />
+
+                    <TextView
+                        android:id="@+id/dominicSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/api_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
+                </LinearLayout>
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/teamfuchs2"
                 android:layout_width="match_parent"
