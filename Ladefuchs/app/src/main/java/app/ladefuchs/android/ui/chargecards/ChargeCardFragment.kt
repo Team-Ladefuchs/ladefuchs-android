@@ -45,7 +45,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.io.OutputStream
 import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -101,8 +100,8 @@ class ChargeCardFragment : Fragment() {
     var apiVersionPath: String = ""
     val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
     val apiVersionBetaPath: String = ""
-    val apiImageBasePath: String = "images/cards/"
-    var pocOperatorList: List<String> = listOf("Allego") //first standard value will be altered during runtime
+    var pocOperatorList: List<String> =
+        listOf("Allego") //first standard value will be altered during runtime
     var currentPoc: String = pocOperatorList[0].lowercase()
     var firstStart: Boolean = true
 
@@ -114,7 +113,7 @@ class ChargeCardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         context
-        val prefs =  PreferenceManager.getDefaultSharedPreferences(context)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         this.firstStart = prefs.getBoolean("firstStart", true)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chargecards, container, false)
@@ -130,16 +129,15 @@ class ChargeCardFragment : Fragment() {
 
         //Set API type
         val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
-        if(useBetaAPI) {
+        if (useBetaAPI) {
             apiBaseURL = apiBaseBetaURL
             apiVersionPath = apiVersionBetaPath
             nerdGlasses.visibility = View.VISIBLE
         }
 
-        if(firstStart){
-            shopPromo=0.0F
-        }
-        else {
+        if (firstStart) {
+            shopPromo = 0.0F
+        } else {
             val editor = prefs.edit()
 
             //Check if we should do Store Promo
@@ -160,7 +158,8 @@ class ChargeCardFragment : Fragment() {
         val appContext = activity?.applicationContext
         val phrasesFile = "phrases.txt"
         val phraseView = view.findViewById<TextView>(R.id.phraseView) as TextView
-        val phrases = appContext?.assets?.open(phrasesFile)?.bufferedReader().use { it?.readLines() }
+        val phrases =
+            appContext?.assets?.open(phrasesFile)?.bufferedReader().use { it?.readLines() }
         var currentPhrase: String = ""
         if (phrases != null) {
             if (nextFloat() <= shopPromo) {
@@ -200,7 +199,7 @@ class ChargeCardFragment : Fragment() {
                 easterEggClickCounter = 0
             } else if (easterEggClickCounter == 10) {
                 useBetaAPI = !useBetaAPI
-                if(useBetaAPI) {
+                if (useBetaAPI) {
                     phraseView.text =
                         "Der Fuchs benutzt jetzt die Beta API, was soll schon schief gehen."
                     apiBaseURL = apiBaseBetaURL
@@ -214,7 +213,7 @@ class ChargeCardFragment : Fragment() {
                     apiVersionPath = apiVersionRegularPath
                     nerdGlasses.visibility = View.INVISIBLE
                 }
-                with (prefs.edit()) {
+                with(prefs.edit()) {
                     putBoolean("useBetaAPI", useBetaAPI)
                     apply()
                 }
@@ -273,24 +272,23 @@ class ChargeCardFragment : Fragment() {
         downloadJSONToInternalStorage(JSONUrl, JSONFileName, "", false)
         // read list into pocOperatorList variable
         printLog("Reading $JSONFileName")
-        var operators:List<Operators>? = null
+        var operators: List<Operators>? = null
         try {
             val operatorsFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
             operators = operatorsFile?.let { Klaxon().parseArray<Operators>(it) }!!
+        } catch (e: Exception) {
         }
-        catch(e: Exception){
-           }
-        if(operators == null) {
+        if (operators == null) {
             operators = activity?.assets?.open(JSONFileName)?.let {
                 Klaxon().parseArray<Operators>(
                     it
                 )
             }
         }
-        if(operators!=null){
+        if (operators != null) {
             var operatorDisplayNames: List<String> = mutableListOf()
-            for(element in operators){
-                operatorDisplayNames=operatorDisplayNames.plus(element.displayName)
+            for (element in operators) {
+                operatorDisplayNames = operatorDisplayNames.plus(element.displayName)
             }
             pocOperatorList = operatorDisplayNames.sortedBy { it?.lowercase() }
         }
@@ -299,7 +297,7 @@ class ChargeCardFragment : Fragment() {
 
     private fun checkShopPromoLevel(editor: SharedPreferences.Editor) {
         val client = OkHttpClient()
-        val url = URL(apiBaseURL+ "shop/promo")
+        val url = URL(apiBaseURL + "shop/promo")
         var apiResponse: Float
         printLog("Trying to get Promo Level", "network")
         val request = Request.Builder()
@@ -321,7 +319,10 @@ class ChargeCardFragment : Fragment() {
         }.start()
     }
 
-    private fun storeFileInInternalStorage(inputStream: InputStream, internalStorageFileName: String) {
+    private fun storeFileInInternalStorage(
+        inputStream: InputStream,
+        internalStorageFileName: String
+    ) {
         val outputStream = activity?.openFileOutput(internalStorageFileName, Context.MODE_PRIVATE)
         val buffer = ByteArray(1024)
         inputStream.use {
@@ -335,7 +336,12 @@ class ChargeCardFragment : Fragment() {
         }
     }
 
-    private fun downloadJSONToInternalStorage(JSONUrl: String, JSONFileName: String, pocOperator: String, pocFile: Boolean = true) {
+    private fun downloadJSONToInternalStorage(
+        JSONUrl: String,
+        JSONFileName: String,
+        pocOperator: String,
+        pocFile: Boolean = true
+    ) {
 
         printLog("Downloading $JSONUrl", "network")
         val client = OkHttpClient()
@@ -344,7 +350,7 @@ class ChargeCardFragment : Fragment() {
         val request = Request.Builder()
             .url(url)
             .get()
-            .header("Authorization", "Bearer " + apiToken)
+            .header("Authorization", "Bearer $apiToken")
             .build()
         Thread {
             try {
@@ -353,7 +359,7 @@ class ChargeCardFragment : Fragment() {
                     response.body!!.string().byteInputStream(),
                     JSONFileName
                 )
-                if (pocFile){
+                if (pocFile) {
                     activity?.runOnUiThread {
                         printLog("Refreshing UI")
                         getPrices(pocOperator, launchedAfterDownload = true, forceDownload = false)
@@ -366,31 +372,30 @@ class ChargeCardFragment : Fragment() {
         }.start()
     }
 
-    private fun downloadImageToInternalStorage(ImageUrl: String, ImageFileName: String ) {
+    private fun buildImageURL(identifier: String):URL{
+        val imageUri = Uri.parse(apiBaseURL)
+            .buildUpon()
+            .appendPath("images")
+            .appendPath("cards")
+            .appendPath("${identifier}.jpg")
+            .build()
+        return URL(imageUri.toString())
 
-        printLog("Downloading $ImageUrl", "network")
-        val url: URL = URL(ImageUrl)
-        val storagePath: String = requireContext().filesDir.toString() + "/" + ImageFileName
+    }
+
+    private fun downloadImageToInternalStorage(imageURL: URL, imageFileName: String) {
+        printLog("Downloading $imageURL", "network")
+        val storagePath = File(requireContext().filesDir, imageFileName)
         Thread {
+            printLog("Getting Image: $storagePath")
             try {
-                val input = url.openStream()
-                try {
-                    printLog("Getting Image")
-                    val output: OutputStream = FileOutputStream(storagePath)
-                    try {
-                        val buffer = ByteArray(1024)
-                        var bytesRead = 0
-                        while (input.read(buffer, 0, buffer.size).also { bytesRead = it } >= 0) {
-                            output.write(buffer, 0, bytesRead)
-                        }
-                    } finally {
-                        output.close()
+                imageURL.openStream().use { input ->
+                    FileOutputStream(storagePath).use { output ->
+                        input.copyTo(output)
                     }
-                } finally {
-                    input.close()
                 }
-            }  catch (e: Exception) {
-                printLog("Couldn't open stream $ImageUrl", "error")
+            } catch (e: Exception) {
+                printLog("Couldn't open stream $imageURL", "error")
                 e.printStackTrace()
             }
         }.start()
@@ -411,8 +416,18 @@ class ChargeCardFragment : Fragment() {
     ): String {
         //Load Prices JSON from File
         printLog("Getting prices for $pocOperator")
-        var chargeCardsAC = readPrices(pocOperator, "ac", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
-        var chargeCardsDC = readPrices(pocOperator, "dc", launchedAfterDownload, forceDownload)?.sortedBy { it.price }
+        var chargeCardsAC = readPrices(
+            pocOperator,
+            "ac",
+            launchedAfterDownload,
+            forceDownload
+        )?.sortedBy { it.price }
+        var chargeCardsDC = readPrices(
+            pocOperator,
+            "dc",
+            launchedAfterDownload,
+            forceDownload
+        )?.sortedBy { it.price }
         if (chargeCardsAC != null || chargeCardsDC != null) {
             val maxListLength = maxOf(chargeCardsAC!!.size, chargeCardsDC!!.size)
             chargeCardsAC.let { fillCards(pocOperator, "ac", it, maxListLength) }
@@ -466,9 +481,9 @@ class ChargeCardFragment : Fragment() {
                 return@forEach
             }
 
-            var cardMeta = cardMetadata?.find { it.identifier == cardIdentifier}
+            var cardMeta = cardMetadata?.find { it.identifier == cardIdentifier }
             if (cardMeta == null) {
-                cardMeta = cardMetadata?.find { it.identifier == "default"}
+                cardMeta = cardMetadata?.find { it.identifier == "default" }
             }
 
 
@@ -478,7 +493,7 @@ class ChargeCardFragment : Fragment() {
             CardHolderView.gravity = Gravity.CENTER_VERTICAL
             CardHolderView.orientation = LinearLayout.HORIZONTAL
 
-            var backgroundUri:String
+            var backgroundUri: String
             backgroundUri = if (i % 2 == 0) {
                 "@drawable/border_light_bg_$columnSide"
             } else {
@@ -513,7 +528,8 @@ class ChargeCardFragment : Fragment() {
                     context?.packageName
                 )
             }
-            val cardImage = File(requireContext().filesDir.toString() + "/card_" + currentCard.identifier + ".jpg" )
+            val cardImage =
+                File(requireContext().filesDir.toString() + "/card_" + currentCard.identifier + ".jpg")
             printLog(cardImage.toString())
 
             if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImage.exists()) {
@@ -530,7 +546,7 @@ class ChargeCardFragment : Fragment() {
                 )
                 imageCardView.scaleType = ScaleType.FIT_XY
                 imageCardView.cornerRadius = 25.toFloat()
-                if(paintStroke) {
+                if (paintStroke) {
                     imageCardView.borderWidth = 4.toFloat()
                     imageCardView.borderColor = Color.DKGRAY
                 }
@@ -538,11 +554,15 @@ class ChargeCardFragment : Fragment() {
 
                 if (cardImage.exists()) {
                     printLog("Setting " + cardImage.absolutePath.toString() + " as background for card: " + cardProviderIdentifier)
-                    printLog("drawable: " + Drawable.createFromPath(cardImage.absolutePath).toString())
-                    val cardImageDrawable: Drawable = Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
-                        if (cardImageDrawable != null) {
-                            imageCardView.background = Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
-                        }
+                    printLog(
+                        "drawable: " + Drawable.createFromPath(cardImage.absolutePath).toString()
+                    )
+                    val cardImageDrawable: Drawable =
+                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    if (cardImageDrawable != null) {
+                        imageCardView.background =
+                            Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    }
                 } else {
                     resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
                 }
@@ -552,7 +572,12 @@ class ChargeCardFragment : Fragment() {
                 imageCardView.requestLayout()
 
             } else {
-                downloadImageToInternalStorage(apiBaseURL + apiImageBasePath + currentCard.identifier + ".jpg", "card_"+currentCard.identifier+".jpg")
+
+                val imageUri = buildImageURL(currentCard.identifier)
+                downloadImageToInternalStorage(
+                    imageUri,
+                    "card_" + currentCard.identifier + ".jpg"
+                )
                 var cardText = currentCard.name
                 if (currentCard.provider != currentCard.name) {
                     cardText = currentCard.provider
@@ -593,8 +618,8 @@ class ChargeCardFragment : Fragment() {
         }
 
         //Filling Column with empty Cells if necessary
-        if(i < maxListLength-1) {
-            while (i < maxListLength-1) {
+        if (i < maxListLength - 1) {
+            while (i < maxListLength - 1) {
                 // Creating a Holder for Card and Price, to lay them out next to each other
                 var CardHolderView: LinearLayout = LinearLayout(context)
                 chargeCardsColumn.addView(CardHolderView)
@@ -653,7 +678,7 @@ class ChargeCardFragment : Fragment() {
         var forceInitialDownload = forceDownload
 
         // check whether forceDownload was activated
-        if(!forceDownload) {
+        if (!forceDownload) {
             var JSONFile: File? = File(activity?.getFileStreamPath(JSONFileName).toString())
             val JSONFileExists = JSONFile?.exists()
             if (!JSONFileExists!!) {
@@ -671,8 +696,9 @@ class ChargeCardFragment : Fragment() {
                 //e.printStackTrace()
             }
         }
-        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400)  && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
-            val JSONUrl = apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
+        if ((chargeCards.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.get(0).updated > 86400) && !launchedAfterDownload) || forceDownload || forceInitialDownload) {
+            val JSONUrl =
+                apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName, pocOperator)
             // load the freshly downloaded JSON file
@@ -688,17 +714,18 @@ class ChargeCardFragment : Fragment() {
         chargeCards = chargeCards.toMutableList()
         //Get available chargecards as string list and transform them back to a real list/set
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        var selectedChargeCards:Set<String> =
+        var selectedChargeCards: Set<String> =
             prefs.getString("selectedChargeCards", "")!!
                 .removePrefix("[") // Remove leading bracket from string
                 .removeSuffix("]") // Remove trailing bracket from string
                 .replace("\\s".toRegex(), "") // strip spaces
-                .split(',').toSet() // transform back to list and then to set for more efficient contains
+                .split(',')
+                .toSet() // transform back to list and then to set for more efficient contains
 
         // if the user hasn't selected any chargeCards keep all
-        if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size>1){
+        if (selectedChargeCards.isNotEmpty() && selectedChargeCards.size > 1) {
             // remove all chargeCards that were deselected
-            chargeCards.removeIf {x: ChargeCards -> x.identifier !in selectedChargeCards && x.identifier != "adac"}
+            chargeCards.removeIf { x: ChargeCards -> x.identifier !in selectedChargeCards && x.identifier != "adac" }
         }
         val maingauPrices = getMaingauPrices(currentType, pocOperatorClean)
         if (maingauPrices.name.isNotEmpty() && pocOperatorClean.lowercase() != "ladeverbund+") {
@@ -738,7 +765,7 @@ class ChargeCardFragment : Fragment() {
             price = 0.0f,
             updated = System.currentTimeMillis() / 1000L
         )
-        if(hasMaingauCustomerPrices) {
+        if (hasMaingauCustomerPrices) {
             when {
                 pocOperator.lowercase() == "ionity" && type == "dc" -> {
                     maingauPrice = ChargeCards(
@@ -780,7 +807,7 @@ class ChargeCardFragment : Fragment() {
         rectangleColor: Int = Color.LTGRAY,
         backgroundColor: Int = Color.WHITE,
         paintStroke: Boolean = false
-    ):Bitmap?{
+    ): Bitmap? {
         val scaleFactor = 2
         val cornerRadius = 25F * scaleFactor
         val strokeWidth = 3F * scaleFactor
@@ -827,18 +854,18 @@ class ChargeCardFragment : Fragment() {
 
         // Second rectangle
         canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, fillPaint)    // fill
-        if(paintStroke) {
+        if (paintStroke) {
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, strokePaint)  // stroke
         }
 
         // text paint to draw text
         val textPaint = TextPaint().apply {
             color = textColor
-            textAlign  = Paint.Align.LEFT
-            this.textSize = cardTextSize-strokeWidth/scaleFactor
+            textAlign = Paint.Align.LEFT
+            this.textSize = cardTextSize - strokeWidth / scaleFactor
             isAntiAlias = true
         }
-        textPaint.typeface = Typeface.create("Roboto",Typeface.BOLD)
+        textPaint.typeface = Typeface.create("Roboto", Typeface.BOLD)
 
         //calculating if breaking is needed in order to correctly position text on the Y Axis
         val numOfChars = textPaint.breakText(
@@ -850,7 +877,8 @@ class ChargeCardFragment : Fragment() {
 
         val textLines = ceil(textToDraw.length.toDouble() / numOfChars.toDouble())
 
-        var textPositionYOffset = canvas.height.toDouble() / 2.0 - (textLines * cardTextSize.toDouble()/2.0 + 2.0 * strokeWidth.toDouble())
+        var textPositionYOffset =
+            canvas.height.toDouble() / 2.0 - (textLines * cardTextSize.toDouble() / 2.0 + 2.0 * strokeWidth.toDouble())
 
         // draw multiline card
         canvas.drawMultilineText(
@@ -877,7 +905,7 @@ class ChargeCardFragment : Fragment() {
         )
     }
 
-    fun printLog(message: String, type: String = "info"){
+    fun printLog(message: String, type: String = "info") {
         if (BuildConfig.DEBUG) {
             val logPrefix = "🦊"
             var typeIcon = "ℹ️"
@@ -899,7 +927,7 @@ class ChargeCardFragment : Fragment() {
         }
     }
 
-    fun showCardDetails(title: String = "", message: String = ""){
+    fun showCardDetails(title: String = "", message: String = "") {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle(title)
         builder.setMessage(message)
@@ -934,8 +962,13 @@ class ChargeCardFragment : Fragment() {
                 "$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
                 "$maxLines-$breakStrategy-$hyphenationFrequency-$justificationMode"
 
-        val staticLayout = StaticLayoutCache[cacheKey] ?:
-        StaticLayout.Builder.obtain(text, start, end, textPaint, width)
+        val staticLayout = StaticLayoutCache[cacheKey] ?: StaticLayout.Builder.obtain(
+            text,
+            start,
+            end,
+            textPaint,
+            width
+        )
             .setAlignment(alignment)
             .setTextDirection(textDir)
             .setLineSpacing(spacingAdd, spacingMult)
@@ -976,8 +1009,13 @@ class ChargeCardFragment : Fragment() {
                 "$spacingMult-$spacingAdd-$includePad-$ellipsizedWidth-$ellipsize-" +
                 "$maxLines-$breakStrategy-$hyphenationFrequency"
 
-        val staticLayout = StaticLayoutCache[cacheKey] ?:
-        StaticLayout.Builder.obtain(text, start, end, textPaint, width)
+        val staticLayout = StaticLayoutCache[cacheKey] ?: StaticLayout.Builder.obtain(
+            text,
+            start,
+            end,
+            textPaint,
+            width
+        )
             .setAlignment(alignment)
             .setTextDirection(textDir)
             .setLineSpacing(spacingAdd, spacingMult)
@@ -1013,22 +1051,22 @@ class ChargeCardFragment : Fragment() {
 
         // The public constructor was deprecated in API level 28,
         // but the builder is only available from API level 23 onwards
-        val staticLayout = StaticLayoutCache[cacheKey] ?:
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            StaticLayout.Builder.obtain(text, start, end, textPaint, width)
-                .setAlignment(alignment)
-                .setLineSpacing(spacingAdd, spacingMult)
-                .setIncludePad(includePad)
-                .setEllipsizedWidth(ellipsizedWidth)
-                .setEllipsize(ellipsize)
-                .build()
-        } else {
-            StaticLayout(
-                text, start, end, textPaint, width, alignment,
-                spacingMult, spacingAdd, includePad, ellipsize, ellipsizedWidth
-            )
-                .apply { StaticLayoutCache[cacheKey] = this }
-        }
+        val staticLayout =
+            StaticLayoutCache[cacheKey] ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                StaticLayout.Builder.obtain(text, start, end, textPaint, width)
+                    .setAlignment(alignment)
+                    .setLineSpacing(spacingAdd, spacingMult)
+                    .setIncludePad(includePad)
+                    .setEllipsizedWidth(ellipsizedWidth)
+                    .setEllipsize(ellipsize)
+                    .build()
+            } else {
+                StaticLayout(
+                    text, start, end, textPaint, width, alignment,
+                    spacingMult, spacingAdd, includePad, ellipsize, ellipsizedWidth
+                )
+                    .apply { StaticLayoutCache[cacheKey] = this }
+            }
 
         staticLayout.draw(this, x, y)
     }
@@ -1095,7 +1133,7 @@ class ChargeCardFragment : Fragment() {
         }
         curOverlay?.visibility = View.VISIBLE
         curOverlay?.setOnClickListener {
-                onboarding(step+1)
+            onboarding(step + 1)
         }
     }
 
