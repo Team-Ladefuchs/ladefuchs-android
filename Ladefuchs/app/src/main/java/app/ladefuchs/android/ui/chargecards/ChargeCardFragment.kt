@@ -344,7 +344,7 @@ class ChargeCardFragment : Fragment() {
         val request = Request.Builder()
             .url(url)
             .get()
-            .header("Authorization", "Bearer " + apiToken)
+            .header("Authorization", "Bearer $apiToken")
             .build()
         Thread {
             try {
@@ -372,24 +372,15 @@ class ChargeCardFragment : Fragment() {
         val url: URL = URL(ImageUrl)
         val storagePath: String = requireContext().filesDir.toString() + "/" + ImageFileName
         Thread {
+            printLog("Getting Image: $storagePath")
             try {
-                val input = url.openStream()
-                try {
+                url.openStream().use { input ->
                     printLog("Getting Image")
-                    val output: OutputStream = FileOutputStream(storagePath)
-                    try {
-                        val buffer = ByteArray(1024)
-                        var bytesRead = 0
-                        while (input.read(buffer, 0, buffer.size).also { bytesRead = it } >= 0) {
-                            output.write(buffer, 0, bytesRead)
-                        }
-                    } finally {
-                        output.close()
+                    FileOutputStream(storagePath).use { output ->
+                        input.copyTo(output)
                     }
-                } finally {
-                    input.close()
                 }
-            }  catch (e: Exception) {
+            } catch (e: Exception) {
                 printLog("Couldn't open stream $ImageUrl", "error")
                 e.printStackTrace()
             }
