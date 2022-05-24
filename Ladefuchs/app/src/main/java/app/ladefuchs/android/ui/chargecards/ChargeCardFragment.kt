@@ -161,11 +161,11 @@ class ChargeCardFragment : Fragment() {
         val phrases =
             appContext?.assets?.open(phrasesFile)?.bufferedReader().use { it?.readLines() }
         var currentPhrase: String = ""
+        val hoodieGlow = view.findViewById<ImageView>(R.id.ladefuchs_hoodie_glow)
         if (phrases != null) {
             if (nextFloat() <= shopPromo) {
                 currentPhrase = "Du liebst den Ladefuchs? \nBesuche unseren Shop️"
                 view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.VISIBLE
-                val hoodieGlow = view.findViewById<ImageView>(R.id.ladefuchs_hoodie_glow)
                 hoodieGlow.visibility = View.VISIBLE
                 val pulseHoodie: ObjectAnimator = ObjectAnimator.ofPropertyValuesHolder(
                     hoodieGlow,
@@ -206,12 +206,16 @@ class ChargeCardFragment : Fragment() {
                     apiVersionPath = apiVersionBetaPath
                     val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
                     nerdGlasses.visibility = View.VISIBLE
+                    view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.INVISIBLE
+                    hoodieGlow.visibility = View.INVISIBLE
                 } else {
                     phraseView.text =
                         "Der Fuchs hat den API-Sicherheitsgurt wieder angelegt."
                     apiBaseURL = apiBaseRegularURL
                     apiVersionPath = apiVersionRegularPath
                     nerdGlasses.visibility = View.INVISIBLE
+                    view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.INVISIBLE
+                    hoodieGlow.visibility = View.INVISIBLE
                 }
                 with(prefs.edit()) {
                     putBoolean("useBetaAPI", useBetaAPI)
