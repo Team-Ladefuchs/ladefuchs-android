@@ -375,6 +375,67 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+            <LinearLayout
+                android:id="@+id/team_roddi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/avatar_roddi"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatar_roddi"
+                    android:src="@drawable/team_roddi" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/roddi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/roddi"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/roddiSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/apfelfuchs"
+                        android:textAppearance="@style/AboutSubHeader" />
+
+                    <TextView
+                        android:id="@+id/roddiSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/twitter_roddi"
+                        android:textAppearance="@style/AboutSubHeaderSans" />
+
+                    <TextView
+                        android:id="@+id/roddiSL3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/ios_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
+                </LinearLayout>
+            </LinearLayout>
+
+
             <LinearLayout
                 android:id="@+id/team_dominic"
                 android:layout_width="match_parent"
