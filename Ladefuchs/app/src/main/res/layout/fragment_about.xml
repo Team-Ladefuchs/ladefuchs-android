@@ -205,14 +205,16 @@
                     android:gravity="clip_vertical"
                     android:padding="8dp">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/avatar_basti"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="24dp"
                         android:contentDescription="@string/avatar_basti"
-                        android:src="@drawable/team_basti" />
+                        android:src="@drawable/team_basti"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -264,7 +266,8 @@
                     android:gravity="clip_vertical"
                     android:padding="8dp">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/avatar_malik"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -323,7 +326,8 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_thorsten"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -383,7 +387,8 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_roddi"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -443,7 +448,8 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_dominic"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
