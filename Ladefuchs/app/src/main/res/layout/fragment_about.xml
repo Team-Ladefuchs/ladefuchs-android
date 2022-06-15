@@ -93,6 +93,19 @@
             app:layout_constraintTop_toBottomOf="@id/einstellungen" />
     </LinearLayout>
 
+    <!--
+            <ImageView
+                android:id="@+id/bug_icon"
+                android:layout_width="32dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/bugtracker_icon"
+                android:rotation="15"
+                app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_bug_icon" />
+        -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -103,13 +116,10 @@
         android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/handcrafted"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/einstellungen">
-        <!--
-        <WebView
-            android:id="@+id/about_us"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" /> -->
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -136,188 +146,186 @@
                 android:fontFamily="@font/bitter"
                 android:text="@string/teamfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
-    <!--
-                <LinearLayout
-                    android:id="@+id/team_flow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="clip_vertical"
-                    android:padding="8dp">
 
-                    <ImageView
-                        android:id="@+id/avatar_flow"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="24dp"
-                        android:contentDescription="@string/avatarbild_flowinho"
-                        android:src="@drawable/team_flow" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/team_basti"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
 
-                        <TextView
-                            android:id="@+id/flowinho"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_black"
-                            android:text="@string/flowinho"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/AboutHeader"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/flowinhoSL"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/apfelfuchs"
-
-                            android:textAppearance="@style/AboutSubHeader" />
-
-                        <TextView
-                            android:id="@+id/flowinhoSL2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto"
-                            android:text="@string/twitter_flowinho"
-                            android:textAppearance="@style/AboutSubHeaderSans"
-                            android:textColor="@color/TextColorDark" />
-
-                        <TextView
-                            android:id="@+id/flowinhoSL3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:autoLink="email"
-                            android:fontFamily="@font/roboto"
-                            android:text="@string/ios_at_ladefuchs_app"
-                            android:textAppearance="@style/AboutSubHeaderSans"
-                            android:textColorLink="@color/TextColorDark" />
-                    </LinearLayout>
-                </LinearLayout>
-    -->
-                <LinearLayout
-                    android:id="@+id/team_basti"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="clip_vertical"
-                    android:padding="8dp">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/avatar_basti"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="24dp"
-                        android:contentDescription="@string/avatar_basti"
-                        android:src="@drawable/team_basti"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/basti"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_black"
-                            android:text="@string/basti"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/AboutHeader"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/bastiSL"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/androidfuchs"
-                            android:textAppearance="@style/AboutSubHeader" />
-
-                        <TextView
-                            android:id="@+id/bastiSL2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/twitter_schlingel"
-                            android:textAppearance="@style/AboutSubHeaderSans" />
-
-                        <TextView
-                            android:id="@+id/bastiSL3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:autoLink="email"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/android_at_ladefuchs_app"
-                            android:textAppearance="@style/AboutSubHeaderSans"
-                            android:textColorLink="@color/TextColorDark" />
-                    </LinearLayout>
-                </LinearLayout>
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/avatar_basti"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatar_basti"
+                    android:src="@drawable/team_basti" />
 
                 <LinearLayout
-                    android:id="@+id/team_malik"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="clip_vertical"
-                    android:padding="8dp">
+                    android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/avatar_malik"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="24dp"
-                        android:contentDescription="@string/avatar_malik"
-                        android:src="@drawable/team_malik" />
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/basti"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/basti"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/malik"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_black"
-                            android:text="@string/malik"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/AboutHeader"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/bastiSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/androidfuchs"
+                        android:textAppearance="@style/AboutSubHeader" />
 
-                        <TextView
-                            android:id="@+id/malikSL"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/designfuchs"
-                            android:textAppearance="@style/AboutSubHeader" />
+                    <TextView
+                        android:id="@+id/bastiSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/twitter_schlingel"
+                        android:textAppearance="@style/AboutSubHeaderSans" />
 
-                        <TextView
-                            android:id="@+id/malikSL2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/twitter_twittlik"
-                            android:textAppearance="@style/AboutSubHeaderSans" />
-
-                        <TextView
-                            android:id="@+id/malikSL3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:autoLink="email"
-                            android:fontFamily="@font/bitter"
-                            android:text="@string/malik_at_ladefuchs_app"
-                            android:textAppearance="@style/AboutSubHeaderSans"
-                            android:textColorLink="@color/TextColorDark" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/bastiSL3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/android_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/team_malik"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/avatar_malik"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatar_malik"
+                    android:src="@drawable/team_malik" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/malik"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/malik"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/malikSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/designfuchs"
+                        android:textAppearance="@style/AboutSubHeader" />
+
+                    <TextView
+                        android:id="@+id/malikSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/twitter_twittlik"
+                        android:textAppearance="@style/AboutSubHeaderSans" />
+
+                    <TextView
+                        android:id="@+id/malikSL3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/malik_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/team_flow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="clip_vertical"
+                android:padding="8dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/avatar_flow"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:contentDescription="@string/avatarbild_flowinho"
+                    android:src="@drawable/team_flowinho" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/flowinho"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_black"
+                        android:text="@string/flowinho"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/AboutHeader"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/flowinhoSL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/bitter"
+                        android:text="@string/apfelfuchs"
+
+                        android:textAppearance="@style/AboutSubHeader" />
+
+                    <TextView
+                        android:id="@+id/flowinhoSL2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/twitter_flowinho"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColor="@color/TextColorDark" />
+
+                    <TextView
+                        android:id="@+id/flowinhoSL3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="email"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/ios_at_ladefuchs_app"
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorDark" />
+                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/team_thorsten"
@@ -326,8 +334,7 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_thorsten"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -387,8 +394,7 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_roddi"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -448,8 +454,7 @@
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_dominic"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -513,135 +518,123 @@
                 android:textAppearance="@style/AboutSubHeader" />
 
             <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:weightSum="99">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:weightSum="99">
 
-
-                    <ImageView
-                        android:id="@+id/podcast_audiodump"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_weight="33"
-                        android:adjustViewBounds="true"
-                        android:clickable="true"
-                        android:contentDescription="@string/audiodumo_logo"
-                        android:focusable="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/audiodump_600"
-                        android:tag="https://www.audiodump.de" />
-
-                    <ImageView
-                        android:id="@+id/podcast_cleanelectric"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="2dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_weight="33"
-                        android:adjustViewBounds="true"
-                        android:clickable="true"
-                        android:contentDescription="@string/cleanelectric_logo"
-                        android:focusable="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/cleanelectric_600"
-                        android:tag="https://www.cleanelectric.de" />
-
-                    <ImageView
-                        android:id="@+id/podcast_bitsundso"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_weight="33"
-                        android:adjustViewBounds="true"
-                        android:clickable="true"
-                        android:contentDescription="@string/bits_und_so_logo"
-                        android:focusable="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/bitsundso_600"
-                        android:tag="https://www.bitsundso.de" />
-
-                </LinearLayout>
-
-
-                <TextView
-                    android:id="@+id/datenfuchs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto_black"
-                    android:text="@string/datenfuchs"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/AboutHeader"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/datenfuchsSL"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/bitter"
-                    android:text="@string/datenfuchs_sl"
-                    android:textAppearance="@style/AboutSubHeader" />
 
                 <ImageView
-                    android:id="@+id/chargeprice_logo"
-                    android:layout_width="match_parent"
+                    android:id="@+id/podcast_audiodump"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_marginBottom="8dp"
+                    android:layout_weight="33"
                     android:adjustViewBounds="true"
                     android:clickable="true"
-                    android:contentDescription="@string/chargeprice_logo"
+                    android:contentDescription="@string/audiodumo_logo"
                     android:focusable="true"
-                    android:src="@drawable/chargeprice_logo"
-                    android:tag="https://chargeprice.app" />
+                    android:scaleType="fitXY"
+                    android:src="@drawable/audiodump_600"
+                    android:tag="https://www.audiodump.de" />
 
-                <TextView
-                    android:id="@+id/illufuchs"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/podcast_cleanelectric"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/roboto_black"
-                    android:text="@string/illufuchs"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/AboutHeader"
-                    android:textStyle="bold" />
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="33"
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/cleanelectric_logo"
+                    android:focusable="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/cleanelectric_600"
+                    android:tag="https://www.cleanelectric.de" />
 
-                <TextView
-                    android:id="@+id/illufuchsSL"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/podcast_bitsundso"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/bitter"
-                    android:text="@string/illusfuchs_SL"
-                    android:textAppearance="@style/AboutSubHeader" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"></View>
-
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="33"
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:contentDescription="@string/bits_und_so_logo"
+                    android:focusable="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/bitsundso_600"
+                    android:tag="https://www.bitsundso.de" />
 
             </LinearLayout>
 
-        </ScrollView>
-        <!--
+
+            <TextView
+                android:id="@+id/datenfuchs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_black"
+                android:text="@string/datenfuchs"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/datenfuchsSL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bitter"
+                android:text="@string/datenfuchs_sl"
+                android:textAppearance="@style/AboutSubHeader" />
+
             <ImageView
-                android:id="@+id/bug_icon"
-                android:layout_width="32dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/bugtracker_icon"
-                android:rotation="15"
-                app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_bug_icon" />
-        -->
+                android:id="@+id/chargeprice_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:contentDescription="@string/chargeprice_logo"
+                android:focusable="true"
+                android:src="@drawable/chargeprice_logo"
+                android:tag="https://chargeprice.app" />
+
+            <TextView
+                android:id="@+id/illufuchs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_black"
+                android:text="@string/illufuchs"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/illufuchsSL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bitter"
+                android:text="@string/illusfuchs_SL"
+                android:textAppearance="@style/AboutSubHeader" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"></View>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
     <TextView
         android:id="@+id/handcrafted"
         android:layout_width="0dp"
