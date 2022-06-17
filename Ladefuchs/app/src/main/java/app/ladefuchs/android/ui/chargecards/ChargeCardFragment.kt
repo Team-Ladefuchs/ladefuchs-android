@@ -561,8 +561,14 @@ class ChargeCardFragment : Fragment() {
                     printLog(
                         "drawable: " + Drawable.createFromPath(cardImage.absolutePath).toString()
                     )
-                    val cardImageDrawable: Drawable =
-                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    var cardImageDrawable: Drawable? = null
+                    try {
+                        cardImageDrawable =
+                            Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    } catch (e: Exception) {
+                    //e.printStackTrace()
+                }
+
                     if (cardImageDrawable != null) {
                         imageCardView.background =
                             Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
