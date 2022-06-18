@@ -42,6 +42,7 @@ import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.fragment_chargecards.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -317,8 +318,7 @@ class ChargeCardFragment : Fragment() {
                 editor.putFloat("shopPromo", apiResponse)
                 editor.commit()
             } catch (e: Exception) {
-                printLog("Couldn't get Store Promo Level", "error")
-                e.printStackTrace()
+                printLog("Couldn't get Store Promo Level, error: ${e.message}", "error")
             }
         }.start()
     }
@@ -358,15 +358,16 @@ class ChargeCardFragment : Fragment() {
             .build()
         Thread {
             try {
-                val response = client.newCall(request).execute()
-                storeFileInInternalStorage(
-                    response.body!!.string().byteInputStream(),
-                    JSONFileName
-                )
-                if (pocFile) {
-                    activity?.runOnUiThread {
-                        printLog("Refreshing UI")
-                        getPrices(pocOperator, launchedAfterDownload = true, forceDownload = false)
+                client.newCall(request).execute().use { response ->
+                    storeFileInInternalStorage(
+                        response.body!!.string().byteInputStream(),
+                        JSONFileName
+                    )
+                    if (pocFile) {
+                        activity?.runOnUiThread {
+                            printLog("Refreshing UI")
+                            getPrices(pocOperator, launchedAfterDownload = true, forceDownload = false)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -393,14 +394,24 @@ class ChargeCardFragment : Fragment() {
         Thread {
             printLog("Getting Image: $storagePath")
             try {
-                imageURL.openStream().use { input ->
-                    FileOutputStream(storagePath).use { output ->
-                        input.copyTo(output)
+                val request = Request.Builder()
+                    .url(imageURL)
+                    .get()
+                    .header("Authorization", "Bearer $apiToken")
+                    .build()
+                val client = OkHttpClient()
+                client.newCall(request).execute().use { response ->
+
+                    if (response.code == 200) {
+                        response.body!!.byteStream().use { input ->
+                            FileOutputStream(storagePath).use { output ->
+                                input.copyTo(output)
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
-                printLog("Couldn't open stream $imageURL", "error")
-                e.printStackTrace()
+                printLog("Couldn't open stream $imageURL, error: ${e.message}", "error")
             }
         }.start()
     }
