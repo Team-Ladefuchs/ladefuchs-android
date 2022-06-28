@@ -381,7 +381,7 @@ class ChargeCardFragment : Fragment() {
             .buildUpon()
             .appendPath("images")
             .appendPath("cards")
-            .appendPath("${identifier}.jpg")
+            .appendPath("${replaceUmlaute(identifier.lowercase())}.jpg")
             .build()
         return URL(imageUri.toString())
 
@@ -808,6 +808,19 @@ class ChargeCardFragment : Fragment() {
             }
         }
         return maingauPrice
+    }
+
+    private fun replaceUmlaute(output: String): String? {
+        return output.replace("\u00fc", "ue")
+            .replace("\u00f6", "oe")
+            .replace("\u00e4", "ae")
+            .replace("\u00df", "ss")
+            .replace("\u00dc(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Ue")
+            .replace("\u00d6(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Oe")
+            .replace("\u00c4(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Ae")
+            .replace("\u00dc", "UE")
+            .replace("\u00d6", "OE")
+            .replace("\u00c4", "AE")
     }
 
     private fun drawChargeCard(
