@@ -25,6 +25,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.ImageView.ScaleType
+import androidx.annotation.IdRes
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -32,6 +33,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.withTranslation
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
@@ -120,6 +123,10 @@ class ChargeCardFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_chargecards, container, false)
     }
 
+    private fun NavController.safeNavigate(actionId: Int) {
+        currentDestination?.getAction(actionId)?.run { navigate(actionId) }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         //Get Preferences
@@ -147,7 +154,7 @@ class ChargeCardFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
-            findNavController().navigate(action_navigation_chargecards_to_navigation_about)
+            findNavController().safeNavigate(action_navigation_chargecards_to_navigation_about)
         }
 
         //calculating Card Dimensions
@@ -470,15 +477,14 @@ class ChargeCardFragment : Fragment() {
         }
         var i = 0
         val columnName = "chargeCardsTableHolder" + currentType.uppercase()
-        val chargeCardsColumn =
+        val chargeCardsColumn: LinearLayout =
             view?.findViewById<LinearLayout>(
                 resources.getIdentifier(
                     columnName,
                     "id",
                     context?.packageName
                 )
-            ) as LinearLayout
-
+            ) ?: return
         chargeCardsColumn.removeAllViews()
         chargeCards.forEach { currentCard ->
 
