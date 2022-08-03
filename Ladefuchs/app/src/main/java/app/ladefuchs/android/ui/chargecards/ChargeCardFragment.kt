@@ -170,7 +170,7 @@ class ChargeCardFragment : Fragment() {
         var currentPhrase: String = ""
         if (phrases != null) {
             if (nextFloat() <= thgPromo){
-                drawPromoBanner(view,"thg","https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=f93d9241-315b-4fb8-84b9-bb525caf90a8")
+                drawPromoBanner(view,"thg","https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=3edae17e-40e3-4842-867b-44529e556b23")
             } else {
                 if (nextFloat() <= shopPromo) {
                     drawPromoBanner(view, "shop","https://shop.ladefuchs.app")
