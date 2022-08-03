@@ -1,7 +1,5 @@
 package app.ladefuchs.android.ui.chargecards
 
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
@@ -22,10 +20,11 @@ import android.text.*
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
+import android.widget.ImageView.INVISIBLE
 import android.widget.ImageView.ScaleType
-import androidx.annotation.IdRes
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -34,7 +33,6 @@ import androidx.core.graphics.withTranslation
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
@@ -43,9 +41,9 @@ import com.aigestudio.wheelpicker.WheelPicker
 import com.beust.klaxon.Klaxon
 import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.fragment_chargecards.*
+import kotlinx.android.synthetic.main.fragment_chargecards.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -97,6 +95,7 @@ class ChargeCardFragment : Fragment() {
     var cardHeight: Int = 0
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
+    var thgPromo: Float = 0.8F
     val apiToken: String = BuildConfig.apiKey
     var apiBaseURL: String = "https://api.ladefuchs.app/"
     var apiBaseRegularURL: String = "https://api.ladefuchs.app/"
@@ -150,6 +149,7 @@ class ChargeCardFragment : Fragment() {
 
             //Check if we should do Store Promo
             shopPromo = prefs.getFloat("shopPromo", 0.0F)
+
             checkShopPromoLevel(editor)
         }
 
@@ -162,38 +162,21 @@ class ChargeCardFragment : Fragment() {
         cardHeight = 176 * cardWidth / 280
 
         //Load Bottom Phrases, select random string and override footer
-        view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.INVISIBLE
         val appContext = activity?.applicationContext
         val phrasesFile = "phrases.txt"
         val phraseView = view.findViewById<TextView>(R.id.phraseView) as TextView
         val phrases =
             appContext?.assets?.open(phrasesFile)?.bufferedReader().use { it?.readLines() }
         var currentPhrase: String = ""
-        val hoodieGlow = view.findViewById<ImageView>(R.id.ladefuchs_hoodie_glow)
         if (phrases != null) {
-            if (nextFloat() <= shopPromo) {
-                currentPhrase = "Du liebst den Ladefuchs? \nBesuche unseren Shop️"
-                view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.VISIBLE
-                hoodieGlow.visibility = View.VISIBLE
-                val pulseHoodie: ObjectAnimator = ObjectAnimator.ofPropertyValuesHolder(
-                    hoodieGlow,
-                    PropertyValuesHolder.ofFloat("alpha", 0f)
-                )
-                pulseHoodie.duration = 1200
-                pulseHoodie.repeatCount = ObjectAnimator.INFINITE
-                pulseHoodie.repeatMode = ObjectAnimator.REVERSE
-                pulseHoodie.start()
-
-                val shopButton = view.findViewById(R.id.ladefuchs_hoodie) as ImageButton
-                shopButton.setOnClickListener {
-                    val intent = Intent()
-                    intent.action = Intent.ACTION_VIEW
-                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
-                    intent.data = Uri.parse(it.tag.toString())
-                    startActivity(intent)
-                }
+            if (nextFloat() <= thgPromo){
+                drawPromoBanner(view,"thg","https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=f93d9241-315b-4fb8-84b9-bb525caf90a8")
             } else {
-                currentPhrase = phrases[nextInt(phrases.size)]
+                if (nextFloat() <= shopPromo) {
+                    drawPromoBanner(view, "shop","https://shop.ladefuchs.app")
+                } else {
+                    currentPhrase = phrases[nextInt(phrases.size)]
+                }
             }
             phraseView.text = currentPhrase
         }
@@ -214,16 +197,12 @@ class ChargeCardFragment : Fragment() {
                     apiVersionPath = apiVersionBetaPath
                     val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
                     nerdGlasses.visibility = View.VISIBLE
-                    view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.INVISIBLE
-                    hoodieGlow.visibility = View.INVISIBLE
                 } else {
                     phraseView.text =
                         "Der Fuchs hat den API-Sicherheitsgurt wieder angelegt."
                     apiBaseURL = apiBaseRegularURL
                     apiVersionPath = apiVersionRegularPath
                     nerdGlasses.visibility = View.INVISIBLE
-                    view.findViewById<ImageButton>(R.id.ladefuchs_hoodie).visibility = View.INVISIBLE
-                    hoodieGlow.visibility = View.INVISIBLE
                 }
                 with(prefs.edit()) {
                     putBoolean("useBetaAPI", useBetaAPI)
@@ -274,6 +253,47 @@ class ChargeCardFragment : Fragment() {
         }
         if (firstStart) {
             onboarding()
+        }
+    }
+
+
+    private fun drawPromoBanner(view: View, promoType: String, promoURL: String) {
+        val viewWidth = getScreenWidth()
+        val viewHeight = 246 * viewWidth / 1100
+
+        val phraseContainer = view.findViewById<TextView>(R.id.phraseContainer) as LinearLayout
+        phraseContainer.removeView(phraseView)
+        val phraseContainerParams = phraseContainer.layoutParams
+        phraseContainerParams.height = viewHeight - 25
+        phraseContainer.setBackgroundColor(Color.parseColor("#FFCEC0AC"))
+        phraseContainer.layoutParams = phraseContainerParams
+
+        val bannerView = view.findViewById<TextView>(R.id.bannerView) as LinearLayout
+        bannerView.visibility = VISIBLE
+        val bannerButton = bannerView.bannerImage
+
+        bannerButton.setImageResource(resources.getIdentifier(
+            "banner_$promoType", "drawable",
+            context?.packageName
+        ))
+
+
+        bannerButton.requestLayout()
+        bannerView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
+        val buttonURL = Uri.parse(promoURL)
+        val bannerParams = bannerButton.layoutParams
+        bannerParams.width = viewWidth
+        bannerParams.height = viewHeight
+        bannerButton.scaleType = ScaleType.FIT_XY
+        bannerButton.setBackgroundColor(Color.parseColor("#00FFFFFF"))
+        bannerButton.layoutParams = bannerParams
+
+        bannerButton.setOnClickListener {
+            val intent = Intent(android.content.Intent.ACTION_VIEW)
+            intent.action = Intent.ACTION_VIEW
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            intent.data = buttonURL
+            startActivity(intent)
         }
     }
 

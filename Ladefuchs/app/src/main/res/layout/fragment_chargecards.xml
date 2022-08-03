@@ -201,7 +201,7 @@
         android:layout_width="0dp"
         android:layout_height="175dp"
         android:background="@drawable/border_picker"
-        app:layout_constraintBottom_toTopOf="@id/phraseView"
+        app:layout_constraintBottom_toTopOf="@id/phraseContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pocHeader"
@@ -213,50 +213,49 @@
         app:wheel_item_text_color="@color/TextColorDisabled"
         app:wheel_selected_item_text_color="@color/TextColorDark" />
 
-    <TextView
-        android:id="@+id/phraseView"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/phraseContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
-        android:fontFamily="@font/bitter_italic"
-        android:paddingTop="5sp"
-        android:paddingBottom="5dp"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textSize="18sp"
+        android:background="#00FFFFFF"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
-        android:id="@+id/ladefuchs_hoodie_glow"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:alpha="1"
-        android:background="#00FFFFFF"
-        android:contentDescription="Ladefuchs Hoodie Glow"
-        android:scaleType="fitCenter"
-        android:scaleX="1.03"
-        android:scaleY="1.03"
-        android:src="@drawable/hoodie_glow"
-        android:tag="https://ladefuchs.app/shop"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/phraseView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/TableColorDark"
+            android:fontFamily="@font/bitter_italic"
+            android:paddingTop="5sp"
+            android:paddingBottom="5dp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/ladefuchs_hoodie"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="Ladefuchs Hoodie"
-        android:scaleType="fitCenter"
-        android:src="@drawable/hoodie"
-        android:tag="https://ladefuchs.app/shop"
-        android:visibility="visible"
+    <LinearLayout
+        android:id="@+id/bannerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/bannerImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:scaleType="fitCenter"
+            android:src="@drawable/banner_thg"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
 
     <include
         android:id="@+id/onboarding_3"
