@@ -209,7 +209,7 @@
         app:wheel_curtain="true"
         app:wheel_curtain_color="@color/WheelCurtainColor"
         app:wheel_curved="true"
-        app:wheel_item_space="16dp"
+        app:wheel_item_space="5dp"
         app:wheel_item_text_color="@color/TextColorDisabled"
         app:wheel_selected_item_text_color="@color/TextColorDark" />
 

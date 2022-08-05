@@ -96,6 +96,7 @@ class ChargeCardFragment : Fragment() {
     val cardMargin: Int = 20
     var shopPromo: Float = 0.5F
     var thgPromo: Float = 0.8F
+    var twitterPromo: Float = 0.5F
     val apiToken: String = BuildConfig.apiKey
     var apiBaseURL: String = "https://api.ladefuchs.app/"
     var apiBaseRegularURL: String = "https://api.ladefuchs.app/"
@@ -170,12 +171,20 @@ class ChargeCardFragment : Fragment() {
         var currentPhrase: String = ""
         if (phrases != null) {
             if (nextFloat() <= thgPromo){
+                printLog("Loading THG Banner")
                 drawPromoBanner(view,"thg","https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=3edae17e-40e3-4842-867b-44529e556b23")
             } else {
                 if (nextFloat() <= shopPromo) {
+                    printLog("Loading Shop Banner")
                     drawPromoBanner(view, "shop","https://shop.ladefuchs.app")
                 } else {
-                    currentPhrase = phrases[nextInt(phrases.size)]
+                    if (nextFloat() <= twitterPromo){
+                        printLog("Loading Twitter Banner")
+                        drawPromoBanner(view, "twitter","https://twitter.com/ladefuchs")
+                    } else {
+                        printLog("Falling back on your mom")
+                        currentPhrase = phrases[nextInt(phrases.size)]
+                    }
                 }
             }
             phraseView.text = currentPhrase
@@ -259,12 +268,13 @@ class ChargeCardFragment : Fragment() {
 
     private fun drawPromoBanner(view: View, promoType: String, promoURL: String) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 246 * viewWidth / 1100
+        //val viewHeight = 246 * viewWidth / 1100
+        val viewHeight = 280 * viewWidth / 1170
 
         val phraseContainer = view.findViewById<TextView>(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams
-        phraseContainerParams.height = viewHeight - 25
+        phraseContainerParams.height = viewHeight - 35
         phraseContainer.setBackgroundColor(Color.parseColor("#FFCEC0AC"))
         phraseContainer.layoutParams = phraseContainerParams
 
@@ -638,6 +648,7 @@ class ChargeCardFragment : Fragment() {
                     paintStroke = paintStroke
                 )
                 imageView.background = BitmapDrawable(resources, cardBitmap)
+                imageView.elevation = 0.5F
                 (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
                     cardMargin,
                     cardMargin,
