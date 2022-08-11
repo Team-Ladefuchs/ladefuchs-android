@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.preference.PreferenceManager
+import android.view.View
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
+import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
+import com.beust.klaxon.Klaxon
 import java.io.InputStream
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -150,7 +153,53 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
     return maingauPrice
 }
 
+/**
+ * A function to safely open other pages
+ */
 fun NavController.safeNavigate(actionId: Int) {
     currentDestination?.getAction(actionId)?.run { navigate(actionId) }
+}
+
+/**
+ * This function retrieves the prices for a specific operator
+ */
+fun getPrices(
+    pocOperator: String,
+    forceDownload: Boolean = false,
+    context: Context,
+    api: API,
+    view: View,
+    resources: Resources
+): String {
+    //Load Prices JSON from File
+    printLog("Getting prices for $pocOperator")
+    val chargeCardsAC = api!!.readPrices(
+        pocOperator,
+        "ac",
+        forceDownload
+    )?.sortedBy { it.price }
+    val chargeCardsDC = api!!.readPrices(
+        pocOperator,
+        "dc",
+        forceDownload
+    )?.sortedBy { it.price }
+    if (chargeCardsAC != null || chargeCardsDC != null) {
+        val maxListLength = maxOf(chargeCardsAC!!.size, chargeCardsDC!!.size)
+        fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
+        fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
+    }
+
+    return pocOperator
+}
+
+fun readCardMetadata(context: Context): List<CardMetaData>? {
+    //Load Metadata JSON from File
+    printLog("Reading de-card_metadata.json")
+    val cardMetadata = context.assets?.open("de-card_metadata.json")?.let {
+        Klaxon().parseArray<CardMetaData>(
+            it
+        )
+    }
+    return cardMetadata
 }
 

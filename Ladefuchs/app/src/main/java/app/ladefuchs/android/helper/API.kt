@@ -85,6 +85,9 @@ class API(private var context: Context) {
     }
 
 
+    /**
+     * This function retrieves the current list of operators
+     */
     fun retrieveOperatorList(): List<String> {
         val JSONUrl = apiBaseURL + apiVersionPath + "operators/enabled"
         val JSONFileName = "operators.json"
@@ -115,7 +118,9 @@ class API(private var context: Context) {
         return listOf()
     }
 
-
+    /**
+     * This function downloads an image from the API and saves it in local storage
+     */
     fun downloadImageToInternalStorage(identifier: String, imageFileName: String) {
         val imageURL = URL(
             Uri.parse(apiBaseURL)
@@ -153,6 +158,9 @@ class API(private var context: Context) {
         }.start()
     }
 
+    /**
+     * This function retrieves the prices for a specific chargecard-chargetype combination
+     */
     fun readPrices(
         pocOperator: String,
         currentType: String,
@@ -186,9 +194,9 @@ class API(private var context: Context) {
             }
         }
         if ((
-            chargeCards.isNotEmpty() &&
-            (System.currentTimeMillis() / 1000L - chargeCards[0].updated > 86400)
-            ) ||
+                    chargeCards.isNotEmpty() &&
+                            (System.currentTimeMillis() / 1000L - chargeCards[0].updated > 86400)
+                    ) ||
             forceDownload ||
             forceInitialDownload
         ) {
