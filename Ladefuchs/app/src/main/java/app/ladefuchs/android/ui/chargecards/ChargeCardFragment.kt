@@ -1,49 +1,29 @@
 package app.ladefuchs.android.ui.chargecards
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.*
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.text.LineBreaker
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.*
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.ImageView.ScaleType
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.withTranslation
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.R
 import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
-import app.ladefuchs.android.dataClasses.ChargeCards
-import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
-import com.beust.klaxon.Klaxon
-import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.android.synthetic.main.fragment_chargecards.*
 import kotlinx.android.synthetic.main.fragment_chargecards.view.*
-import java.io.File
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
-import kotlin.math.ceil
 
 
 //import com.tylerthrailkill.helpers.prettyprint
@@ -62,7 +42,16 @@ class ChargeCardFragment : Fragment() {
     private var currentPoc: String = pocOperatorList[0].lowercase()
     private var api: API? = null
     private var prefs: SharedPreferences? = null
-
+    object StaticLayoutCache {
+        private const val MAX_SIZE = 50 // Arbitrary max number of cached items
+        private val cache = lruCache<String, StaticLayout>(MAX_SIZE)
+        operator fun set(key: String, staticLayout: StaticLayout) {
+            cache.put(key, staticLayout)
+        }
+        operator fun get(key: String): StaticLayout? {
+            return cache[key]
+        }
+    }
     /**
      * This is the initialisation function that will be called on creation
      */
@@ -274,43 +263,6 @@ class ChargeCardFragment : Fragment() {
     }
 
 
-    fun showCardDetails(title: String = "", message: String = "") {
-        val builder = AlertDialog.Builder(activity)
-        builder.setTitle(title)
-        builder.setMessage(message)
-        builder.setPositiveButton(android.R.string.yes, null)
-        builder.show()
-    }
-
-
-    fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
-            val builder = AlertDialog.Builder(it)
-            // Get the layout inflater
-            val inflater = requireActivity().layoutInflater
-
-            // Inflate and set the layout for the dialog
-            // Pass null as the parent view because its going in the dialog layout
-            builder.setView(inflater.inflate(R.layout.card_detail_dialog, null))
-                // Add action buttons
-                .setPositiveButton(R.string.dialog_ok,
-                    DialogInterface.OnClickListener { dialog, id ->
-                        // sign in the user ...
-                    })
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
-    }
-
-    object StaticLayoutCache {
-        private const val MAX_SIZE = 50 // Arbitrary max number of cached items
-        private val cache = lruCache<String, StaticLayout>(MAX_SIZE)
-        operator fun set(key: String, staticLayout: StaticLayout) {
-            cache.put(key, staticLayout)
-        }
-        operator fun get(key: String): StaticLayout? {
-            return cache[key]
-        }
-    }
 
     private fun onboarding(step: Int = 1) {
         phraseView.text = getString(R.string.onboarding_phrase)
