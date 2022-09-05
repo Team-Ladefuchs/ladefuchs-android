@@ -79,4 +79,7 @@
     <string name="onboarding2">Die günstigste Ladekarte findest Du oben in der Liste.</string>
     <string name="onboarding3">Hier kannst Du Deine persönlichen Ladetarife und weitere Ladesäulen-Betreiber hinzufügen.</string>
     <string name="onboarding_phrase">Wickel Dein Kabel auf und häng es über den Ladeport, dann bleibt’s sauber.</string>
+    <string name="betaInfoText">Der Fuchs benutzt jetzt die Beta API, was soll schon schief gehen.</string>
+    <string name="eastereggInfoText">EY! LASS DEN FUCHS IN RUHE! WAS HAT ER DIR GETAN?! FERKEL!</string>
+    <string name="prodInfoText">Der Fuchs hat den API-Sicherheitsgurt wieder angelegt.</string>
 </resources>
