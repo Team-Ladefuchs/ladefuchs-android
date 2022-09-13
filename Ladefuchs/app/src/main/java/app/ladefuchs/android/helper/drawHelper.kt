@@ -269,11 +269,13 @@ fun fillCards(
             imageCardView.requestLayout()
 
         } else {
-
-            api.downloadImageToInternalStorage(
-                currentCard.identifier,
-                "card_" + currentCard.identifier + ".jpg"
-            )
+            printLog(currentCard.toString())
+            if (!currentCard.image.isNullOrEmpty()) {
+                api.downloadImageToInternalStorage(
+                    currentCard.image,
+                    "card_" + currentCard.identifier + ".jpg"
+                )
+            }
             var cardText = currentCard.name
             if (currentCard.provider != currentCard.name) {
                 cardText = currentCard.provider

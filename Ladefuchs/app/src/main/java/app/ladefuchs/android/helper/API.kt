@@ -121,14 +121,9 @@ class API(private var context: Context) {
     /**
      * This function downloads an image from the API and saves it in local storage
      */
-    fun downloadImageToInternalStorage(identifier: String, imageFileName: String) {
+    fun downloadImageToInternalStorage(imageURL: String, imageFileName: String) {
         val imageURL = URL(
-            Uri.parse(apiBaseURL)
-                .buildUpon()
-                .appendPath("images")
-                .appendPath("cards")
-                .appendPath("${umlautSanitization(identifier.lowercase())}.jpg")
-                .build()
+            Uri.parse(imageURL)
                 .toString()
         )
         printLog("Downloading $imageURL", "network")
@@ -202,7 +197,7 @@ class API(private var context: Context) {
         ) {
             val JSONUrl =
                 apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
-            printLog("Data in $JSONFileName is outdated or update was forced, Updating from API")
+            printLog("Data in $JSONFileName is outdated or update was forced, Updating from API: $JSONUrl")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName)
             // load the freshly downloaded JSON file
             val JSONFile = File(context.getFileStreamPath(JSONFileName).toString())

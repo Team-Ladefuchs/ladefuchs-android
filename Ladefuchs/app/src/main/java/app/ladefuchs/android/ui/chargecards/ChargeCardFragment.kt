@@ -254,7 +254,7 @@ class ChargeCardFragment : Fragment() {
         bannerButton.layoutParams = bannerParams
 
         bannerButton.setOnClickListener {
-            val intent = Intent(android.content.Intent.ACTION_VIEW)
+            val intent = Intent(Intent.ACTION_VIEW)
             intent.action = Intent.ACTION_VIEW
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
             intent.data = buttonURL
