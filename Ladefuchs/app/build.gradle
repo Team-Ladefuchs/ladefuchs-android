@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "app.ladefuchs.android"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 150
         versionName "1.5"

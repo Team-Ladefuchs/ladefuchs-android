@@ -2,7 +2,9 @@ package app.ladefuchs.android.helper
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.preference.PreferenceManager
+import androidx.annotation.RequiresApi
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.ChargeCards
 import app.ladefuchs.android.dataClasses.Operator
@@ -11,7 +13,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class API(private var context: Context) {
     private val apiToken: String = BuildConfig.apiKey
@@ -47,6 +52,7 @@ class API(private var context: Context) {
         this.apiVersionPath = apiVersionBetaPath
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun downloadJSONToInternalStorage(
         JSONUrl: String,
         JSONFileName: String,
@@ -64,6 +70,19 @@ class API(private var context: Context) {
             val t = Thread {
                 client.newCall(request).execute().use { response ->
                     if (response.code == 200) {
+
+                        try {
+                            val result = Files.deleteIfExists(Paths.get(context.filesDir.toString() + "/" + JSONFileName))
+                            if (result) {
+                                println("Deletion succeeded.")
+                            } else {
+                                println("Deletion failed.")
+                            }
+                        } catch (e: IOException) {
+                            println("Deletion failed.")
+                            e.printStackTrace()
+                        }
+
                         storeFileInInternalStorage(
                             response.body!!.string().byteInputStream(),
                             JSONFileName,
@@ -98,8 +117,11 @@ class API(private var context: Context) {
         var operators: List<Operator>? = null
         try {
             val operatorsFile: File? = File(context.getFileStreamPath(JSONFileName).toString())
+            printLog("Trying to read " + operatorsFile.toString())
             operators = operatorsFile?.let { Klaxon().parseArray<Operator>(it) }!!
         } catch (e: Exception) {
+            printLog("Could not read: $JSONFileName", "error")
+            printLog(e.toString())
         }
         if (operators == null) {
             operators = context.assets?.open(JSONFileName)?.let {
@@ -112,6 +134,7 @@ class API(private var context: Context) {
             var operatorDisplayNames: List<String> = mutableListOf()
             for (element in operators) {
                 operatorDisplayNames = operatorDisplayNames.plus(element.displayName)
+                printLog(element.displayName)
             }
             return operatorDisplayNames.sortedBy { it.lowercase() }
         }
