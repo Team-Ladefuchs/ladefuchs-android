@@ -117,7 +117,9 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
         provider = "",
         price = 0.0f,
         updated = System.currentTimeMillis() / 1000L,
-        image = ""
+        image = "",
+        blockingFeeStart = 0,
+        monthlyFee = 0f
     )
     if (hasMaingauCustomerPrices) {
         when {
@@ -128,7 +130,9 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
                     provider = "Maingau",
                     price = maingauIonityPrice,
                     updated = System.currentTimeMillis() / 1000L,
-                    image = ""
+                    image = "",
+                    blockingFeeStart = 0,
+                    monthlyFee = 0f
                 )
             }
             type == "ac" && pocOperator.lowercase() != "ionity" -> {
@@ -139,7 +143,9 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
                     provider = "Maingau",
                     price = maingauAcPrice,
                     updated = System.currentTimeMillis() / 1000L,
-                    image = ""
+                    image = "",
+                    blockingFeeStart = 0,
+                    monthlyFee = 0f
                 )
             }
             type == "dc" && pocOperator.lowercase() != "ionity" -> {
@@ -149,7 +155,9 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
                     provider = "Maingau",
                     price = maingauDcPrice,
                     updated = System.currentTimeMillis() / 1000L,
-                    image = ""
+                    image = "",
+                    blockingFeeStart = 0,
+                    monthlyFee = 0f
                 )
             }
         }

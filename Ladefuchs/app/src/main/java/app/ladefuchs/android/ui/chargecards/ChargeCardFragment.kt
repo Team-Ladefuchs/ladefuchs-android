@@ -263,7 +263,6 @@ class ChargeCardFragment : Fragment() {
     }
 
 
-
     private fun onboarding(step: Int = 1) {
         phraseView.text = getString(R.string.onboarding_phrase)
         var curOverlay: ConstraintLayout? = null;

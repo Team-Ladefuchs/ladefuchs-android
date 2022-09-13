@@ -6,5 +6,9 @@ data class ChargeCards(
     val provider: String,
     val price: Float,
     val updated: Long,
-    val image: String? = null
+    val image: String? = null,
+    val url: String? = null,
+    val blockingFeeStart:Int,
+    val monthlyFee:Float,
+    val note:String? = null
 )
