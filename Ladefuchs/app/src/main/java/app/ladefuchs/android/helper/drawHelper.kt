@@ -264,8 +264,9 @@ fun fillCards(
                 }
 
                 if (cardImageDrawable != null) {
-                    imageCardView.background =
-                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    //imageCardView.background =
+                        //Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                    imageCardView.setImageDrawable(cardImageDrawable)
                 }
             } else {
                 resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
@@ -274,6 +275,7 @@ fun fillCards(
             imageCardView.tileModeX = Shader.TileMode.CLAMP
             imageCardView.tileModeY = Shader.TileMode.CLAMP
             imageCardView.requestLayout()
+            val secondImageCardView = imageCardView
 
         } else {
             printLog(currentCard.toString())
@@ -289,19 +291,18 @@ fun fillCards(
             }
             val cardBitmap = drawChargeCard(
                 textToDraw = cardText,
-                textSize = 36F,
+                textSize = 26F,
                 textColor = Color.parseColor("#" + cardMeta?.textColor),
                 rectangleColor = Color.parseColor("#" + cardMeta?.borderColor),
                 backgroundColor = Color.parseColor("#" + cardMeta?.backgroundColor),
                 paintStroke = paintStroke
             )
             imageView.background = BitmapDrawable(resources, cardBitmap)
-            imageView.elevation = 0.5F
             (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMargin,
-                cardMargin,
-                cardMargin,
-                cardMargin
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
             )
         }
 
@@ -343,13 +344,23 @@ fun fillCards(
                 // TableColorDark
                 CardHolderView.setBackgroundColor(Color.parseColor("#E0D7C8"))
             }
-            CardHolderView.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
+            CardHolderView.setPadding(
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
+            )
 
             // Creating the TextView that will hold the Price
             val textview: TextView = TextView(context)
             CardHolderView.addView(textview)
             textview.text = ("")
-            textview.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
+            textview.setPadding(
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
+            )
             textview.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
             textview.setTextAppearance(R.style.TableTextViewDisabled)
             textview.setTextColor(R.color.TextColorDisabled)
