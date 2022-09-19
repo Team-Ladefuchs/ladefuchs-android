@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/PrimaryBackground"
+    android:background="@color/UIColorLight"
     tools:context=".ui.chargecards.ChargeCardFragment">
 
     <ImageView
         android:id="@+id/ladefuchs_logo"
-        android:layout_width="67dp"
-        android:layout_height="62dp"
+        android:layout_width="84dp"
+        android:layout_height="78dp"
         android:layout_marginStart="172dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="172dp"
@@ -23,10 +23,10 @@
 
     <ImageView
         android:id="@+id/nerd_glasses"
-        android:layout_width="50dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="62dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
         android:src="@drawable/glasses"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,8 +36,8 @@
     <LinearLayout
         android:id="@+id/chargeCardsTableHeader"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/TableColorDark"
+        android:layout_height="60dp"
+        android:background="@color/UIColorDark"
         android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:background="@drawable/border_dark_bg_left">
+            android:background="@drawable/border_header_dark_bg_left">
 
             <LinearLayout
                 android:id="@+id/chargeCardsTableHeaderACGlueBox"
@@ -76,10 +76,10 @@
 
                 <ImageView
                     android:id="@+id/chargeCardsTableHeaderACImage"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:alpha="0.5"
-                    android:padding="10dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:alpha="0.4"
+                    android:padding="5dp"
                     android:src="@drawable/ic_typ2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderAC"
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
-            android:background="@drawable/border_dark_bg_right">
+            android:background="@drawable/border_header_dark_bg_right">
 
             <LinearLayout
                 android:id="@+id/chargeCardsTableHeaderDCGlueBox"
@@ -120,9 +120,9 @@
 
                 <ImageView
                     android:id="@+id/chargeCardsTableHeaderDCImage"
-                    android:layout_width="45dp"
+                    android:layout_width="35dp"
                     android:layout_height="45dp"
-                    android:alpha="0.5"
+                    android:alpha="0.4"
                     android:padding="5dp"
                     android:src="@drawable/ic_ccs"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -146,10 +146,10 @@
             android:id="@+id/cardScroller"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/chargeCardsTableHolder"
@@ -181,15 +181,16 @@
         android:id="@+id/pocHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_header_bottom"
+        android:background="@color/UIColorDark"
         android:fontFamily="sans-serif"
-        android:paddingTop="5sp"
-        android:paddingBottom="5dp"
+        android:paddingTop="10sp"
+        android:paddingBottom="12dp"
         android:shadowColor="#000000"
         android:text="@string/pocHeader"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="18sp"
+        android:textColor="@color/TextColorBlack"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/pocSelector"
         app:layout_constraintEnd_toEndOf="parent"
@@ -199,19 +200,21 @@
     <com.aigestudio.wheelpicker.WheelPicker
         android:id="@+id/pocSelector"
         android:layout_width="0dp"
-        android:layout_height="175dp"
-        android:background="@drawable/border_picker"
+        android:layout_height="125dp"
+        android:background="@drawable/border_light_bg_left"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toTopOf="@id/phraseContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pocHeader"
-        app:wheel_atmospheric="true"
-        app:wheel_curtain="true"
         app:wheel_curtain_color="@color/WheelCurtainColor"
         app:wheel_curved="true"
-        app:wheel_item_space="5dp"
+        app:wheel_cyclic="false"
         app:wheel_item_text_color="@color/TextColorDisabled"
-        app:wheel_selected_item_text_color="@color/TextColorDark" />
+        app:wheel_item_text_size="22dp"
+        app:wheel_selected_item_text_color="@color/TextColorDark"
+        app:wheel_visible_item_count="5" />
 
     <LinearLayout
         android:id="@+id/phraseContainer"
@@ -227,7 +230,7 @@
             android:id="@+id/phraseView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/TableColorDark"
+            android:background="@color/UIColorDark"
             android:fontFamily="@font/bitter_italic"
             android:paddingTop="5sp"
             android:paddingBottom="5dp"
@@ -259,11 +262,11 @@
 
     <include
         android:id="@+id/onboarding_3"
+        layout="@layout/onboarding_overlay3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/onboarding_overlay3"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible" />
+
     <ImageButton
         android:id="@+id/aboutButton"
         android:layout_width="50dp"
@@ -272,29 +275,27 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="40dp"
         android:background="@drawable/circle_bg"
-        android:padding="10dp"
         android:contentDescription="@string/settings_button"
+        android:padding="10dp"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_settings_black_18dp"
         app:layout_constraintBottom_toTopOf="@+id/chargeCardsTableHeader"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_settings" />
 
     <include
         android:id="@+id/onboarding_1"
+        layout="@layout/onboarding_overlay1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/onboarding_overlay1"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible" />
 
     <include
         android:id="@+id/onboarding_2"
+        layout="@layout/onboarding_overlay2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/onboarding_overlay2"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

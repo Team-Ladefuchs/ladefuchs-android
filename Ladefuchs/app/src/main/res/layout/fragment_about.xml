@@ -10,11 +10,9 @@
 
     <ImageView
         android:id="@+id/ladefuchs_logo"
-        android:layout_width="67dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="172dp"
+        android:layout_width="84dp"
+        android:layout_height="78dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="172dp"
         android:contentDescription="@string/ladefuchs_logo_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,11 +56,8 @@
                 android:id="@+id/einstellungenHeaderText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_black"
                 android:text="Einstellungen"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold"
+                android:textAppearance="@style/AboutTopHeader"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/disclosure_triangle"
                 app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +73,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/einstellungenHeaderText"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/colorAccent" />
+                app:tint="@android:color/black" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,19 +88,7 @@
             app:layout_constraintTop_toBottomOf="@id/einstellungen" />
     </LinearLayout>
 
-    <!--
-            <ImageView
-                android:id="@+id/bug_icon"
-                android:layout_width="32dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/bugtracker_icon"
-                android:rotation="15"
-                app:layout_constraintBottom_toTopOf="@+id/aboutus_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_bug_icon" />
-        -->
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -133,7 +116,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/roboto_black"
                 android:text="@string/teamfuchs_header"
                 android:textAllCaps="true"
                 android:textAppearance="@style/AboutHeader"
@@ -143,6 +125,8 @@
                 android:id="@+id/teamfuchsSL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="25dp"
                 android:fontFamily="@font/bitter"
                 android:text="@string/teamfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
@@ -157,8 +141,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_basti"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatar_basti"
@@ -166,13 +150,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/basti"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/basti"
                         android:textAllCaps="true"
@@ -183,6 +170,8 @@
                         android:id="@+id/bastiSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/androidfuchs"
                         android:textAppearance="@style/AboutSubHeader" />
@@ -191,20 +180,28 @@
                         android:id="@+id/bastiSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/twitter_schlingel"
-                        android:textAppearance="@style/AboutSubHeaderSans" />
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorBlack" />
 
                     <TextView
                         android:id="@+id/bastiSL3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/android_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -216,8 +213,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_malik"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatar_malik"
@@ -225,13 +222,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/malik"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/malik"
                         android:textAllCaps="true"
@@ -242,6 +242,8 @@
                         android:id="@+id/malikSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/designfuchs"
                         android:textAppearance="@style/AboutSubHeader" />
@@ -250,16 +252,23 @@
                         android:id="@+id/malikSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/twitter_twittlik"
-                        android:textAppearance="@style/AboutSubHeaderSans" />
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorBlack" />
 
                     <TextView
                         android:id="@+id/malikSL3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/malik_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
@@ -275,8 +284,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_flow"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatarbild_flowinho"
@@ -284,13 +293,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/flowinho"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/flowinho"
                         android:textAllCaps="true"
@@ -301,26 +313,34 @@
                         android:id="@+id/flowinhoSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/apfelfuchs"
-
                         android:textAppearance="@style/AboutSubHeader" />
 
                     <TextView
                         android:id="@+id/flowinhoSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
+                        android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/twitter_flowinho"
                         android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColor="@color/TextColorDark" />
+                        android:textColor="@color/TextColorDark"
+                        android:textColorLink="@color/TextColorBlack" />
 
                     <TextView
                         android:id="@+id/flowinhoSL3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/roboto"
+                        android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/ios_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
@@ -336,8 +356,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_thorsten"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatar_thorsten"
@@ -345,13 +365,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/thorsten"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/thorsten"
                         android:textAllCaps="true"
@@ -362,6 +385,8 @@
                         android:id="@+id/thorstenSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/androidfuchs"
                         android:textAppearance="@style/AboutSubHeader" />
@@ -370,16 +395,23 @@
                         android:id="@+id/thorstenSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/twitter_thorsten"
-                        android:textAppearance="@style/AboutSubHeaderSans" />
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorBlack" />
 
                     <TextView
                         android:id="@+id/thorstenSL3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/android_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
@@ -396,22 +428,26 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_roddi"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatar_roddi"
+
                     android:src="@drawable/team_roddi" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/roddi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/roddi"
                         android:textAllCaps="true"
@@ -422,6 +458,8 @@
                         android:id="@+id/roddiSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/apfelfuchs"
                         android:textAppearance="@style/AboutSubHeader" />
@@ -430,16 +468,23 @@
                         android:id="@+id/roddiSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/twitter_roddi"
-                        android:textAppearance="@style/AboutSubHeaderSans" />
+                        android:textAppearance="@style/AboutSubHeaderSans"
+                        android:textColorLink="@color/TextColorBlack" />
 
                     <TextView
                         android:id="@+id/roddiSL3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/ios_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
@@ -456,8 +501,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/avatar_dominic"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:contentDescription="@string/avatar_dominic"
@@ -465,13 +510,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/dominic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/roboto_black"
                         android:text="@string/dominic"
                         android:textAllCaps="true"
@@ -482,6 +530,8 @@
                         android:id="@+id/dominicSL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:fontFamily="@font/bitter"
                         android:text="@string/apifuchs"
                         android:textAppearance="@style/AboutSubHeader" />
@@ -490,8 +540,11 @@
                         android:id="@+id/dominicSL2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="1.5dp"
+                        android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
                         android:fontFamily="@font/bitter"
+                        android:tag="clickableLink"
                         android:text="@string/api_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
@@ -514,6 +567,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="25dp"
                 android:text="@string/podcastfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
 
@@ -591,6 +646,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="25dp"
                 android:text="@string/datenfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
 
@@ -623,12 +680,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="25dp"
                 android:text="@string/illusfuchs_SL"
                 android:textAppearance="@style/AboutSubHeader" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="20dp"></View>
 
 
         </LinearLayout>
@@ -639,10 +695,9 @@
         android:id="@+id/handcrafted"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
+        android:background="@color/UIColorDark"
         android:fontFamily="@font/roboto"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:padding="10dp"
         android:text="@string/handcrafted"
         android:textAlignment="center"
         android:textColor="@color/TextColorDark"
@@ -656,7 +711,7 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
+        android:background="@color/UIColorDark"
         android:fontFamily="@font/roboto"
         android:minWidth="0dp"
         android:minHeight="0dp"
@@ -674,7 +729,7 @@
         android:id="@+id/version_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
+        android:background="@color/UIColorDark"
         android:fontFamily="@font/roboto"
         android:textAlignment="center"
         android:textColor="@color/TextColorDisabled"
@@ -682,4 +737,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

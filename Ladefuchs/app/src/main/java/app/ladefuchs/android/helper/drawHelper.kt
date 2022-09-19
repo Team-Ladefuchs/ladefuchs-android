@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
@@ -23,9 +25,14 @@ import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import kotlin.math.ceil
 
-private var cardWidth: Int = getScreenWidth() / 4
+private var cardWidth: Int = getScreenWidth() / 5
 private var cardHeight: Int = 176 * cardWidth / 280
+private const val cardMarginLeft: Int = 50
+private const val cardMarginRight: Int = 20
+private const val cardMarginTop: Int = 20
+private const val cardMarginBottom: Int = 20
 private const val cardMargin: Int = 20
+private const val globalCornerRadius: Float = 15F
 
 /**
  * This function will draw the scrollable list of chargecards
@@ -39,7 +46,7 @@ fun drawChargeCard(
     paintStroke: Boolean = false
 ): Bitmap? {
     val scaleFactor = 2
-    val cornerRadius = 25F * scaleFactor
+    val cornerRadius = globalCornerRadius * scaleFactor
     val strokeWidth = 3F * scaleFactor
     val textCardWidth = cardWidth * scaleFactor
     val textCardHeight = cardHeight * scaleFactor
@@ -230,13 +237,13 @@ fun fillCards(
             imageCardView.layoutParams.width = cardWidth
             imageCardView.layoutParams.height = cardHeight
             (imageCardView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMargin,
-                cardMargin,
-                cardMargin,
-                cardMargin
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
             )
             imageCardView.scaleType = ImageView.ScaleType.FIT_XY
-            imageCardView.cornerRadius = 25.toFloat()
+            imageCardView.cornerRadius = globalCornerRadius
             if (paintStroke) {
                 imageCardView.borderWidth = 4.toFloat()
                 imageCardView.borderColor = Color.DKGRAY
@@ -331,10 +338,10 @@ fun fillCards(
             CardHolderView.orientation = LinearLayout.HORIZONTAL
             if (i % 2 == 0) {
                 //TableColorLight
-                CardHolderView.setBackgroundColor(Color.parseColor("#F2EBE1"))
+                CardHolderView.setBackgroundColor(Color.parseColor("#F0EBDC"))
             } else {
                 // TableColorDark
-                CardHolderView.setBackgroundColor(Color.parseColor("#CEC0AC"))
+                CardHolderView.setBackgroundColor(Color.parseColor("#E0D7C8"))
             }
             CardHolderView.setPadding(cardMargin, cardMargin, cardMargin, cardMargin)
 

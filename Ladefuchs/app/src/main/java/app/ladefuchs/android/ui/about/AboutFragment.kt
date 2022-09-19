@@ -3,12 +3,17 @@ package app.ladefuchs.android.ui.about
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewManager
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -18,6 +23,35 @@ import app.ladefuchs.android.R
 class AboutFragment : Fragment() {
 
     private lateinit var aboutViewModel: AboutViewModel
+
+    private fun getViewsByTag(root: ViewGroup, tag: String): ArrayList<View>? {
+        val views = ArrayList<View>()
+        val childCount = root.childCount
+        for (i in 0 until childCount) {
+            val child = root.getChildAt(i)
+            if (child is ViewGroup) {
+                views.addAll(getViewsByTag(child, tag)!!)
+            }
+            val tagObj = child.tag
+            if (tagObj != null && tagObj == tag) {
+                views.add(child)
+            }
+        }
+        return views
+    }
+
+    private fun TextView.removeLinksUnderline() {
+        val spannable = SpannableString(text)
+        for (u in spannable.getSpans(0, spannable.length, URLSpan::class.java)) {
+            spannable.setSpan(object : URLSpan(u.url) {
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false
+                }
+            }, spannable.getSpanStart(u), spannable.getSpanEnd(u), 0)
+        }
+        text = spannable
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,16 +73,6 @@ class AboutFragment : Fragment() {
         view.findViewById<Button>(app.ladefuchs.android.R.id.imprint_button).setOnClickListener {
             findNavController().navigate(app.ladefuchs.android.R.id.action_navigation_about_to_imprint)
         }
-/*
-        view.findViewById<ImageView>(R.id.bug_icon).setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_about_to_feedbackfuchs)
-        }
-*/
-        /*
-        val webView: WebView = view.findViewById<WebView>(R.id.about_us)
-
-        webView.loadUrl("file:///android_asset/aboutus.html")
-        */
 
         //Hiding settings and making them collapsible
         val settingsFragmentView = view.findViewById<View>(R.id.settingsFragment)
@@ -80,24 +104,45 @@ class AboutFragment : Fragment() {
         val VersionHolder: TextView = view.findViewById<TextView>(R.id.version_info)
         VersionHolder.text = "Version " + versionName.toString()
 
+
         // Making Links in Textviews Clickable... well... really...
         val schlingelSL2 = view.findViewById(R.id.bastiSL2) as TextView
         schlingelSL2.movementMethod = LinkMovementMethod.getInstance()
+        schlingelSL2.removeLinksUnderline()
+        val schlingelSL3 = view.findViewById(R.id.bastiSL3) as TextView
+        schlingelSL3.removeLinksUnderline()
 
         val malikSL2 = view.findViewById(R.id.malikSL2) as TextView
         malikSL2.movementMethod = LinkMovementMethod.getInstance()
+        malikSL2.removeLinksUnderline()
+        val malikSL3 = view.findViewById(R.id.malikSL3) as TextView
+        malikSL3.removeLinksUnderline()
 
-        val illuSL2 = view.findViewById(R.id.illufuchsSL) as TextView
-        illuSL2.movementMethod = LinkMovementMethod.getInstance()
+        val flowinhoSL2 = view.findViewById(R.id.flowinhoSL2) as TextView
+        flowinhoSL2.movementMethod = LinkMovementMethod.getInstance()
+        flowinhoSL2.removeLinksUnderline()
+        val flowinhoSL3 = view.findViewById(R.id.flowinhoSL3) as TextView
+        flowinhoSL2.removeLinksUnderline()
 
         val thorstenSL2 = view.findViewById(R.id.thorstenSL2) as TextView
         thorstenSL2.movementMethod = LinkMovementMethod.getInstance()
+        thorstenSL2.removeLinksUnderline()
+        val thorstenSL3 = view.findViewById(R.id.thorstenSL3) as TextView
+        thorstenSL3.removeLinksUnderline()
 
-        val dominic = view.findViewById(R.id.dominicSL) as TextView
-        dominic.movementMethod = LinkMovementMethod.getInstance()
+        val dominicSL2 = view.findViewById(R.id.dominicSL2) as TextView
+        dominicSL2.movementMethod = LinkMovementMethod.getInstance()
+        dominicSL2.removeLinksUnderline()
 
-        val roddi = view.findViewById(R.id.roddiSL) as TextView
-        roddi.movementMethod = LinkMovementMethod.getInstance()
+        val roddiSL2 = view.findViewById(R.id.roddiSL2) as TextView
+        roddiSL2.movementMethod = LinkMovementMethod.getInstance()
+        roddiSL2.removeLinksUnderline()
+        val roddiSL3 = view.findViewById(R.id.roddiSL3) as TextView
+        roddiSL3.removeLinksUnderline()
+
+        val illuSL2 = view.findViewById(R.id.illufuchsSL) as TextView
+        illuSL2.movementMethod = LinkMovementMethod.getInstance()
+        illuSL2.removeLinksUnderline()
 
         // On Click Listeners for Images
         val chargePriceLogo = view.findViewById(R.id.chargeprice_logo) as ImageView

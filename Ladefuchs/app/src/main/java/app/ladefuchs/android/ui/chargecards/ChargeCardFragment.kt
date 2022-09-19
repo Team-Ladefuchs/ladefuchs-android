@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.*
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.*
@@ -13,6 +14,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.ImageView.ScaleType
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
@@ -73,6 +75,7 @@ class ChargeCardFragment : Fragment() {
      * This function is called after creation and initialises the UI
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         var nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
         // check whether onboarding should be showed
         if (onboarding) {
@@ -223,9 +226,10 @@ class ChargeCardFragment : Fragment() {
     /**
      * This function draws the banner content
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun drawPromoBanner(view: View, promoType: String, promoURL: String) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 280 * viewWidth / 1170
+        val viewHeight = 280 * viewWidth!! / 1170
         val phraseContainer = view.findViewById<TextView>(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams

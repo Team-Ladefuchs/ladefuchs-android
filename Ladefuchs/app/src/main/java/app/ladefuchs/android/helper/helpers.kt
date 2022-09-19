@@ -3,8 +3,12 @@ package app.ladefuchs.android.helper
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.os.Build
 import android.preference.PreferenceManager
 import android.view.View
+import android.view.WindowManager
+import android.view.WindowMetrics
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.CardMetaData
@@ -13,6 +17,7 @@ import com.beust.klaxon.Klaxon
 import java.io.InputStream
 import kotlin.math.min
 import kotlin.math.roundToInt
+
 
 /**
  * Function to log while in Debug mode
