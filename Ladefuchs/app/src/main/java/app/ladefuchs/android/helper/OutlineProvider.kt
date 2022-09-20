@@ -14,9 +14,6 @@ class OutlineProvider(
     override fun getOutline(view: View?, outline: Outline?) {
         view?.background?.copyBounds(rect)
         rect.offset(xShift, yShift)
-
-        val cornerRadius = 15F
-
-        outline?.setRoundRect(rect, cornerRadius)
+        outline?.setRoundRect(rect, 15F)
     }
 }

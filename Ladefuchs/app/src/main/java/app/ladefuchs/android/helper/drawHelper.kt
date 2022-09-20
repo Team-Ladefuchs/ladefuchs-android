@@ -6,23 +6,17 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.core.content.res.ResourcesCompat
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
-import java.security.AccessController.getContext
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -276,9 +270,8 @@ fun fillCards(
                 resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
             }
             imageCardView.isOval = false
-            imageCardView.elevation = 30.0F
-            val outlineProvider = OutlineProvider(10,10)
-            imageCardView.outlineProvider = outlineProvider
+            imageCardView.elevation = 25.0F
+            imageCardView.outlineProvider = OutlineProvider(5,0)
 
             imageCardView.tileModeX = Shader.TileMode.CLAMP
             imageCardView.tileModeY = Shader.TileMode.CLAMP
@@ -306,7 +299,7 @@ fun fillCards(
             )
             imageView.background = BitmapDrawable(resources, cardBitmap)
             imageView.elevation = 30.0F
-            imageView.outlineProvider = ViewOutlineProvider.PADDED_BOUNDS
+            imageView.outlineProvider = OutlineProvider(10,10)
         }
 
         // Format the price according to the user set locale
