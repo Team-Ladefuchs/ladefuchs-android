@@ -12,14 +12,17 @@ import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
+import java.security.AccessController.getContext
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -57,6 +60,7 @@ fun drawChargeCard(
         textCardHeight,
         Bitmap.Config.ARGB_8888
     )
+
 
     // canvas to drawing
     val canvas = Canvas(bitmap)
@@ -191,6 +195,13 @@ fun fillCards(
         chargeCardsColumn.addView(CardHolderView)
         CardHolderView.gravity = Gravity.CENTER_VERTICAL
         CardHolderView.orientation = LinearLayout.HORIZONTAL
+        CardHolderView.clipToPadding = false
+        CardHolderView.setPadding(
+            cardMarginLeft,
+            cardMarginTop,
+            cardMarginRight,
+            cardMarginBottom
+        )
 
         val backgroundUri: String = if (i % 2 == 0) {
             "@drawable/border_light_bg_$columnSide"
@@ -236,12 +247,6 @@ fun fillCards(
             CardHolderView.addView(imageCardView)
             imageCardView.layoutParams.width = cardWidth
             imageCardView.layoutParams.height = cardHeight
-            (imageCardView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
-            )
             imageCardView.scaleType = ImageView.ScaleType.FIT_XY
             imageCardView.cornerRadius = globalCornerRadius
             if (paintStroke) {
@@ -271,6 +276,10 @@ fun fillCards(
                 resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
             }
             imageCardView.isOval = false
+            imageCardView.elevation = 30.0F
+            val outlineProvider = OutlineProvider(10,10)
+            imageCardView.outlineProvider = outlineProvider
+
             imageCardView.tileModeX = Shader.TileMode.CLAMP
             imageCardView.tileModeY = Shader.TileMode.CLAMP
             imageCardView.requestLayout()
@@ -296,13 +305,8 @@ fun fillCards(
                 paintStroke = paintStroke
             )
             imageView.background = BitmapDrawable(resources, cardBitmap)
-            imageView.elevation = 0.5F
-            (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMargin,
-                cardMargin,
-                cardMargin,
-                cardMargin
-            )
+            imageView.elevation = 30.0F
+            imageView.outlineProvider = ViewOutlineProvider.PADDED_BOUNDS
         }
 
         // Format the price according to the user set locale
