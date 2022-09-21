@@ -11,8 +11,8 @@ android {
         applicationId "app.ladefuchs.android"
         minSdkVersion 26
         targetSdkVersion 30
-        versionCode 150
-        versionName "1.5"
+        versionCode 160
+        versionName "1.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
