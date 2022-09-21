@@ -6,16 +6,13 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
@@ -264,18 +261,19 @@ fun fillCards(
                 }
 
                 if (cardImageDrawable != null) {
-                    //imageCardView.background =
-                        //Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
-                    imageCardView.setImageDrawable(cardImageDrawable)
+                    imageCardView.background =
+                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
                 }
             } else {
                 resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
             }
             imageCardView.isOval = false
+            imageCardView.elevation = 25.0F
+            imageCardView.outlineProvider = OutlineProvider(5,0)
+
             imageCardView.tileModeX = Shader.TileMode.CLAMP
             imageCardView.tileModeY = Shader.TileMode.CLAMP
             imageCardView.requestLayout()
-            val secondImageCardView = imageCardView
 
         } else {
             printLog(currentCard.toString())
@@ -298,12 +296,8 @@ fun fillCards(
                 paintStroke = paintStroke
             )
             imageView.background = BitmapDrawable(resources, cardBitmap)
-            (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
-            )
+            imageView.elevation = 30.0F
+            imageView.outlineProvider = OutlineProvider(10,10)
         }
 
         // Format the price according to the user set locale
