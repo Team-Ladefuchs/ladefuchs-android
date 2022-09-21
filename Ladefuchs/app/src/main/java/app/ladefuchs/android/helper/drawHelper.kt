@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -298,6 +299,12 @@ fun fillCards(
             imageView.background = BitmapDrawable(resources, cardBitmap)
             imageView.elevation = 30.0F
             imageView.outlineProvider = OutlineProvider(10,10)
+            (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
+            )
         }
 
         // Format the price according to the user set locale
