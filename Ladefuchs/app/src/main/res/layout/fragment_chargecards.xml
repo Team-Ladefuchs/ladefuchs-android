@@ -33,111 +33,111 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/chargeCardsTableHeader"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/UIColorDark"
-        android:baselineAligned="false"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/chargeCardsTableHeaderACContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@drawable/border_header_dark_bg_left">
-
             <LinearLayout
-                android:id="@+id/chargeCardsTableHeaderACGlueBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
+                android:id="@+id/chargeCardsTableHeader"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+
+                android:baselineAligned="false"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo">
 
-                <TextView
-                    android:id="@+id/chargeCardsTableHeaderAC"
-                    style="@style/TableHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ac"
-                    android:textSize="28sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/chargeCardsTableHeaderACImage"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/chargeCardsTableHeaderACContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:background="@drawable/border_header_dark_bg_left">
 
-                <ImageView
-                    android:id="@+id/chargeCardsTableHeaderACImage"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:alpha="0.4"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_typ2"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderAC"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <LinearLayout
+                        android:id="@+id/chargeCardsTableHeaderACGlueBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/chargeCardsTableHeaderAC"
+                            style="@style/TableHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ac"
+                            android:textSize="28sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/chargeCardsTableHeaderACImage"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/chargeCardsTableHeaderACImage"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:alpha="0.4"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_typ2"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderAC"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/chargeCardsTableHeaderDCContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:background="@drawable/border_header_dark_bg_right">
+
+                    <LinearLayout
+                        android:id="@+id/chargeCardsTableHeaderDCGlueBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/chargeCardsTableHeaderDC"
+                            style="@style/TableHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dc"
+                            android:textSize="28sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/chargeCardsTableHeaderDCImage"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/chargeCardsTableHeaderDCImage"
+                            android:layout_width="35dp"
+                            android:layout_height="45dp"
+                            android:alpha="0.4"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_ccs"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderDC"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/chargeCardsTableHeaderDCContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:background="@drawable/border_header_dark_bg_right">
-
-            <LinearLayout
-                android:id="@+id/chargeCardsTableHeaderDCGlueBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/chargeCardsTableHeaderDC"
-                    style="@style/TableHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dc"
-                    android:textSize="28sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/chargeCardsTableHeaderDCImage"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/chargeCardsTableHeaderDCImage"
-                    android:layout_width="35dp"
-                    android:layout_height="45dp"
-                    android:alpha="0.4"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_ccs"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderDC"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipetorefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/pocHeader"
+        app:layout_constraintBottom_toTopOf="@id/pocHeaderContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chargeCardsTableHeader">
@@ -146,6 +146,7 @@
             android:id="@+id/cardScroller"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:contentDescription="Enthält alle Ladekarten"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -177,25 +178,36 @@
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <TextView
-        android:id="@+id/pocHeader"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/pocHeaderContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/UIColorDark"
-        android:fontFamily="sans-serif"
-        android:paddingTop="10sp"
-        android:paddingBottom="12dp"
-        android:shadowColor="#000000"
-        android:text="@string/pocHeader"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="@color/TextColorBlack"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/pocSelector"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swipetorefresh" />
+        app:layout_constraintBottom_toTopOf="@id/pocSelector"
+        app:layout_constraintTop_toBottomOf="@id/swipetorefresh">
+
+        <TextView
+            android:id="@+id/pocHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/UIColorDark"
+            android:fontFamily="sans-serif"
+            android:paddingTop="10sp"
+            android:paddingBottom="12dp"
+            android:shadowColor="#000000"
+            android:text="@string/pocHeader"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
 
     <com.aigestudio.wheelpicker.WheelPicker
         android:id="@+id/pocSelector"
@@ -207,7 +219,7 @@
         app:layout_constraintBottom_toTopOf="@id/phraseContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pocHeader"
+        app:layout_constraintTop_toBottomOf="@+id/pocHeaderContainer"
         app:wheel_curtain_color="@color/WheelCurtainColor"
         app:wheel_curved="true"
         app:wheel_cyclic="false"
