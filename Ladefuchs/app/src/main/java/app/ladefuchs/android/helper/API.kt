@@ -17,6 +17,7 @@ import java.io.IOException
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 class API(private var context: Context) {
     private val apiToken: String = BuildConfig.apiKey
@@ -188,8 +189,8 @@ class API(private var context: Context) {
         //Load Prices JSON from File
         val country = "de"
         val replaceRule = Regex("[^A-Za-z0-9.+-]")
-        val pocOperatorClean = replaceRule.replace(pocOperator, "")
-        printLog("Getting Prices for $pocOperatorClean")
+        val pocOperatorClean = replaceRule.replace(pocOperator, "").lowercase(Locale.getDefault())
+        printLog("ReadPrices Prices for $pocOperatorClean")
         val JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
         var forceInitialDownload = forceDownload
