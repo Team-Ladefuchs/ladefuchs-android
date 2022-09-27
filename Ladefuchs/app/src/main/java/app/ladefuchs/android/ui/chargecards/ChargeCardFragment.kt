@@ -27,7 +27,6 @@ import com.aigestudio.wheelpicker.WheelPicker
 import kotlinx.android.synthetic.main.fragment_chargecards.*
 import kotlinx.android.synthetic.main.fragment_chargecards.view.*
 
-
 //import com.tylerthrailkill.helpers.prettyprint
 
 class ChargeCardFragment : Fragment() {
@@ -40,8 +39,8 @@ class ChargeCardFragment : Fragment() {
         "shop", "shop", "shop",
         "thg", "thg", "thg", "thg", "thg",
     )
-    private var pocOperatorList: List<String> = listOf("Allego")
-    private var currentPoc: String = pocOperatorList[0].lowercase()
+    private var pocOperatorList: List<String> = listOf()
+    private var currentPoc: String = ""
     private var api: API? = null
     private var prefs: SharedPreferences? = null
     object StaticLayoutCache {
@@ -97,7 +96,14 @@ class ChargeCardFragment : Fragment() {
         retrieveFooterContent(view)
         // retrieve all operators
         pocOperatorList = api!!.retrieveOperatorList()
-        printLog(pocOperatorList.toString())
+
+        printLog("Operator List $pocOperatorList")
+
+        if (pocOperatorList.isEmpty())
+            return
+
+        currentPoc = pocOperatorList[0]
+        printLog("First Operator is $currentPoc")
         // add easterEggOnclickListener
         easterEgg(view)
         //initialize Price List
