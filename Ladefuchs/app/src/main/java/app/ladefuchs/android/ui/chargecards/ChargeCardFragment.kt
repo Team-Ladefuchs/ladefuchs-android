@@ -1,13 +1,14 @@
 package app.ladefuchs.android.ui.chargecards
 
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.content.SharedPreferences
-import android.graphics.*
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.text.*
+import android.text.StaticLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
@@ -146,6 +147,7 @@ class ChargeCardFragment : Fragment() {
         swipetorefresh.setOnRefreshListener {
             getPrices(currentPoc, forceDownload = true, requireContext(), api!!, view, resources)
             swipetorefresh.isRefreshing = false
+
         }
         // check whether onboarding should be shown
         if (onboarding) {
