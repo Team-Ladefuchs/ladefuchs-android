@@ -44,6 +44,7 @@ class ChargeCardFragment : Fragment() {
     private var currentPoc: String = ""
     private var api: API? = null
     private var prefs: SharedPreferences? = null
+    private var cardsNeedRefresh: Boolean = false
     object StaticLayoutCache {
         private const val MAX_SIZE = 50 // Arbitrary max number of cached items
         private val cache = lruCache<String, StaticLayout>(MAX_SIZE)
@@ -74,10 +75,11 @@ class ChargeCardFragment : Fragment() {
     /**
      * This function is called after creation and initialises the UI
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         var nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
-        // check whether onboarding should be showed
+        // check whether onboarding should be shown
         if (onboarding) {
             // deactivate the banner while in onboarding
             showBanner = false
@@ -108,7 +110,7 @@ class ChargeCardFragment : Fragment() {
         // add easterEggOnclickListener
         easterEgg(view)
         //initialize Price List
-        getPrices(
+        cardsNeedRefresh = getPrices(
             currentPoc,
             forceDownload = false,
             requireContext(),
@@ -116,6 +118,9 @@ class ChargeCardFragment : Fragment() {
             view,
             resources
         )
+        if (cardsNeedRefresh) {
+            refreshCardView()
+        }
         // initialize picker
         val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
         //Switch to a more 3D, iOS-style Look
@@ -125,7 +130,7 @@ class ChargeCardFragment : Fragment() {
         // Loading the pocList into the Picker Library
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
-            getPrices(
+            cardsNeedRefresh = getPrices(
                 data.toString().lowercase(),
                 forceDownload = false,
                 requireContext(),
@@ -133,6 +138,9 @@ class ChargeCardFragment : Fragment() {
                 view,
                 resources
             )
+            if (cardsNeedRefresh) {
+                refreshCardView()
+            }
             currentPoc = data.toString().lowercase()
         }
         // set the colors of the Pull To Refresh View
@@ -147,12 +155,20 @@ class ChargeCardFragment : Fragment() {
         swipetorefresh.setOnRefreshListener {
             getPrices(currentPoc, forceDownload = true, requireContext(), api!!, view, resources)
             swipetorefresh.isRefreshing = false
-
         }
         // check whether onboarding should be shown
         if (onboarding) {
             onboarding()
         }
+    }
+
+    private fun refreshCardView() {
+        printLog("Refreshing Charge Card View")
+        view?.let {
+            getPrices(currentPoc, false, requireContext(), api!!,
+                it, resources, true)
+        }
+        cardsNeedRefresh = false
     }
 
     /**
@@ -192,6 +208,7 @@ class ChargeCardFragment : Fragment() {
     /**
      * Within this function the content of the footer will be determined
      */
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
         val phraseView = view.findViewById<TextView>(R.id.phraseView) as TextView
         val phrases =

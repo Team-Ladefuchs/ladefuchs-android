@@ -186,27 +186,32 @@ fun getPrices(
     context: Context,
     api: API,
     view: View,
-    resources: Resources
-): String {
+    resources: Resources,
+    skipDownload: Boolean = false
+): Boolean {
     //Load Prices JSON from File
     printLog("Getting prices for $pocOperator")
+    var imageDownloadedAC = false
+    var imageDownloadedDC = false
     val chargeCardsAC = api!!.readPrices(
         pocOperator,
         "ac",
-        forceDownload
+        forceDownload,
+        skipDownload
     )?.sortedBy { it.price }
     val chargeCardsDC = api!!.readPrices(
         pocOperator,
         "dc",
-        forceDownload
+        forceDownload,
+        skipDownload
     )?.sortedBy { it.price }
     if (chargeCardsAC != null || chargeCardsDC != null) {
         val maxListLength = maxOf(chargeCardsAC!!.size, chargeCardsDC!!.size)
-        fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
-        fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
+        imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
+        imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
     }
 
-    return pocOperator
+    return imageDownloadedAC || imageDownloadedDC
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {

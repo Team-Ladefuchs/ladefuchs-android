@@ -140,9 +140,10 @@ fun fillCards(
     api: API,
     resources: Resources,
     paintStroke: Boolean = false,
-) {
+): Boolean {
 
     val cardMetadata = readCardMetadata(context)
+    var cardsDownloaded = false
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
     val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
@@ -160,7 +161,7 @@ fun fillCards(
                 "id",
                 context.packageName
             )
-        ) ?: return
+        ) ?: return false
     chargeCardsColumn.removeAllViews()
     chargeCards.forEach { currentCard ->
 
@@ -250,9 +251,6 @@ fun fillCards(
 
             if (cardImage.exists()) {
                 printLog("Setting " + cardImage.absolutePath.toString() + " as background for card: " + cardProviderIdentifier)
-                printLog(
-                    "drawable: " + Drawable.createFromPath(cardImage.absolutePath).toString()
-                )
                 var cardImageDrawable: Drawable? = null
                 try {
                     cardImageDrawable =
@@ -283,6 +281,7 @@ fun fillCards(
                     currentCard.image,
                     "card_" + currentCard.identifier + ".jpg"
                 )
+                cardsDownloaded = true
             }
             var cardText = currentCard.name
             if (currentCard.provider != currentCard.name) {
@@ -373,5 +372,6 @@ fun fillCards(
             i++
         }
     }
+    return cardsDownloaded
 }
 

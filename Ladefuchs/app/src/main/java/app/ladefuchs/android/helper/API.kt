@@ -182,7 +182,8 @@ class API(private var context: Context) {
     fun readPrices(
         pocOperator: String,
         currentType: String,
-        forceDownload: Boolean = false
+        forceDownload: Boolean = false,
+        skipDownload: Boolean = false
     ): List<ChargeCards>? {
 
         //Load Prices JSON from File
@@ -195,7 +196,7 @@ class API(private var context: Context) {
         var forceInitialDownload = forceDownload
 
         // check whether forceDownload was activated
-        if (!forceDownload) {
+        if (!forceDownload || skipDownload) {
             val JSONFile: File? = File(context.getFileStreamPath(JSONFileName).toString())
             val JSONFileExists = JSONFile?.exists()
 
@@ -216,12 +217,12 @@ class API(private var context: Context) {
                 }
             }
         }
-        if ((
+        if (!skipDownload && ((
                     chargeCards.isNotEmpty() &&
                             (System.currentTimeMillis() / 1000L - chargeCards[0].updated > 86400)
                     ) ||
             forceDownload ||
-            forceInitialDownload
+            forceInitialDownload)
         ) {
             val JSONUrl =
                 apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
