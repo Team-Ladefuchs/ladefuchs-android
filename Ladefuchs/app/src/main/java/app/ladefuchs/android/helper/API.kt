@@ -60,8 +60,8 @@ class API(private var context: Context) {
         if (wifiOn) {
             return false;
         }
-        val mobileDataOff = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) > 0;
-        if (mobileDataOff) {
+        val mobileDataOn = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) > 0;
+        if (mobileDataOn) {
             return false
         }
         return Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 0
