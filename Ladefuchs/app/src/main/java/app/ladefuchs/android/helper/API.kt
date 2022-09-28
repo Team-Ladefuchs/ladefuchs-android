@@ -64,7 +64,7 @@ class API(private var context: Context) {
         if (mobileDataOn) {
             return false
         }
-        return Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 0
+        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
