@@ -60,11 +60,10 @@ class API(private var context: Context) {
         if (wifiOn) {
             return false;
         }
-        val mobileDataOn = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) > 0;
-        if (mobileDataOn) {
-            return false
-        }
-        return true
+        val mobileDataOff = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) == 0;
+        val airplaneModeOff = Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 0;
+
+        return mobileDataOff && airplaneModeOff
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
