@@ -276,7 +276,6 @@ fun fillCards(
 
         } else {
             if (!currentCard.image.isNullOrEmpty()) {
-                printLog("Downloading Image ${"card_" + currentCard.identifier + ".jpg"}")
                 api.downloadImageToInternalStorage(
                     currentCard.image,
                     "card_" + currentCard.identifier + ".jpg"
