@@ -55,12 +55,16 @@ class API(private var context: Context) {
     }
 
     private fun isOffline(): Boolean {
-        val wifiOn = Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) != 0
-        if (wifiOn){
-            return true;
+        val wifiOn =
+            Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 1
+        if (wifiOn) {
+            return false;
         }
-        // wifi is off, so check if there is at least cellular connection
-        return Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+        val mobileDataOff = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) > 0;
+        if (mobileDataOff) {
+            return false
+        }
+        return Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 0
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
