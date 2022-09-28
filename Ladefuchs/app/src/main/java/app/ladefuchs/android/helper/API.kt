@@ -60,10 +60,12 @@ class API(private var context: Context) {
         if (wifiOn) {
             return false;
         }
-        val mobileDataOff = Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) == 0;
-        val airplaneModeOff = Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 0;
 
-        return mobileDataOff && airplaneModeOff
+        val airplaneOn = Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) == 1
+        if (airplaneOn){
+            return true
+        }
+        return Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) == 0
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -127,6 +129,7 @@ class API(private var context: Context) {
      * This function retrieves the current list of operators
      */
     fun retrieveOperatorList(): List<String> {
+
         val JSONUrl = apiBaseURL + apiVersionPath + "operators/enabled"
         val JSONFileName = "operators.json"
         // download the latest operator list
@@ -164,6 +167,12 @@ class API(private var context: Context) {
      * This function downloads an image from the API and saves it in local storage
      */
     fun downloadImageToInternalStorage(imageURL: String, imageFileName: String) {
+
+        if (isOffline()){
+            printLog("Device is offline", "network")
+            return
+        }
+
         val imageURL = URL(
             Uri.parse(imageURL)
                 .toString()
