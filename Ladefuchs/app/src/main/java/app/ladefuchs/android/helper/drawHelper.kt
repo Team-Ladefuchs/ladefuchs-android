@@ -226,7 +226,7 @@ fun fillCards(
         }
         val cardImage =
             File(context.filesDir.toString() + "/card_" + currentCard.identifier + ".jpg")
-        printLog(cardImage.toString())
+        printLog("Card image file $cardImage")
 
         if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImage.exists()) {
             CardHolderView.removeView(imageView)
@@ -277,8 +277,8 @@ fun fillCards(
             imageCardView.requestLayout()
 
         } else {
-            printLog(currentCard.toString())
             if (!currentCard.image.isNullOrEmpty()) {
+                printLog("Downloading Image ${"card_" + currentCard.identifier + ".jpg"}")
                 api.downloadImageToInternalStorage(
                     currentCard.image,
                     "card_" + currentCard.identifier + ".jpg"

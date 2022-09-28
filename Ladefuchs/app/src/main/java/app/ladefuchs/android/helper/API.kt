@@ -73,7 +73,8 @@ class API(private var context: Context) {
                     if (response.code == 200) {
 
                         try {
-                            val result = Files.deleteIfExists(Paths.get(context.filesDir.toString() + "/" + JSONFileName))
+                            val result =
+                                Files.deleteIfExists(Paths.get(context.filesDir.toString() + "/" + JSONFileName))
                             if (result) {
                                 println("Deletion succeeded.")
                             } else {
@@ -99,8 +100,7 @@ class API(private var context: Context) {
             t.join()
         } catch (e: Exception) {
             printLog("Couldn't download JSON Data from $JSONUrl", "error")
-            printLog(e.message.toString())
-            e.printStackTrace()
+            printLog("Exception: $e", "error")
         }
     }
 
@@ -162,7 +162,6 @@ class API(private var context: Context) {
                     .build()
                 val client = OkHttpClient()
                 client.newCall(request).execute().use { response ->
-
                     if (response.code == 200) {
                         response.body!!.byteStream().use { input ->
                             FileOutputStream(storagePath).use { output ->
@@ -192,23 +191,28 @@ class API(private var context: Context) {
         val pocOperatorClean = replaceRule.replace(pocOperator, "").lowercase(Locale.getDefault())
         printLog("ReadPrices Prices for $pocOperatorClean")
         val JSONFileName = "$country-$pocOperatorClean-$currentType.json"
-        var chargeCards: List<ChargeCards> = listOf<ChargeCards>()
+        var chargeCards: List<ChargeCards> = listOf()
         var forceInitialDownload = forceDownload
 
         // check whether forceDownload was activated
         if (!forceDownload) {
             val JSONFile: File? = File(context.getFileStreamPath(JSONFileName).toString())
             val JSONFileExists = JSONFile?.exists()
+
             if (!JSONFileExists!!) {
                 printLog("No current file Found")
                 forceInitialDownload = true
             } else {
                 try {
-                    printLog(context.getFileStreamPath(JSONFileName).toString())
+                    printLog("JSON file ${context.getFileStreamPath(JSONFileName)}")
                     chargeCards = JSONFile.let { Klaxon().parseArray<ChargeCards>(it) }!!
+                    printLog("carrrds ${chargeCards[0]}")
                 } catch (e: Exception) {
-                    if (BuildConfig.DEBUG)
+                    forceInitialDownload = true
+                    printLog("Error reading prices from cache ${e.message}")
+                    if (BuildConfig.DEBUG){
                         e.printStackTrace()
+                    }
                 }
             }
         }
