@@ -20,15 +20,6 @@
     -->
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Verfügbare Ladekarten">
-        <MultiSelectListPreference
-            app:key="chargecards"
-            app:title="@string/chargecard_title"
-            app:entries="@array/chargecard_entries"
-            app:entryValues="@array/chargecard_entry_values"
-            app:dialogTitle="@string/dialog_chargecard_list_preference"/>
-    </PreferenceCategory>
-
     <PreferenceCategory app:title="Optionen">
     <SwitchPreferenceCompat
         android:visibility="visible"
