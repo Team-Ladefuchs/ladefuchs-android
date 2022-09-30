@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
+import android.provider.Settings
 import androidx.annotation.RequiresApi
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.ChargeCards
@@ -53,13 +54,32 @@ class API(private var context: Context) {
         this.apiVersionPath = apiVersionBetaPath
     }
 
+    private fun isOffline(): Boolean {
+        val wifiOn =
+            Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 1
+        if (wifiOn) {
+            return false;
+        }
+
+        val airplaneOn = Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) == 1
+        if (airplaneOn){
+            return true
+        }
+        return Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) == 0
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun downloadJSONToInternalStorage(
         JSONUrl: String,
         JSONFileName: String,
     ) {
 
-        printLog("Downloading $JSONUrl", "network")
+        if (isOffline()){
+            printLog("Device is offline", "network")
+            return
+        }
+
+        printLog("Downloading to Internal Storage $JSONUrl", "network")
         val client = OkHttpClient()
         val url = URL(JSONUrl)
         val request = Request.Builder()
@@ -109,6 +129,7 @@ class API(private var context: Context) {
      * This function retrieves the current list of operators
      */
     fun retrieveOperatorList(): List<String> {
+
         val JSONUrl = apiBaseURL + apiVersionPath + "operators/enabled"
         val JSONFileName = "operators.json"
         // download the latest operator list
@@ -146,11 +167,17 @@ class API(private var context: Context) {
      * This function downloads an image from the API and saves it in local storage
      */
     fun downloadImageToInternalStorage(imageURL: String, imageFileName: String) {
+
+        if (isOffline()){
+            printLog("Device is offline", "network")
+            return
+        }
+
         val imageURL = URL(
             Uri.parse(imageURL)
                 .toString()
         )
-        printLog("Downloading $imageURL", "network")
+        printLog("Downloading image: $imageURL", "network")
         val storagePath = File(context.filesDir, imageFileName)
         Thread {
             printLog("Getting Image: $storagePath")
@@ -190,7 +217,7 @@ class API(private var context: Context) {
         val country = "de"
         val replaceRule = Regex("[^A-Za-z0-9.+-]")
         val pocOperatorClean = replaceRule.replace(pocOperator, "").lowercase(Locale.getDefault())
-        printLog("ReadPrices Prices for $pocOperatorClean")
+        printLog("ReadPrices for $pocOperatorClean")
         val JSONFileName = "$country-$pocOperatorClean-$currentType.json"
         var chargeCards: List<ChargeCards> = listOf()
         var forceInitialDownload = forceDownload
