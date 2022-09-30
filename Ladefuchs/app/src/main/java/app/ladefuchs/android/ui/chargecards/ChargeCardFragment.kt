@@ -1,7 +1,7 @@
 package app.ladefuchs.android.ui.chargecards
 
+import android.app.AlertDialog
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
@@ -160,6 +160,26 @@ class ChargeCardFragment : Fragment() {
         if (onboarding) {
             onboarding()
         }
+
+        //check if user previously selected cards
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        var selectedCards = sharedPreferences.getString("selectedChargeCards",null)
+        printLog("Selected Cards: $selectedCards")
+        if (selectedCards != null) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Abschied an den Tariffilter")
+            builder.setMessage("Lieber Fuchs, liebe Füchsin,\n" +
+                    "wir wissen, dass du bisher den Filter für eigene Tarife benutzt hast. \n" +
+                    "Der Ladefuchs soll dir aber immer alle günstigen Preise zeigen, damit du die Möglichkeit hast, dir auch den neuen heissen Tarif zu holen, welcher deine Ladung noch etwas günstiger macht.\n" +
+                    "Daher gibt es genau diesen Filter ab sofort nicht mehr.\n" +
+                    "Sei stark, ab hier wird es nur günstiger.")
+            builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+            }
+            builder.show()
+            val preferences: SharedPreferences.Editor? = sharedPreferences.edit()
+            preferences?.remove("selectedChargeCards")?.commit()
+        }
+
     }
 
     private fun refreshCardView() {
