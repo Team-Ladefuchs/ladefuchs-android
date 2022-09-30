@@ -183,10 +183,4 @@ class AboutFragment : Fragment() {
 
     }
 
-    fun toggleSettings () {
-
-    }
-
-
-
 }
