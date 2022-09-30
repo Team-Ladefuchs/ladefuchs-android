@@ -172,7 +172,7 @@ class ChargeCardFragment : Fragment() {
                     "wir wissen, dass du bisher den Filter für eigene Tarife benutzt hast. \n" +
                     "Der Ladefuchs soll dir aber immer alle günstigen Preise zeigen, damit du die Möglichkeit hast, dir auch den neuen heissen Tarif zu holen, welcher deine Ladung noch etwas günstiger macht.\n" +
                     "Daher gibt es genau diesen Filter ab sofort nicht mehr.\n" +
-                    "Sei stark, ab hier wird es nur günstiger.")
+                    "Sei stark, wir arbeiten an anderen Möglichkeiten der Personalisierung.")
             builder.setPositiveButton(android.R.string.yes) { dialog, which ->
             }
             builder.show()
