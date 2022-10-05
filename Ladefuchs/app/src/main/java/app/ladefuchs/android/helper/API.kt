@@ -3,6 +3,7 @@ package app.ladefuchs.android.helper
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.os.Debug
 import android.preference.PreferenceManager
 import android.provider.Settings
 import androidx.annotation.RequiresApi
@@ -56,12 +57,12 @@ class API(private var context: Context) {
 
     private fun isOffline(): Boolean {
         val wifiOn =
-            Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) == 1
+            Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) != 0
         if (wifiOn) {
             return false;
         }
 
-        val airplaneOn = Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) == 1
+        val airplaneOn = Settings.System.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
         if (airplaneOn){
             return true
         }
@@ -96,13 +97,15 @@ class API(private var context: Context) {
                             val result =
                                 Files.deleteIfExists(Paths.get(context.filesDir.toString() + "/" + JSONFileName))
                             if (result) {
-                                println("Deletion succeeded.")
+                                printLog("Deletion succeeded.")
                             } else {
-                                println("Deletion failed.")
+                                printLog("Deletion failed.")
                             }
                         } catch (e: IOException) {
-                            println("Deletion failed.")
-                            e.printStackTrace()
+                            printLog("Deletion failed.")
+                            if (BuildConfig.DEBUG){
+                                e.printStackTrace()
+                            }
                         }
 
                         storeFileInInternalStorage(
@@ -143,7 +146,7 @@ class API(private var context: Context) {
             operators = operatorsFile?.let { Klaxon().parseArray<Operator>(it) }!!
         } catch (e: Exception) {
             printLog("Could not read: $JSONFileName", "error")
-            printLog(e.toString())
+            printLog(e.toString(), "error")
         }
         if (operators == null) {
             operators = context.assets?.open(JSONFileName)?.let {
@@ -153,12 +156,8 @@ class API(private var context: Context) {
             }
         }
         if (operators != null) {
-            var operatorDisplayNames: List<String> = mutableListOf()
-            for (element in operators) {
-                operatorDisplayNames = operatorDisplayNames.plus(element.displayName)
-                printLog(element.displayName)
-            }
-            return operatorDisplayNames.sortedBy { it.lowercase() }
+            // operators com presorted from the API
+            return operators.map { element -> element.displayName }.sorted();
         }
         return listOf()
     }
@@ -166,21 +165,17 @@ class API(private var context: Context) {
     /**
      * This function downloads an image from the API and saves it in local storage
      */
-    fun downloadImageToInternalStorage(imageURL: String, imageFileName: String) {
+    fun downloadImageToInternalStorage(imageURL: URL) {
 
         if (isOffline()){
             printLog("Device is offline", "network")
             return
         }
+        var storagePath = getImagePath(imageURL, context)
+        printLog("Downloading image: ${imageURL.path}", "network")
 
-        val imageURL = URL(
-            Uri.parse(imageURL)
-                .toString()
-        )
-        printLog("Downloading image: $imageURL", "network")
-        val storagePath = File(context.filesDir, imageFileName)
         Thread {
-            printLog("Getting Image: $storagePath")
+            printLog("Getting Image Path: $storagePath")
             try {
                 val request = Request.Builder()
                     .url(imageURL)
@@ -262,8 +257,8 @@ class API(private var context: Context) {
                 printLog("Reloading chargeCards after Download")
                 chargeCards = JSONFile.let { Klaxon().parseArray<ChargeCards>(it) }!!
             } catch (e: Exception) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace()
+//                if (BuildConfig.DEBUG)
+//                    e.printStackTrace()
             }
         }
 
