@@ -227,7 +227,7 @@ fun fillCards(
             )
         }
 
-        var cardImagePath: File? = null;
+        var cardImagePath: File? = null
 
         if (!currentCard.image.isNullOrEmpty()){
             var cardUri = URL(currentCard.image)
@@ -259,13 +259,14 @@ fun fillCards(
 
             printLog("Card image file $cardImagePath")
             if (cardImageExists) {
-//                printLog("Setting " + cardImage.absolutePath.toString() + " as background for card: " + cardProviderIdentifier)
                 var cardImageDrawable: Drawable? = null
                 try {
                     cardImageDrawable =
                         Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
                 } catch (e: Exception) {
-                    //e.printStackTrace()
+                    if (BuildConfig.DEBUG){
+                        e.printStackTrace()
+                    }
                 }
 
                 if (cardImageDrawable != null) {
@@ -289,7 +290,6 @@ fun fillCards(
                 api.downloadImageToInternalStorage(
                     URL(currentCard.image)
                 )
-                //"card_" + currentCard.identifier + ".jpg"
                 cardsDownloaded = true
             }
             var cardText = currentCard.name

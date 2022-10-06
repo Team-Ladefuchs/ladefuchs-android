@@ -156,8 +156,8 @@ class API(private var context: Context) {
             }
         }
         if (operators != null) {
-            // operators com presorted from the API
-            return operators.map { element -> element.displayName }.sorted();
+            // operators are presorted from the API .
+            return operators.map { item -> item.displayName }.sortedBy { it.lowercase() }
         }
         return listOf()
     }
