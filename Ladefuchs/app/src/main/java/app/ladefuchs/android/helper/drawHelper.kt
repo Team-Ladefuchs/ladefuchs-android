@@ -18,6 +18,7 @@ import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
+import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -225,11 +226,17 @@ fun fillCards(
                 context.packageName
             )
         }
-        val cardImage =
-            File(context.filesDir.toString() + "/card_" + currentCard.identifier + ".jpg")
-        printLog("Card image file $cardImage")
 
-        if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImage.exists()) {
+        var cardImagePath: File? = null
+
+        if (!currentCard.image.isNullOrEmpty()){
+            var cardUri = URL(currentCard.image)
+            cardImagePath = getImagePath(cardUri, context)
+        }
+
+        val cardImageExists = cardImagePath != null  && cardImagePath.exists()
+
+        if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
             CardHolderView.removeView(imageView)
             val imageCardView = RoundedImageView(context)
             CardHolderView.addView(imageCardView)
@@ -249,23 +256,27 @@ fun fillCards(
             }
             imageCardView.mutateBackground(true)
 
-            if (cardImage.exists()) {
-                printLog("Setting " + cardImage.absolutePath.toString() + " as background for card: " + cardProviderIdentifier)
+
+            printLog("Card image file $cardImagePath")
+            if (cardImageExists) {
                 var cardImageDrawable: Drawable? = null
                 try {
                     cardImageDrawable =
-                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                        Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
                 } catch (e: Exception) {
-                    //e.printStackTrace()
+                    if (BuildConfig.DEBUG){
+                        e.printStackTrace()
+                    }
                 }
 
                 if (cardImageDrawable != null) {
                     imageCardView.background =
-                        Drawable.createFromPath(cardImage.absolutePath)!! as BitmapDrawable
+                        Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
                 }
             } else {
                 resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
             }
+
             imageCardView.isOval = false
             imageCardView.elevation = 25.0F
             imageCardView.outlineProvider = OutlineProvider(5,0)
@@ -277,8 +288,7 @@ fun fillCards(
         } else {
             if (!currentCard.image.isNullOrEmpty()) {
                 api.downloadImageToInternalStorage(
-                    currentCard.image,
-                    "card_" + currentCard.identifier + ".jpg"
+                    URL(currentCard.image)
                 )
                 cardsDownloaded = true
             }

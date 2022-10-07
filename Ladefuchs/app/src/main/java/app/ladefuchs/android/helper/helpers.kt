@@ -3,6 +3,7 @@ package app.ladefuchs.android.helper
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.net.Uri
 import android.preference.PreferenceManager
 import android.view.View
 import androidx.navigation.NavController
@@ -10,7 +11,9 @@ import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.beust.klaxon.Klaxon
+import java.io.File
 import java.io.InputStream
+import java.net.URL
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -118,7 +121,7 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
         provider = "",
         price = 0.0f,
         updated = System.currentTimeMillis() / 1000L,
-        image = "",
+        "",
         blockingFeeStart = 0,
         monthlyFee = 0f
     )
@@ -221,3 +224,7 @@ fun readCardMetadata(context: Context): List<CardMetaData>? {
     return cardMetadata
 }
 
+fun getImagePath(cardUri: URL, context: Context): File{
+    val cardChecksum = cardUri.path.substring(cardUri.path.lastIndexOf('/') + 1)
+    return File("${context.filesDir}/card_${cardChecksum}.jpg")
+}
