@@ -247,7 +247,7 @@ class ChargeCardFragment : Fragment() {
                     drawPromoBanner(
                         view,
                         "thg",
-                        "https://api?.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=3edae17e-40e3-4842-867b-44529e556b23"
+                        "https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=3edae17e-40e3-4842-867b-44529e556b23"
                     )
                 }
                 "twitter" -> {
