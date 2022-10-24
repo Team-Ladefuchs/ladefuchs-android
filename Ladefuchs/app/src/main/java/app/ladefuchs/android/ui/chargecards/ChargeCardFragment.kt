@@ -138,6 +138,7 @@ class ChargeCardFragment : Fragment() {
                 view,
                 resources
             )
+            printLog("Switched to CPO: $data")
             if (cardsNeedRefresh) {
                 refreshCardView()
             }

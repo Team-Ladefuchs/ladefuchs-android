@@ -229,7 +229,6 @@ class API(private var context: Context) {
                 try {
                     printLog("JSON file ${context.getFileStreamPath(JSONFileName)}")
                     chargeCards = JSONFile.let { Klaxon().parseArray<ChargeCards>(it) }!!
-                    printLog("carrrds ${chargeCards[0]}")
                 } catch (e: Exception) {
                     forceInitialDownload = true
                     printLog("Error reading prices from cache ${e.message}")

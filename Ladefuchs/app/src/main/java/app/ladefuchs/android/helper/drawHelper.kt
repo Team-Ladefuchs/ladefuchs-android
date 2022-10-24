@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
 import com.makeramen.roundedimageview.RoundedImageView
@@ -142,7 +143,7 @@ fun fillCards(
     resources: Resources,
     paintStroke: Boolean = false,
 ): Boolean {
-
+    printLog("Filling cards for $currentType")
     val cardMetadata = readCardMetadata(context)
     var cardsDownloaded = false
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
@@ -189,6 +190,7 @@ fun fillCards(
         // Creating a Holder for Card and Price, to lay them out next to each other
         val CardHolderView: LinearLayout = LinearLayout(context)
         chargeCardsColumn.addView(CardHolderView)
+        printLog("Creating CardHolderView for $currentType")
         CardHolderView.gravity = Gravity.CENTER_VERTICAL
         CardHolderView.orientation = LinearLayout.HORIZONTAL
 
@@ -257,7 +259,7 @@ fun fillCards(
             imageCardView.mutateBackground(true)
 
 
-            printLog("Card image file $cardImagePath")
+            //printLog("Card image file $cardImagePath")
             if (cardImageExists) {
                 var cardImageDrawable: Drawable? = null
                 try {
@@ -381,6 +383,7 @@ fun fillCards(
             i++
         }
     }
+    printLog("Cards populated for $currentType")
     return cardsDownloaded
 }
 
