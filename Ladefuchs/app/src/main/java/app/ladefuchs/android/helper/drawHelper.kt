@@ -190,7 +190,7 @@ fun fillCards(
         // Creating a Holder for Card and Price, to lay them out next to each other
         val CardHolderView: LinearLayout = LinearLayout(context)
         chargeCardsColumn.addView(CardHolderView)
-        printLog("Creating CardHolderView for $currentType")
+        // printLog("Creating CardHolderView for $currentType")
         CardHolderView.gravity = Gravity.CENTER_VERTICAL
         CardHolderView.orientation = LinearLayout.HORIZONTAL
 

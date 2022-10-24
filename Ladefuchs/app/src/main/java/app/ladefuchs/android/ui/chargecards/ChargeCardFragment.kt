@@ -110,6 +110,7 @@ class ChargeCardFragment : Fragment() {
         // add easterEggOnclickListener
         easterEgg(view)
         //initialize Price List
+        printLog("Triggering Refresh with $currentPoc")
         cardsNeedRefresh = getPrices(
             currentPoc,
             forceDownload = false,
@@ -119,7 +120,8 @@ class ChargeCardFragment : Fragment() {
             resources
         )
         if (cardsNeedRefresh) {
-            refreshCardView()
+            printLog("Triggering view Refresh @124")
+            refreshCardView(currentPoc)
         }
         // initialize picker
         val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
@@ -130,6 +132,7 @@ class ChargeCardFragment : Fragment() {
         // Loading the pocList into the Picker Library
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
+            printLog("CPO selected: $data")
             cardsNeedRefresh = getPrices(
                 data.toString().lowercase(),
                 forceDownload = false,
@@ -138,9 +141,9 @@ class ChargeCardFragment : Fragment() {
                 view,
                 resources
             )
-            printLog("Switched to CPO: $data")
+            printLog("Picker Switched to CPO: $data")
             if (cardsNeedRefresh) {
-                refreshCardView()
+                refreshCardView(currentPoc)
             }
             currentPoc = data.toString().lowercase()
         }
@@ -154,6 +157,7 @@ class ChargeCardFragment : Fragment() {
 
         // RefreshListener
         swipetorefresh.setOnRefreshListener {
+            printLog("Swipe to Refresh with $currentPoc")
             getPrices(currentPoc, forceDownload = true, requireContext(), api!!, view, resources)
             swipetorefresh.isRefreshing = false
         }
@@ -183,10 +187,10 @@ class ChargeCardFragment : Fragment() {
 
     }
 
-    private fun refreshCardView() {
-        printLog("Refreshing Charge Card View")
+    private fun refreshCardView(CPOSelected: String) {
+        printLog("Refreshing Charge Card View with $CPOSelected")
         view?.let {
-            getPrices(currentPoc, false, requireContext(), api!!,
+            getPrices(CPOSelected, false, requireContext(), api!!,
                 it, resources, true)
         }
         cardsNeedRefresh = false

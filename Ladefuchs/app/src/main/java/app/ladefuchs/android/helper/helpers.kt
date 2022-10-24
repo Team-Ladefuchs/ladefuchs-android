@@ -205,6 +205,7 @@ fun getPrices(
         skipDownload
     )?.sortedBy { it.price }
     if (chargeCardsAC != null || chargeCardsDC != null) {
+        printLog("Re-Filling Cards for $pocOperator")
         val maxListLength = maxOf(chargeCardsAC!!.size, chargeCardsDC!!.size)
         imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
         imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
