@@ -74,6 +74,10 @@ class AboutFragment : Fragment() {
             findNavController().navigate(app.ladefuchs.android.R.id.action_navigation_about_to_imprint)
         }
 
+        view.findViewById<Button>(app.ladefuchs.android.R.id.ack_button).setOnClickListener {
+            findNavController().navigate(app.ladefuchs.android.R.id.action_navigation_about_to_acknowledgement)
+        }
+
         //Hiding settings and making them collapsible
         val settingsFragmentView = view.findViewById<View>(R.id.settingsFragment)
         val settingsDisclosureTriangle = view.findViewById<ImageView>(R.id.disclosure_triangle)

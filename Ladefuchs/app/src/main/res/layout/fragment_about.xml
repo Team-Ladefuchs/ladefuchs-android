@@ -720,10 +720,29 @@
         android:textAllCaps="false"
         android:textColor="@color/TextColorDisabled"
         android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@id/version_info"
+        app:layout_constraintBottom_toTopOf="@id/ack_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/handcrafted" />
+
+    <Button
+        android:id="@+id/ack_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/UIColorDark"
+        android:fontFamily="@font/roboto"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingBottom="5dp"
+        android:text="@string/acknowledgement_header"
+        android:textAllCaps="false"
+        android:textColor="@color/TextColorDisabled"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@id/version_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imprint_button" />
 
     <TextView
         android:id="@+id/version_info"
