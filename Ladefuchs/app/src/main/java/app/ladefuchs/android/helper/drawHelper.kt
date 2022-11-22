@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
@@ -14,9 +15,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.ui.chargecards.ChargeCardDetail
 import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
 import java.net.URL
@@ -24,6 +28,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import kotlin.math.ceil
+
 
 private var cardWidth: Int = getScreenWidth() / 5
 private var cardHeight: Int = 176 * cardWidth / 280
@@ -190,7 +195,7 @@ fun fillCards(
         // Creating a Holder for Card and Price, to lay them out next to each other
         val CardHolderView: LinearLayout = LinearLayout(context)
         chargeCardsColumn.addView(CardHolderView)
-        // printLog("Creating CardHolderView for $currentType")
+        printLog("Creating CardHolderView for $currentType")
         CardHolderView.gravity = Gravity.CENTER_VERTICAL
         CardHolderView.orientation = LinearLayout.HORIZONTAL
 
@@ -206,6 +211,12 @@ fun fillCards(
                 context.packageName
             )
         )
+
+        val bundle = bundleOf("cardData" to currentCard)
+
+        CardHolderView.setOnClickListener { view ->
+            view.findNavController().navigate(R.id.action_card_to_detail, bundle)
+        }
 
         // Creating a View that will Hold the card image as a Background
         val imageView: ImageView = ImageView(context)

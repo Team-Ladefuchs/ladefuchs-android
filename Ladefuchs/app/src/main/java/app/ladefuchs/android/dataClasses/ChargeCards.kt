@@ -1,5 +1,9 @@
 package app.ladefuchs.android.dataClasses
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class ChargeCards(
     val identifier: String,
     val name: String,
@@ -11,4 +15,4 @@ data class ChargeCards(
     val blockingFeeStart:Int,
     val monthlyFee:Float,
     val note:String? = null
-)
+) : Parcelable
