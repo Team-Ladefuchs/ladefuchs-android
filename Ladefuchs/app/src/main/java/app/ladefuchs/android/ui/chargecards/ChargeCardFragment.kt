@@ -296,7 +296,7 @@ class ChargeCardFragment : Fragment() {
         val bannerParams = bannerButton.layoutParams
         bannerParams.width = viewWidth
         bannerParams.height = viewHeight
-        bannerButton.scaleType = ScaleType.FIT_XY
+        bannerButton.scaleType = ScaleType.CENTER
         bannerButton.setBackgroundColor(Color.parseColor("#00FFFFFF"))
         bannerButton.layoutParams = bannerParams
 
