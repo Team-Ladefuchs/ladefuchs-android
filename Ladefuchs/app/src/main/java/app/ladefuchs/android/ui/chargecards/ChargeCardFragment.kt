@@ -3,6 +3,7 @@ package app.ladefuchs.android.ui.chargecards
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -276,11 +277,17 @@ class ChargeCardFragment : Fragment() {
         val bannerView = view.findViewById(R.id.bannerView) as LinearLayout
         bannerView.visibility = VISIBLE
         val bannerButton = bannerView.bannerImage
+        val bitmapImage = Drawable.createFromPath(
+            Paths.get(requireContext().filesDir.toString() + "/" + banner.filename)
+                .toString()
+        )!! as BitmapDrawable
+        val drawableImage = BitmapDrawable(
+            resources,
+            Bitmap.createBitmap(bitmapImage.bitmap, 0, 0, bitmapImage.bitmap.width, viewHeight)
+        )
+
         bannerButton.setImageDrawable(
-            Drawable.createFromPath(
-                Paths.get(requireContext().filesDir.toString() + "/" + banner.filename)
-                    .toString()
-            )!! as BitmapDrawable
+            drawableImage
         )
 
         bannerButton.requestLayout()
