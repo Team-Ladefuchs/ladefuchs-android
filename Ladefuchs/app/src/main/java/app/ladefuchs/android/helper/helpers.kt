@@ -190,26 +190,25 @@ fun getPrices(
 ): Boolean {
     //Load Prices JSON from File
     printLog("Getting prices for $pocOperator")
-    var imageDownloadedAC = false
-    var imageDownloadedDC = false
-    val chargeCardsAC = api!!.readPrices(
+    val imageDownloadedAC: Boolean
+    val imageDownloadedDC: Boolean
+    val chargeCardsAC = api.readPrices(
         pocOperator,
         "ac",
         forceDownload,
         skipDownload
-    )?.sortedBy { it.price }
-    val chargeCardsDC = api!!.readPrices(
+    ).sortedBy { it.price }
+    val chargeCardsDC = api.readPrices(
         pocOperator,
         "dc",
         forceDownload,
         skipDownload
-    )?.sortedBy { it.price }
-    if (chargeCardsAC != null || chargeCardsDC != null) {
-        printLog("Re-Filling Cards for $pocOperator")
-        val maxListLength = maxOf(chargeCardsAC!!.size, chargeCardsDC!!.size)
-        imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
-        imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
-    }
+    ).sortedBy { it.price }
+    printLog("Re-Filling Cards for $pocOperator")
+    val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
+    imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
+    imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
+
 
     return imageDownloadedAC || imageDownloadedDC
 }
@@ -225,7 +224,7 @@ fun readCardMetadata(context: Context): List<CardMetaData>? {
     return cardMetadata
 }
 
-fun getImagePath(cardUri: URL, context: Context): File{
+fun getImagePath(cardUri: URL, context: Context): File {
     val cardChecksum = cardUri.path.substring(cardUri.path.lastIndexOf('/') + 1)
     return File("${context.filesDir}/card_${cardChecksum}.jpg")
 }
