@@ -266,7 +266,7 @@ class ChargeCardFragment : Fragment() {
         banner: Banner
     ) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 280 * viewWidth / 1170
+        val viewHeight = 280 * viewWidth / 1100
         val phraseContainer = view.findViewById(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams
@@ -283,7 +283,7 @@ class ChargeCardFragment : Fragment() {
         )!! as BitmapDrawable
         val drawableImage = BitmapDrawable(
             resources,
-            Bitmap.createBitmap(bitmapImage.bitmap, 0, 0, bitmapImage.bitmap.width, viewHeight)
+            Bitmap.createBitmap(bitmapImage.bitmap, 70, 0, bitmapImage.bitmap.width-130, viewHeight+55)
         )
 
         bannerButton.setImageDrawable(
@@ -296,7 +296,7 @@ class ChargeCardFragment : Fragment() {
         val bannerParams = bannerButton.layoutParams
         bannerParams.width = viewWidth
         bannerParams.height = viewHeight
-        bannerButton.scaleType = ScaleType.CENTER
+        bannerButton.scaleType = ScaleType.CENTER_INSIDE
         bannerButton.setBackgroundColor(Color.parseColor("#00FFFFFF"))
         bannerButton.layoutParams = bannerParams
 
