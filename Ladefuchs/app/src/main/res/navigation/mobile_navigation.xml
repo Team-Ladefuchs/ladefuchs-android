@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_navigation_about_to_imprint"
             app:destination="@id/imprint" />
+        <action
+            android:id="@+id/action_navigation_about_to_acknowledgement"
+            app:destination="@id/acknowledgement" />
     </fragment>
 
     <fragment
@@ -59,6 +62,14 @@
         android:label="Imprint" >
         <action
             android:id="@+id/action_imprint_to_navigation_about"
+            app:destination="@id/navigation_about" />
+    </fragment>
+    <fragment
+        android:id="@+id/acknowledgement"
+        android:name="app.ladefuchs.android.ui.acknowledgement.Acknowledgement"
+        android:label="Acknowledgement">
+        <action
+            android:id="@+id/action_acknowledgement_to_navigation_about"
             app:destination="@id/navigation_about" />
     </fragment>
 

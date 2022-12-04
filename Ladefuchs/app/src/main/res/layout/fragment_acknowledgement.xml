@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/PrimaryBackground"
+    tools:context=".Acknowledgement">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/ladefuchs_logo"
+            android:layout_width="84dp"
+            android:layout_height="78dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/ladefuchs_logo_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_ladefuchs_logo" />
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="32dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:background="@color/PrimaryBackground"
+            app:srcCompat="@drawable/abc_vector_test"
+            android:tint="@color/TextColorDark"
+            app:layout_constraintBottom_toTopOf="@+id/acknowledgement_header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/acknowledgement_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/TableColorDark"
+            android:fontFamily="sans-serif-black"
+            android:text="@string/acknowledgement_header"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/acknowledgement_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo" />
+
+        <TextView
+            android:id="@+id/acknowledgement_text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/acknowledgement_text"
+            android:textAlignment="textStart"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/acknowledgement_header" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
