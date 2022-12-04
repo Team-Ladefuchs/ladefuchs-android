@@ -24,22 +24,6 @@ class AboutFragment : Fragment() {
 
     private lateinit var aboutViewModel: AboutViewModel
 
-    private fun getViewsByTag(root: ViewGroup, tag: String): ArrayList<View>? {
-        val views = ArrayList<View>()
-        val childCount = root.childCount
-        for (i in 0 until childCount) {
-            val child = root.getChildAt(i)
-            if (child is ViewGroup) {
-                views.addAll(getViewsByTag(child, tag)!!)
-            }
-            val tagObj = child.tag
-            if (tagObj != null && tagObj == tag) {
-                views.add(child)
-            }
-        }
-        return views
-    }
-
     private fun TextView.removeLinksUnderline() {
         val spannable = SpannableString(text)
         for (u in spannable.getSpans(0, spannable.length, URLSpan::class.java)) {
@@ -59,10 +43,9 @@ class AboutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         aboutViewModel =
-                ViewModelProviders.of(this).get(AboutViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_about, container, false)
+            ViewModelProviders.of(this).get(AboutViewModel::class.java)
 
-        return root
+        return inflater.inflate(R.layout.fragment_about, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -70,8 +53,8 @@ class AboutFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_about_to_navigation_chargecards)
         }
 
-        view.findViewById<Button>(app.ladefuchs.android.R.id.imprint_button).setOnClickListener {
-            findNavController().navigate(app.ladefuchs.android.R.id.action_navigation_about_to_imprint)
+        view.findViewById<Button>(R.id.imprint_button).setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_about_to_imprint)
         }
 
         //Hiding settings and making them collapsible
@@ -101,8 +84,8 @@ class AboutFragment : Fragment() {
 
         val versionName = requireContext().packageManager
             .getPackageInfo(requireContext().packageName, 0).versionName
-        val VersionHolder: TextView = view.findViewById<TextView>(R.id.version_info)
-        VersionHolder.text = "Version " + versionName.toString()
+        val VersionHolder: TextView = view.findViewById(R.id.version_info)
+        VersionHolder.text = "Version $versionName"
 
 
         // Making Links in Textviews Clickable... well... really...
@@ -122,7 +105,7 @@ class AboutFragment : Fragment() {
         flowinhoSL2.movementMethod = LinkMovementMethod.getInstance()
         flowinhoSL2.removeLinksUnderline()
         val flowinhoSL3 = view.findViewById(R.id.flowinhoSL3) as TextView
-        flowinhoSL2.removeLinksUnderline()
+        flowinhoSL3.removeLinksUnderline()
 
         val thorstenSL2 = view.findViewById(R.id.thorstenSL2) as TextView
         thorstenSL2.movementMethod = LinkMovementMethod.getInstance()

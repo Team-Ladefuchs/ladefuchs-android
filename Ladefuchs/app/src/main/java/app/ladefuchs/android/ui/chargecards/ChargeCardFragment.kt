@@ -3,7 +3,10 @@ package app.ladefuchs.android.ui.chargecards
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,10 +26,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.R
 import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
+import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
 import kotlinx.android.synthetic.main.fragment_chargecards.*
 import kotlinx.android.synthetic.main.fragment_chargecards.view.*
+import java.nio.file.Paths
 
 //import com.tylerthrailkill.helpers.prettyprint
 
@@ -34,27 +39,24 @@ class ChargeCardFragment : Fragment() {
     private var useBetaAPI: Boolean = false
     private var onboarding: Boolean = true
     private var showBanner: Boolean = true
-    private var promoProbabilities: Array<String> = arrayOf(
-        "quote",
-        "twitter", "twitter",
-        "shop", "shop", "shop",
-        "thg", "thg", "thg", "thg", "thg",
-    )
     private var pocOperatorList: List<String> = listOf()
     private var currentPoc: String = ""
     private var api: API? = null
     private var prefs: SharedPreferences? = null
     private var cardsNeedRefresh: Boolean = false
+
     object StaticLayoutCache {
         private const val MAX_SIZE = 50 // Arbitrary max number of cached items
         private val cache = lruCache<String, StaticLayout>(MAX_SIZE)
         operator fun set(key: String, staticLayout: StaticLayout) {
             cache.put(key, staticLayout)
         }
+
         operator fun get(key: String): StaticLayout? {
             return cache[key]
         }
     }
+
     /**
      * This is the initialisation function that will be called on creation
      */
@@ -78,7 +80,7 @@ class ChargeCardFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        var nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
+        val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
         // check whether onboarding should be shown
         if (onboarding) {
             // deactivate the banner while in onboarding
@@ -168,21 +170,23 @@ class ChargeCardFragment : Fragment() {
 
         //check if user previously selected cards
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        var selectedCards = sharedPreferences.getString("selectedChargeCards",null)
+        val selectedCards = sharedPreferences.getString("selectedChargeCards", null)
         printLog("Selected Cards: $selectedCards")
         if (selectedCards != null) {
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Abschied an den Tariffilter")
-            builder.setMessage("Lieber Fuchs, liebe Füchsin,\n" +
-                    "wir wissen, dass du bisher den Filter für eigene Tarife benutzt hast. \n" +
-                    "Der Ladefuchs soll dir aber immer alle günstigen Preise zeigen, damit du die Möglichkeit hast, dir auch den neuen heissen Tarif zu holen, welcher deine Ladung noch etwas günstiger macht.\n" +
-                    "Daher gibt es genau diesen Filter ab sofort nicht mehr.\n" +
-                    "Sei stark, wir arbeiten an anderen Möglichkeiten der Personalisierung.")
-            builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+            builder.setMessage(
+                "Lieber Fuchs, liebe Füchsin,\n" +
+                        "wir wissen, dass du bisher den Filter für eigene Tarife benutzt hast. \n" +
+                        "Der Ladefuchs soll dir aber immer alle günstigen Preise zeigen, damit du die Möglichkeit hast, dir auch den neuen heissen Tarif zu holen, welcher deine Ladung noch etwas günstiger macht.\n" +
+                        "Daher gibt es genau diesen Filter ab sofort nicht mehr.\n" +
+                        "Sei stark, wir arbeiten an anderen Möglichkeiten der Personalisierung."
+            )
+            builder.setPositiveButton(android.R.string.ok) { dialog, which ->
             }
             builder.show()
             val preferences: SharedPreferences.Editor? = sharedPreferences.edit()
-            preferences?.remove("selectedChargeCards")?.commit()
+            preferences?.remove("selectedChargeCards")?.apply()
         }
 
     }
@@ -190,8 +194,10 @@ class ChargeCardFragment : Fragment() {
     private fun refreshCardView(CPOSelected: String) {
         printLog("Refreshing Charge Card View with $CPOSelected")
         view?.let {
-            getPrices(CPOSelected, false, requireContext(), api!!,
-                it, resources, true)
+            getPrices(
+                CPOSelected, false, requireContext(), api!!,
+                it, resources, true
+            )
         }
         cardsNeedRefresh = false
     }
@@ -235,41 +241,19 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
-        val phraseView = view.findViewById<TextView>(R.id.phraseView) as TextView
-        val phrases =
-            requireContext().applicationContext.assets?.open("phrases.txt")?.bufferedReader()
-                .use { it?.readLines() }
-        var currentPhrase: String = ""
         if (showBanner) {
-            val curBanner = promoProbabilities.random()
-            when (curBanner) {
-                "shop" -> {
-                    printLog("Loading Shop Banner")
-                    drawPromoBanner(view, "shop", "https://shop.ladefuchs.app")
-                }
-                "thg" -> {
-                    printLog("Loading THG Banner")
-                    drawPromoBanner(
-                        view,
-                        "thg",
-                        "https://api.ladefuchs.app/affiliate?url=https%3A%2F%2Fgeld-fuer-eauto.de%2Fref%2FLadefuchs&banner=3edae17e-40e3-4842-867b-44529e556b23"
-                    )
-                }
-                "twitter" -> {
-                    printLog("Loading Twitter Banner")
-                    drawPromoBanner(view, "twitter", "https://twitter.com/ladefuchs")
-                }
-                else -> {
-                    printLog("Falling back on your mom")
-                    currentPhrase = phrases?.random() ?: ""
-                    phraseView.text = currentPhrase
-
-                }
-            }
+            val banner: Banner = api!!.retrieveBanners()
+            drawPromoBanner(
+                view,
+                banner
+            )
         } else {
-            printLog("Falling back on your mom")
-            currentPhrase = phrases?.random() ?: ""
-            phraseView.text = currentPhrase
+            val phraseView = view.findViewById(R.id.phraseView) as TextView
+            val phrases =
+                requireContext().applicationContext.assets?.open("phrases.txt")?.bufferedReader()
+                    .use { it?.readLines() }
+            printLog("Falling back on your mom", "debug")
+            phraseView.text = phrases?.random() ?: ""
         }
     }
 
@@ -277,33 +261,42 @@ class ChargeCardFragment : Fragment() {
      * This function draws the banner content
      */
     @RequiresApi(Build.VERSION_CODES.R)
-    private fun drawPromoBanner(view: View, promoType: String, promoURL: String) {
+    private fun drawPromoBanner(
+        view: View,
+        banner: Banner
+    ) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 280 * viewWidth!! / 1170
-        val phraseContainer = view.findViewById<TextView>(R.id.phraseContainer) as LinearLayout
+        val viewHeight = 280 * viewWidth / 1100
+        val phraseContainer = view.findViewById(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams
         phraseContainerParams.height = viewHeight - 35
         phraseContainer.setBackgroundColor(Color.parseColor("#FFCEC0AC"))
         phraseContainer.layoutParams = phraseContainerParams
 
-        val bannerView = view.findViewById<TextView>(R.id.bannerView) as LinearLayout
+        val bannerView = view.findViewById(R.id.bannerView) as LinearLayout
         bannerView.visibility = VISIBLE
         val bannerButton = bannerView.bannerImage
-
-        bannerButton.setImageResource(
-            resources.getIdentifier(
-                "banner_$promoType", "drawable",
-                context?.packageName
-            )
+        val bitmapImage = Drawable.createFromPath(
+            Paths.get(requireContext().filesDir.toString() + "/" + banner.filename)
+                .toString()
+        )!! as BitmapDrawable
+        val drawableImage = BitmapDrawable(
+            resources,
+            Bitmap.createBitmap(bitmapImage.bitmap, 70, 0, bitmapImage.bitmap.width-130, viewHeight+55)
         )
+
+        bannerButton.setImageDrawable(
+            drawableImage
+        )
+
         bannerButton.requestLayout()
         bannerView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
-        val buttonURL = Uri.parse(promoURL)
+        val buttonURL = Uri.parse(banner.link)
         val bannerParams = bannerButton.layoutParams
         bannerParams.width = viewWidth
         bannerParams.height = viewHeight
-        bannerButton.scaleType = ScaleType.FIT_XY
+        bannerButton.scaleType = ScaleType.CENTER_INSIDE
         bannerButton.setBackgroundColor(Color.parseColor("#00FFFFFF"))
         bannerButton.layoutParams = bannerParams
 
@@ -319,7 +312,7 @@ class ChargeCardFragment : Fragment() {
 
     private fun onboarding(step: Int = 1) {
         phraseView.text = getString(R.string.onboarding_phrase)
-        var curOverlay: ConstraintLayout? = null;
+        var curOverlay: ConstraintLayout? = null
         when (step) {
             1 -> {
                 this.view?.findViewById<ConstraintLayout>(R.id.onboarding_1)

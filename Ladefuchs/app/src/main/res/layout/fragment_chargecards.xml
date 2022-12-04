@@ -231,7 +231,7 @@
     <com.aigestudio.wheelpicker.WheelPicker
         android:id="@+id/pocSelector"
         android:layout_width="0dp"
-        android:layout_height="125dp"
+        android:layout_height="150dp"
         android:background="@drawable/border_light_bg_left"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
