@@ -27,7 +27,7 @@
         android:layout_marginStart="8dp"
         android:background="@color/PrimaryBackground"
         app:srcCompat="@drawable/abc_vector_test"
-        android:tint="@color/TextColorDark"
+        app:tint="@color/TextColorDark"
         app:layout_constraintBottom_toTopOf="@+id/webView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

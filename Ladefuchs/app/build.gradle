@@ -41,6 +41,8 @@ android {
         jvmTarget = '1.8'
     }
     repositories {
+        //noinspection JcenterRepositoryObsolete This is needed for the wheelpicker and klaxon
+        jcenter()
         mavenCentral()
         maven { url 'https://jitpack.io' }
     }

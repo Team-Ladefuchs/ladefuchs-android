@@ -26,7 +26,7 @@
         android:layout_marginStart="8dp"
         android:background="@color/PrimaryBackground"
         android:contentDescription="@string/zurueck"
-        android:tint="@color/TextColorDark"
+        app:tint="@color/TextColorDark"
         app:layout_constraintBottom_toTopOf="@+id/einstellungen"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
