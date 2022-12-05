@@ -1,7 +1,9 @@
 package app.ladefuchs.android.ui.about
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.TextPaint
@@ -15,7 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import app.ladefuchs.android.R
 
@@ -43,10 +45,13 @@ class AboutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         aboutViewModel =
-            ViewModelProviders.of(this).get(AboutViewModel::class.java)
+            ViewModelProvider(this).get(AboutViewModel::class.java)
 
         return inflater.inflate(R.layout.fragment_about, container, false)
     }
+
+    // This is needed as long as we support below version 33
+    @Suppress("DEPRECATION")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         view.findViewById<ImageView>(R.id.back_button).setOnClickListener {
@@ -57,8 +62,8 @@ class AboutFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_about_to_imprint)
         }
 
-        view.findViewById<Button>(app.ladefuchs.android.R.id.ack_button).setOnClickListener {
-            findNavController().navigate(app.ladefuchs.android.R.id.action_navigation_about_to_acknowledgement)
+        view.findViewById<Button>(R.id.ack_button).setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_about_to_acknowledgement)
         }
 
         //Hiding settings and making them collapsible
@@ -67,7 +72,7 @@ class AboutFragment : Fragment() {
         view.findViewById<LinearLayout>(R.id.einstellungen).removeView(settingsFragmentView)
 
         view.findViewById<TextView>(R.id.einstellungenHeaderText).setOnClickListener {
-            if(view.findViewById<View>(R.id.settingsFragment) != null) {
+            if (view.findViewById<View>(R.id.settingsFragment) != null) {
                 view.findViewById<LinearLayout>(R.id.einstellungen).removeView(settingsFragmentView)
                 settingsDisclosureTriangle.rotation = 0F
             } else {
@@ -77,7 +82,7 @@ class AboutFragment : Fragment() {
         }
 
         view.findViewById<ImageView>(R.id.disclosure_triangle).setOnClickListener {
-            if(view.findViewById<View>(R.id.settingsFragment) != null) {
+            if (view.findViewById<View>(R.id.settingsFragment) != null) {
                 view.findViewById<LinearLayout>(R.id.einstellungen).removeView(settingsFragmentView)
                 settingsDisclosureTriangle.rotation = 0F
             } else {
@@ -86,10 +91,19 @@ class AboutFragment : Fragment() {
             }
         }
 
-        val versionName = requireContext().packageManager
-            .getPackageInfo(requireContext().packageName, 0).versionName
-        val VersionHolder: TextView = view.findViewById(R.id.version_info)
-        VersionHolder.text = "Version $versionName"
+        val versionName: String
+        versionName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().packageManager
+                .getPackageInfo(
+                    requireContext().packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                ).versionName
+        } else {
+            requireContext().packageManager
+                .getPackageInfo(requireContext().packageName, 0).versionName
+        }
+        val versionHolder: TextView = view.findViewById(R.id.version_info)
+        versionHolder.text = "Version $versionName"
 
 
         // Making Links in Textviews Clickable... well... really...
