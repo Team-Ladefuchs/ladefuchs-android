@@ -31,6 +31,7 @@ import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
 import kotlinx.android.synthetic.main.fragment_chargecards.*
 import kotlinx.android.synthetic.main.fragment_chargecards.view.*
+import java.io.File
 import java.nio.file.Paths
 
 //import com.tylerthrailkill.helpers.prettyprint
@@ -243,18 +244,20 @@ class ChargeCardFragment : Fragment() {
     private fun retrieveFooterContent(view: View) {
         if (showBanner) {
             val banner: Banner = api!!.retrieveBanners()
-            drawPromoBanner(
-                view,
-                banner
-            )
-        } else {
-            val phraseView = view.findViewById(R.id.phraseView) as TextView
-            val phrases =
-                requireContext().applicationContext.assets?.open("phrases.txt")?.bufferedReader()
-                    .use { it?.readLines() }
-            printLog("Falling back on your mom", "debug")
-            phraseView.text = phrases?.random() ?: ""
+            if (File("${requireContext().filesDir}/${banner.filename}").exists()) {
+                drawPromoBanner(
+                    view,
+                    banner
+                )
+                return
+            }
         }
+        val phrases =
+            requireContext().applicationContext.assets?.open("phrases.txt")?.bufferedReader()
+                .use { it?.readLines() }
+        printLog("Falling back on your mom", "debug")
+        phraseView.text = phrases?.random() ?: ""
+
     }
 
     /**
@@ -283,7 +286,13 @@ class ChargeCardFragment : Fragment() {
         )!! as BitmapDrawable
         val drawableImage = BitmapDrawable(
             resources,
-            Bitmap.createBitmap(bitmapImage.bitmap, 70, 0, bitmapImage.bitmap.width-130, viewHeight+55)
+            Bitmap.createBitmap(
+                bitmapImage.bitmap,
+                70,
+                0,
+                bitmapImage.bitmap.width - 130,
+                viewHeight + 55
+            )
         )
 
         bannerButton.setImageDrawable(
