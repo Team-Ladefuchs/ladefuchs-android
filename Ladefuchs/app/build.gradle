@@ -46,6 +46,7 @@ android {
         mavenCentral()
         maven { url 'https://jitpack.io' }
     }
+    namespace 'app.ladefuchs.android'
 }
 
 dependencies {
