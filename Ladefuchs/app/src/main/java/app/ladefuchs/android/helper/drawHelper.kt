@@ -2,24 +2,26 @@ package app.ladefuchs.android.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import androidx.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
-import androidx.navigation.findNavController
+import androidx.core.text.HtmlCompat
+import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
-import app.ladefuchs.android.ui.chargecards.ChargeCardDetail
 import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
 import java.net.URL
@@ -27,6 +29,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 
 private var cardWidth: Int = getScreenWidth() / 5
@@ -210,10 +213,44 @@ fun fillCards(
             )
         )
 
-        val bundle = bundleOf("cardData" to currentCard)
-
+        // This function provides the popup window with the card metadata
         CardHolderView.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_card_to_detail, bundle)
+            // inflate the layout of the popup window
+            val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView: View = inflater.inflate(R.layout.card_detail_dialog, null)
+
+            // create the popup window
+            val width = view.context.resources.displayMetrics.widthPixels * 0.90
+            val height = view.context.resources.displayMetrics.heightPixels * 0.90
+            val focusable = true // lets taps outside the popup also dismiss it
+            val popupWindow =
+                PopupWindow(popupView, width.roundToInt(), height.roundToInt(), focusable)
+
+            // show the popup window
+            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+            // set onClick Listeners for backButtons
+            popupView.findViewById<ImageButton>(R.id.back_button).setOnClickListener {
+                popupWindow.dismiss()
+            }
+
+            popupView.findViewById<TextView>(R.id.button_ok).setOnClickListener {
+                popupWindow.dismiss()
+            }
+
+            popupView.findViewById<TextView>(R.id.detail_header).text = currentCard.name
+            val textView = popupView.findViewById<TextView>(R.id.textView2)
+            var textViewText =
+                """
+                Provider: ${currentCard.provider}
+                Preis pro kWh: ${String.format("%.2f", currentCard.price)}  
+                ${HtmlCompat.fromHtml("Link zur Karte: ${currentCard.url}", HtmlCompat.FROM_HTML_MODE_COMPACT)}
+                """
+            if (currentCard.blockingFeeStart != 0)
+                textViewText += "Start der Blockiergebühr nach ${currentCard.blockingFeeStart} Minuten"
+            if (currentCard.monthlyFee != 0.0f)
+                textViewText += "Monatliche Gebühr:${String.format(" % .2f", currentCard.monthlyFee)}"
+            textView.text = textViewText
         }
 
         // Creating a View that will Hold the card image as a Background
@@ -240,12 +277,12 @@ fun fillCards(
 
         var cardImagePath: File? = null
 
-        if (!currentCard.image.isNullOrEmpty()){
+        if (!currentCard.image.isNullOrEmpty()) {
             val cardUri = URL(currentCard.image)
             cardImagePath = getImagePath(cardUri, context)
         }
 
-        val cardImageExists = cardImagePath != null  && cardImagePath.exists()
+        val cardImageExists = cardImagePath != null && cardImagePath.exists()
 
         if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
             CardHolderView.removeView(imageView)
@@ -275,7 +312,7 @@ fun fillCards(
                     cardImageDrawable =
                         Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
                 } catch (e: Exception) {
-                    if (BuildConfig.DEBUG){
+                    if (BuildConfig.DEBUG) {
                         e.printStackTrace()
                     }
                 }
@@ -290,7 +327,7 @@ fun fillCards(
 
             imageCardView.isOval = false
             imageCardView.elevation = 25.0F
-            imageCardView.outlineProvider = OutlineProvider(5,0)
+            imageCardView.outlineProvider = OutlineProvider(5, 0)
 
             imageCardView.tileModeX = Shader.TileMode.CLAMP
             imageCardView.tileModeY = Shader.TileMode.CLAMP
@@ -317,7 +354,7 @@ fun fillCards(
             )
             imageView.background = BitmapDrawable(resources, cardBitmap)
             imageView.elevation = 30.0F
-            imageView.outlineProvider = OutlineProvider(10,10)
+            imageView.outlineProvider = OutlineProvider(10, 10)
             (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
                 cardMarginLeft,
                 cardMarginTop,
