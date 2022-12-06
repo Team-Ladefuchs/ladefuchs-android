@@ -1,6 +1,7 @@
 package app.ladefuchs.android.ui.chargecards
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import androidx.fragment.app.Fragment
@@ -29,8 +30,13 @@ class ChargeCardDetail : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val data = requireArguments().getParcelable<ChargeCards>("cardData")!!
+    ): View {
+         val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+             requireArguments().getParcelable("cardData", ChargeCards::class.java)!!
+         }
+        else {
+             requireArguments().getParcelable("cardData")!!
+         }
         val layout: View = inflater.inflate(R.layout.card_detail_dialog, container, false)
         layout.findViewById<TextView>(R.id.detail_header).text = data.name
         val textView = layout.findViewById<TextView>(R.id.textView2)
