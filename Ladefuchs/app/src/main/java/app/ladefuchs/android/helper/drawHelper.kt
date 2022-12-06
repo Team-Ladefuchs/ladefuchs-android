@@ -6,8 +6,7 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
@@ -36,7 +35,6 @@ private const val cardMarginLeft: Int = 50
 private const val cardMarginRight: Int = 20
 private const val cardMarginTop: Int = 20
 private const val cardMarginBottom: Int = 20
-private const val cardMargin: Int = 20
 private const val globalCornerRadius: Float = 15F
 
 /**
@@ -119,7 +117,7 @@ fun drawChargeCard(
 
     val textLines = ceil(textToDraw.length.toDouble() / numOfChars.toDouble())
 
-    var textPositionYOffset =
+    val textPositionYOffset =
         canvas.height.toDouble() / 2.0 - (textLines * cardTextSize.toDouble() / 2.0 + 2.0 * strokeWidth.toDouble())
 
     // draw multiline card
@@ -193,7 +191,7 @@ fun fillCards(
 
 
         // Creating a Holder for Card and Price, to lay them out next to each other
-        val CardHolderView: LinearLayout = LinearLayout(context)
+        val CardHolderView = LinearLayout(context)
         chargeCardsColumn.addView(CardHolderView)
         printLog("Creating CardHolderView for $currentType")
         CardHolderView.gravity = Gravity.CENTER_VERTICAL
@@ -219,7 +217,7 @@ fun fillCards(
         }
 
         // Creating a View that will Hold the card image as a Background
-        val imageView: ImageView = ImageView(context)
+        val imageView = ImageView(context)
         CardHolderView.addView(imageView)
         imageView.requestLayout()
         imageView.layoutParams.width = cardWidth
@@ -243,7 +241,7 @@ fun fillCards(
         var cardImagePath: File? = null
 
         if (!currentCard.image.isNullOrEmpty()){
-            var cardUri = URL(currentCard.image)
+            val cardUri = URL(currentCard.image)
             cardImagePath = getImagePath(cardUri, context)
         }
 
@@ -337,7 +335,7 @@ fun fillCards(
         (priceNumberFormat.format(currentCard.price).trim { it <= ' ' })
 
         // Creating the TextView that will hold the Price
-        val textviewPrice: TextView = TextView(context)
+        val textviewPrice = TextView(context)
         CardHolderView.addView(textviewPrice)
         textviewPrice.text = priceNumberFormat.format(currentCard.price).trim { it <= ' ' }
         textviewPrice.setTextAppearance(R.style.TableTextView)
@@ -350,7 +348,7 @@ fun fillCards(
     if (i < maxListLength - 1) {
         while (i < maxListLength - 1) {
             // Creating a Holder for Card and Price, to lay them out next to each other
-            val CardHolderView: LinearLayout = LinearLayout(context)
+            val CardHolderView = LinearLayout(context)
             chargeCardsColumn.addView(CardHolderView)
             CardHolderView.gravity = Gravity.CENTER_VERTICAL
             CardHolderView.layoutParams =
@@ -374,7 +372,7 @@ fun fillCards(
             )
 
             // Creating the TextView that will hold the Price
-            val textview: TextView = TextView(context)
+            val textview = TextView(context)
             CardHolderView.addView(textview)
             textview.text = ("")
             textview.setPadding(

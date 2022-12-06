@@ -32,7 +32,8 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/nerd_glass_desc" />
 
     <LinearLayout
         android:id="@+id/chargeCardsTableHeader"
@@ -84,7 +85,8 @@
                     android:src="@drawable/ic_typ2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderAC"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/tableheader_ac_desc" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -128,7 +130,8 @@
                     android:src="@drawable/ic_ccs"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderDC"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/tableheader_dc_desc" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -147,7 +150,7 @@
             android:id="@+id/cardScroller"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:contentDescription="Enthält alle Ladekarten"
+            android:contentDescription="@string/cardScroller_desc"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -166,7 +169,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder"></LinearLayout>
+                    app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder" />
 
                 <LinearLayout
                     android:id="@+id/chargeCardsTableHolderDC"
@@ -174,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder"></LinearLayout>
+                    app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -288,7 +291,8 @@
             android:background="#00FFFFFF"
             android:scaleType="fitCenter"
             android:src="@drawable/banner_thg"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="SpeakableTextPresentCheck"
+            android:contentDescription="@string/img_btn_desc" />
     </LinearLayout>
 
     <include
