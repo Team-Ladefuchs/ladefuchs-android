@@ -3,8 +3,7 @@ package app.ladefuchs.android.helper
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
-import android.net.Uri
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.View
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
@@ -72,22 +71,6 @@ fun getScreenWidth(): Int {
 }
 
 /**
- * This function sanitizes the umlauts
- */
-fun umlautSanitization(output: String): String? {
-    return output.replace("\u00fc", "ue")
-        .replace("\u00f6", "oe")
-        .replace("\u00e4", "ae")
-        .replace("\u00df", "ss")
-        .replace("\u00dc(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Ue")
-        .replace("\u00d6(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Oe")
-        .replace("\u00c4(?=[a-z\u00e4\u00f6\u00fc\u00df ])".toRegex(), "Ae")
-        .replace("\u00dc", "UE")
-        .replace("\u00d6", "OE")
-        .replace("\u00c4", "AE")
-}
-
-/**
  * This function does some fancy color manipulation god knows what for
  */
 fun manipulateColor(color: Int, factor: Float): Int {
@@ -111,9 +94,9 @@ fun getMaingauPrices(type: String, pocOperator: String, context: Context): Charg
     //Load Pricetoggle from prefs
     val hasMaingauCustomerPrices = prefs.getBoolean("specialMaingauCustomer", false)
 
-    val maingauIonityPrice: Float = 0.75F
-    val maingauAcPrice: Float = 0.49F
-    val maingauDcPrice: Float = 0.59F
+    val maingauIonityPrice = 0.75F
+    val maingauAcPrice = 0.49F
+    val maingauDcPrice = 0.59F
 
     var maingauPrice = ChargeCards(
         identifier = "",

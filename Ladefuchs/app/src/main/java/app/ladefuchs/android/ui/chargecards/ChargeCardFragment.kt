@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.text.StaticLayout
 import android.view.LayoutInflater
 import android.view.View
@@ -24,13 +24,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.ladefuchs.android.R
 import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
 import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
-import kotlinx.android.synthetic.main.fragment_chargecards.*
-import kotlinx.android.synthetic.main.fragment_chargecards.view.*
+
 import java.io.File
 import java.nio.file.Paths
 
@@ -45,6 +45,9 @@ class ChargeCardFragment : Fragment() {
     private var api: API? = null
     private var prefs: SharedPreferences? = null
     private var cardsNeedRefresh: Boolean = false
+    private lateinit var phraseView: TextView
+    private lateinit var swipetorefresh: SwipeRefreshLayout
+
 
     object StaticLayoutCache {
         private const val MAX_SIZE = 50 // Arbitrary max number of cached items
@@ -59,7 +62,8 @@ class ChargeCardFragment : Fragment() {
     }
 
     /**
-     * This is the initialisation function that will be called on creation
+     * This is the initia
+     lisation function that will be called on creation
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,7 +84,8 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        phraseView = view.findViewById(R.id.phraseView) as TextView
+        swipetorefresh = view.findViewById(R.id.swipetorefresh) as SwipeRefreshLayout
         val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
         // check whether onboarding should be shown
         if (onboarding) {
@@ -170,7 +175,7 @@ class ChargeCardFragment : Fragment() {
         }
 
         //check if user previously selected cards
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val selectedCards = sharedPreferences.getString("selectedChargeCards", null)
         printLog("Selected Cards: $selectedCards")
         if (selectedCards != null) {
@@ -183,7 +188,7 @@ class ChargeCardFragment : Fragment() {
                         "Daher gibt es genau diesen Filter ab sofort nicht mehr.\n" +
                         "Sei stark, wir arbeiten an anderen Möglichkeiten der Personalisierung."
             )
-            builder.setPositiveButton(android.R.string.ok) { dialog, which ->
+            builder.setPositiveButton(android.R.string.ok) { _, _ ->
             }
             builder.show()
             val preferences: SharedPreferences.Editor? = sharedPreferences.edit()
@@ -279,7 +284,7 @@ class ChargeCardFragment : Fragment() {
 
         val bannerView = view.findViewById(R.id.bannerView) as LinearLayout
         bannerView.visibility = VISIBLE
-        val bannerButton = bannerView.bannerImage
+        val bannerButton = view.findViewById(R.id.bannerImage) as ImageButton
         val bitmapImage = Drawable.createFromPath(
             Paths.get(requireContext().filesDir.toString() + "/" + banner.filename)
                 .toString()
@@ -339,7 +344,7 @@ class ChargeCardFragment : Fragment() {
             }
             4 -> {
                 this.view?.findViewById<ConstraintLayout>(R.id.onboarding_3)?.visibility = View.GONE
-                val edit = PreferenceManager.getDefaultSharedPreferences(context).edit()
+                val edit = PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
                 edit.putBoolean("firstStart", false).apply()
                 return
             }

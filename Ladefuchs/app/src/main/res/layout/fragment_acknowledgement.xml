@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/PrimaryBackground"
-    tools:context=".Acknowledgement">
+    tools:context="ui.acknowledgement.Acknowledgement">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
             android:layout_marginStart="8dp"
             android:background="@color/PrimaryBackground"
             app:srcCompat="@drawable/abc_vector_test"
-            android:tint="@color/TextColorDark"
+            app:tint="@color/TextColorDark"
             app:layout_constraintBottom_toTopOf="@+id/acknowledgement_header"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
