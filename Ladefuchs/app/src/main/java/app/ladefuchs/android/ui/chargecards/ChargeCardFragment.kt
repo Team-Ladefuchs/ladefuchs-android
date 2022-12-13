@@ -30,6 +30,7 @@ import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_ab
 import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
+
 import java.io.File
 import java.nio.file.Paths
 
@@ -61,7 +62,8 @@ class ChargeCardFragment : Fragment() {
     }
 
     /**
-     * This is the initialisation function that will be called on creation
+     * This is the initia
+     lisation function that will be called on creation
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
