@@ -61,7 +61,8 @@ class ChargeCardFragment : Fragment() {
     }
 
     /**
-     * This is the initialisation function that will be called on creation
+     * This is the initia
+     lisation function that will be called on creation
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
