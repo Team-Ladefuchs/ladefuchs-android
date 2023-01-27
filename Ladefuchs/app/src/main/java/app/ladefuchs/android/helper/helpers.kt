@@ -189,11 +189,7 @@ fun getPrices(
     ).sortedBy { it.price }
     printLog("Re-Filling Cards for $pocOperator")
     val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
-    imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
-    imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
-
-
-    return imageDownloadedAC || imageDownloadedDC
+    return  fillCards(chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {

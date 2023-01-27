@@ -95,4 +95,8 @@
     <string name="tableheader_ac_desc">TableHeadeAC</string>
     <string name="tableheader_dc_desc">TableHeaderDC</string>
     <string name="cardScroller_desc">Enthält alle Ladekarten</string>
+    <string name="back_button_desc">The Button to leave the overlay</string>
+    <string name="get_card_text">Hol dir die Karte!</string>
+    <string name="blockFeeHeader">Blockiergebühr</string>
+    <string name="monthlyFeeHeader">Monatliche Gebühr</string>
 </resources>

@@ -3,21 +3,18 @@ package app.ladefuchs.android.helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.os.bundleOf
-import androidx.core.text.HtmlCompat
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
@@ -140,8 +137,8 @@ fun drawChargeCard(
  */
 @SuppressLint("ResourceAsColor")
 fun fillCards(
-    currentType: String,
-    chargeCards: List<ChargeCards>,
+    chargeCardsAC: List<ChargeCards>,
+    chargeCardsDC: List<ChargeCards>,
     maxListLength: Int,
     context: Context,
     view: View,
@@ -149,287 +146,366 @@ fun fillCards(
     resources: Resources,
     paintStroke: Boolean = false,
 ): Boolean {
-    printLog("Filling cards for $currentType")
-    val cardMetadata = readCardMetadata(context)
+    val types = listOf("ac", "dc")
     var cardsDownloaded = false
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
-    val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
-    // Define Views to attach Card Tables to and required Variables
-    var columnSide = "left"
-    if (currentType.lowercase() == "dc") {
-        columnSide = "right"
-    }
-    var i = 0
-    val columnName = "chargeCardsTableHolder" + currentType.uppercase()
-    val chargeCardsColumn: LinearLayout =
-        view.findViewById(
-            resources.getIdentifier(
-                columnName,
-                "id",
-                context.packageName
-            )
-        ) ?: return false
-    chargeCardsColumn.removeAllViews()
-    chargeCards.forEach { currentCard ->
-
-        val cardIdentifier = "card_" + currentCard.identifier
-        val cardProviderIdentifier = "card_" + currentCard.provider
-
-        // Skip ADAC card if not enabled
-        if (currentCard.identifier == "adac" && !hasADACPrices) {
-            printLog("ADAC prices will be skipped")
-            return@forEach
-        }
-
-        // Skip Maingau Prices if personalized processes are available
-        if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices) {
-            return@forEach
-        }
-
-        var cardMeta = cardMetadata?.find { it.identifier == cardIdentifier }
-        if (cardMeta == null) {
-            cardMeta = cardMetadata?.find { it.identifier == "default" }
-        }
-
-
-        // Creating a Holder for Card and Price, to lay them out next to each other
-        val CardHolderView = LinearLayout(context)
-        chargeCardsColumn.addView(CardHolderView)
-        printLog("Creating CardHolderView for $currentType")
-        CardHolderView.gravity = Gravity.CENTER_VERTICAL
-        CardHolderView.orientation = LinearLayout.HORIZONTAL
-
-        val backgroundUri: String = if (i % 2 == 0) {
-            "@drawable/border_light_bg_$columnSide"
-        } else {
-            "@drawable/border_dark_bg_$columnSide"
-        }
-
-        CardHolderView.setBackgroundResource(
-            resources.getIdentifier(
-                backgroundUri, "drawable",
-                context.packageName
-            )
-        )
-
-        // This function provides the popup window with the card metadata
-        CardHolderView.setOnClickListener { view ->
-            // inflate the layout of the popup window
-            val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = inflater.inflate(R.layout.card_detail_dialog, null)
-
-            // create the popup window
-            val width = view.context.resources.displayMetrics.widthPixels * 0.90
-            val height = view.context.resources.displayMetrics.heightPixels * 0.90
-            val focusable = true // lets taps outside the popup also dismiss it
-            val popupWindow =
-                PopupWindow(popupView, width.roundToInt(), height.roundToInt(), focusable)
-
-            // show the popup window
-            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-
-            // set onClick Listeners for backButtons
-            popupView.findViewById<ImageButton>(R.id.back_button).setOnClickListener {
-                popupWindow.dismiss()
-            }
-
-            popupView.findViewById<TextView>(R.id.button_ok).setOnClickListener {
-                popupWindow.dismiss()
-            }
-
-            popupView.findViewById<TextView>(R.id.detail_header).text = currentCard.name
-            val textView = popupView.findViewById<TextView>(R.id.textView2)
-            var textViewText =
-                """
-                Provider: ${currentCard.provider}
-                Preis pro kWh: ${String.format("%.2f", currentCard.price)}  
-                ${HtmlCompat.fromHtml("Link zur Karte: ${currentCard.url}", HtmlCompat.FROM_HTML_MODE_COMPACT)}
-                """
-            if (currentCard.blockingFeeStart != 0)
-                textViewText += "Start der Blockiergebühr nach ${currentCard.blockingFeeStart} Minuten"
-            if (currentCard.monthlyFee != 0.0f)
-                textViewText += "Monatliche Gebühr:${String.format(" % .2f", currentCard.monthlyFee)}"
-            textView.text = textViewText
-        }
-
-        // Creating a View that will Hold the card image as a Background
-        val imageView = ImageView(context)
-        CardHolderView.addView(imageView)
-        imageView.requestLayout()
-        imageView.layoutParams.width = cardWidth
-        imageView.layoutParams.height = cardHeight
-
-
-        var resourceIdentifier: Int? = context.resources?.getIdentifier(
-            cardIdentifier,
-            "drawable",
-            context.packageName
-        )
-
-        if (resourceIdentifier == 0) {
-            resourceIdentifier = context.resources?.getIdentifier(
-                cardProviderIdentifier,
-                "drawable",
-                context.packageName
-            )
-        }
-
-        var cardImagePath: File? = null
-
-        if (!currentCard.image.isNullOrEmpty()) {
-            val cardUri = URL(currentCard.image)
-            cardImagePath = getImagePath(cardUri, context)
-        }
-
-        val cardImageExists = cardImagePath != null && cardImagePath.exists()
-
-        if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
-            CardHolderView.removeView(imageView)
-            val imageCardView = RoundedImageView(context)
-            CardHolderView.addView(imageCardView)
-            imageCardView.layoutParams.width = cardWidth
-            imageCardView.layoutParams.height = cardHeight
-            (imageCardView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
-            )
-            imageCardView.scaleType = ImageView.ScaleType.FIT_XY
-            imageCardView.cornerRadius = globalCornerRadius
-            if (paintStroke) {
-                imageCardView.borderWidth = 4.toFloat()
-                imageCardView.borderColor = Color.DKGRAY
-            }
-            imageCardView.mutateBackground(true)
-
-
-            //printLog("Card image file $cardImagePath")
-            if (cardImageExists) {
-                var cardImageDrawable: Drawable? = null
-                try {
-                    cardImageDrawable =
-                        Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
-                } catch (e: Exception) {
-                    if (BuildConfig.DEBUG) {
-                        e.printStackTrace()
-                    }
-                }
-
-                if (cardImageDrawable != null) {
-                    imageCardView.background =
-                        Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
-                }
-            } else {
-                resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
-            }
-
-            imageCardView.isOval = false
-            imageCardView.elevation = 25.0F
-            imageCardView.outlineProvider = OutlineProvider(5, 0)
-
-            imageCardView.tileModeX = Shader.TileMode.CLAMP
-            imageCardView.tileModeY = Shader.TileMode.CLAMP
-            imageCardView.requestLayout()
-
-        } else {
-            if (!currentCard.image.isNullOrEmpty()) {
-                api.downloadImageToInternalStorage(
-                    URL(currentCard.image)
+    types.forEach { currentType ->
+        printLog("Filling cards for $currentType")
+        val cardMetadata = readCardMetadata(context)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
+        val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
+        // Define Views to attach Card Tables to and required Variables
+        val columnSide = if (currentType.lowercase() == "dc") "right" else "left"
+        var i = 0
+        val columnName = "chargeCardsTableHolder" + currentType.uppercase()
+        val chargeCardsColumn: LinearLayout =
+            view.findViewById(
+                resources.getIdentifier(
+                    columnName,
+                    "id",
+                    context.packageName
                 )
-                cardsDownloaded = true
+            ) ?: return false
+        chargeCardsColumn.removeAllViews()
+        val chargeCards = if (currentType == "ac") chargeCardsAC else chargeCardsDC
+        chargeCards.forEach cards@{ currentCard ->
+
+            val cardIdentifier = "card_" + currentCard.identifier
+            val cardProviderIdentifier = "card_" + currentCard.provider
+
+            // Skip ADAC card if not enabled
+            if (currentCard.identifier == "adac" && !hasADACPrices) {
+                printLog("ADAC prices will be skipped")
+                return@cards
             }
-            var cardText = currentCard.name
-            if (currentCard.provider != currentCard.name) {
-                cardText = currentCard.provider
+
+            // Skip Maingau Prices if personalized processes are available
+            if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices) {
+                return@cards
             }
-            val cardBitmap = drawChargeCard(
-                textToDraw = cardText,
-                textSize = 26F,
-                textColor = Color.parseColor("#" + cardMeta?.textColor),
-                rectangleColor = Color.parseColor("#" + cardMeta?.borderColor),
-                backgroundColor = Color.parseColor("#" + cardMeta?.backgroundColor),
-                paintStroke = paintStroke
-            )
-            imageView.background = BitmapDrawable(resources, cardBitmap)
-            imageView.elevation = 30.0F
-            imageView.outlineProvider = OutlineProvider(10, 10)
-            (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
-            )
-        }
 
-        // Format the price according to the user set locale
-        val priceNumberFormat = NumberFormat.getCurrencyInstance()
-        val decimalFormatSymbols: DecimalFormatSymbols =
-            (priceNumberFormat as DecimalFormat).decimalFormatSymbols
-        decimalFormatSymbols.currencySymbol = ""
-        priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
-        (priceNumberFormat.format(currentCard.price).trim { it <= ' ' })
+            var cardMeta = cardMetadata?.find { it.identifier == cardIdentifier }
+            if (cardMeta == null) {
+                cardMeta = cardMetadata?.find { it.identifier == "default" }
+            }
 
-        // Creating the TextView that will hold the Price
-        val textviewPrice = TextView(context)
-        CardHolderView.addView(textviewPrice)
-        textviewPrice.text = priceNumberFormat.format(currentCard.price).trim { it <= ' ' }
-        textviewPrice.setTextAppearance(R.style.TableTextView)
-        textviewPrice.gravity = Gravity.CENTER
-        textviewPrice.width = cardWidth
-        i++
-    }
 
-    //Filling Column with empty Cells if necessary
-    if (i < maxListLength - 1) {
-        while (i < maxListLength - 1) {
             // Creating a Holder for Card and Price, to lay them out next to each other
             val CardHolderView = LinearLayout(context)
             chargeCardsColumn.addView(CardHolderView)
+            printLog("Creating CardHolderView for $currentType")
             CardHolderView.gravity = Gravity.CENTER_VERTICAL
-            CardHolderView.layoutParams =
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
             CardHolderView.orientation = LinearLayout.HORIZONTAL
-            if (i % 2 == 0) {
-                //TableColorLight
-                CardHolderView.setBackgroundColor(Color.parseColor("#F0EBDC"))
+
+            val backgroundUri: String = if (i % 2 == 0) {
+                "@drawable/border_light_bg_$columnSide"
             } else {
-                // TableColorDark
-                CardHolderView.setBackgroundColor(Color.parseColor("#E0D7C8"))
+                "@drawable/border_dark_bg_$columnSide"
             }
-            CardHolderView.setPadding(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
+
+            CardHolderView.setBackgroundResource(
+                resources.getIdentifier(
+                    backgroundUri, "drawable",
+                    context.packageName
+                )
             )
 
+            // Creating a View that will Hold the card image as a Background
+            val imageView = ImageView(context)
+            CardHolderView.addView(imageView)
+            imageView.requestLayout()
+            imageView.layoutParams.width = cardWidth
+            imageView.layoutParams.height = cardHeight
+
+
+            var resourceIdentifier: Int? = context.resources?.getIdentifier(
+                cardIdentifier,
+                "drawable",
+                context.packageName
+            )
+
+            if (resourceIdentifier == 0) {
+                resourceIdentifier = context.resources?.getIdentifier(
+                    cardProviderIdentifier,
+                    "drawable",
+                    context.packageName
+                )
+            }
+
+            var cardImagePath: File? = null
+
+            if (!currentCard.image.isNullOrEmpty()) {
+                val cardUri = URL(currentCard.image)
+                cardImagePath = getImagePath(cardUri, context)
+            }
+
+            val cardImageExists = cardImagePath != null && cardImagePath.exists()
+
+            if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
+                CardHolderView.removeView(imageView)
+                val imageCardView = RoundedImageView(context)
+                CardHolderView.addView(imageCardView)
+                imageCardView.layoutParams.width = cardWidth
+                imageCardView.layoutParams.height = cardHeight
+                (imageCardView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
+                    cardMarginLeft,
+                    cardMarginTop,
+                    cardMarginRight,
+                    cardMarginBottom
+                )
+                imageCardView.scaleType = ImageView.ScaleType.FIT_XY
+                imageCardView.cornerRadius = globalCornerRadius
+                if (paintStroke) {
+                    imageCardView.borderWidth = 4.toFloat()
+                    imageCardView.borderColor = Color.DKGRAY
+                }
+                imageCardView.mutateBackground(true)
+
+
+                //printLog("Card image file $cardImagePath")
+                if (cardImageExists) {
+                    var cardImageDrawable: Drawable? = null
+                    try {
+                        cardImageDrawable =
+                            Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
+                    } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    if (cardImageDrawable != null) {
+                        imageCardView.background =
+                            Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
+                        // This function provides the popup window with the card metadata
+                        CardHolderView.setOnClickListener { view ->
+                            // inflate the layout of the popup window
+                            val inflater =
+                                view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                            val popupView: View =
+                                inflater.inflate(R.layout.card_detail_dialog, null)
+
+                            // create the popup window
+                            val width = view.context.resources.displayMetrics.widthPixels
+                            val height = view.context.resources.displayMetrics.heightPixels
+                            val focusable = true // lets taps outside the popup also dismiss it
+                            val popupWindow =
+                                PopupWindow(popupView, width, height, focusable)
+
+                            // show the popup window
+                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+                            // set onClick Listeners for backButtons
+                            popupView.findViewById<ImageButton>(R.id.back_button)
+                                .setOnClickListener {
+                                    popupWindow.dismiss()
+                                }
+
+
+                            popupView.findViewById<ImageView>(R.id.card_logo)
+                                .setImageDrawable(cardImageDrawable)
+                            val currentCardAc: ChargeCards? =
+                                if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
+                            val currentCardDc: ChargeCards? =
+                                if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
+                            popupView.findViewById<TextView>(R.id.detail_header1).text =
+                                currentCard.name
+                            popupView.findViewById<TextView>(R.id.detail_header2).text =
+                                currentCard.name
+                            if (currentCardAc !== null) {
+                                popupView.findViewById<TextView>(R.id.priceAC).text =
+                                    currentCardAc.price.toString()
+                                popupView.findViewById<TextView>(R.id.blockFeeAC).text =
+                                    "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
+                                popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+                                    if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
+                            }
+                            if (currentCardDc !== null) {
+                                popupView.findViewById<TextView>(R.id.priceDC).text =
+                                    currentCardDc.price.toString()
+                                popupView.findViewById<TextView>(R.id.blockFeeDC).text =
+                                    "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
+                                popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+                                    if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
+                            }
+                            popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
+                                val urlIntent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(currentCard.url.toString())
+                                )
+                                context.startActivity(urlIntent)
+                            }
+
+                            if (currentCard.url == null){
+                                popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
+                            }
+                        }
+                    }
+                } else {
+                    resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
+                }
+
+                imageCardView.isOval = false
+                imageCardView.elevation = 25.0F
+                imageCardView.outlineProvider = OutlineProvider(5, 0)
+
+                imageCardView.tileModeX = Shader.TileMode.CLAMP
+                imageCardView.tileModeY = Shader.TileMode.CLAMP
+                imageCardView.requestLayout()
+
+            } else {
+                if (!currentCard.image.isNullOrEmpty()) {
+                    api.downloadImageToInternalStorage(
+                        URL(currentCard.image)
+                    )
+                    cardsDownloaded = true
+                }
+                var cardText = currentCard.name
+                if (currentCard.provider != currentCard.name) {
+                    cardText = currentCard.provider
+                }
+                val cardBitmap = drawChargeCard(
+                    textToDraw = cardText,
+                    textSize = 26F,
+                    textColor = Color.parseColor("#" + cardMeta?.textColor),
+                    rectangleColor = Color.parseColor("#" + cardMeta?.borderColor),
+                    backgroundColor = Color.parseColor("#" + cardMeta?.backgroundColor),
+                    paintStroke = paintStroke
+                )
+                imageView.background = BitmapDrawable(resources, cardBitmap)
+                imageView.elevation = 30.0F
+                imageView.outlineProvider = OutlineProvider(10, 10)
+                (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
+                    cardMarginLeft,
+                    cardMarginTop,
+                    cardMarginRight,
+                    cardMarginBottom
+                )
+                CardHolderView.setOnClickListener { view ->
+                    // inflate the layout of the popup window
+                    val inflater =
+                        view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                    val popupView: View = inflater.inflate(R.layout.card_detail_dialog, null)
+
+                    // create the popup window
+                    val width = view.context.resources.displayMetrics.widthPixels
+                    val height = view.context.resources.displayMetrics.heightPixels
+                    val focusable = true // lets taps outside the popup also dismiss it
+                    val popupWindow =
+                        PopupWindow(popupView, width, height, focusable)
+
+                    // show the popup window
+                    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+                    // set onClick Listeners for backButtons
+                    popupView.findViewById<ImageButton>(R.id.back_button).setOnClickListener {
+                        popupWindow.dismiss()
+                    }
+
+                    val currentCardAc: ChargeCards? =
+                        if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier === currentCard.identifier }
+                    val currentCardDc: ChargeCards? =
+                        if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier === currentCard.identifier }
+                    popupView.findViewById<TextView>(R.id.detail_header1).text = currentCard.name
+                    popupView.findViewById<TextView>(R.id.detail_header2).text = currentCard.name
+                    popupView.findViewById<ImageView>(R.id.card_logo).setImageBitmap(cardBitmap)
+                    if (currentCardAc !== null) {
+                        popupView.findViewById<TextView>(R.id.priceAC).text =
+                            currentCardAc.price.toString()
+                        popupView.findViewById<TextView>(R.id.blockFeeAC).text =
+                            "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
+                        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+                            if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
+                    }
+                    if (currentCardDc !== null) {
+                        popupView.findViewById<TextView>(R.id.priceDC).text =
+                            currentCardDc.price.toString()
+                        popupView.findViewById<TextView>(R.id.blockFeeDC).text =
+                            "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
+                        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+                            if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
+                    }
+                    popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
+                        val urlIntent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(currentCard.url)
+                        )
+                        context.startActivity(urlIntent)
+                    }
+                    if (currentCard.url == null){
+                        popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
+                    }
+                }
+            }
+
+            // Format the price according to the user set locale
+            val priceNumberFormat = NumberFormat.getCurrencyInstance()
+            val decimalFormatSymbols: DecimalFormatSymbols =
+                (priceNumberFormat as DecimalFormat).decimalFormatSymbols
+            decimalFormatSymbols.currencySymbol = ""
+            priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
+            (priceNumberFormat.format(currentCard.price).trim { it <= ' ' })
+
             // Creating the TextView that will hold the Price
-            val textview = TextView(context)
-            CardHolderView.addView(textview)
-            textview.text = ("")
-            textview.setPadding(
-                cardMarginLeft,
-                cardMarginTop,
-                cardMarginRight,
-                cardMarginBottom
-            )
-            textview.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
-            textview.setTextAppearance(R.style.TableTextViewDisabled)
-            textview.setTextColor(R.color.TextColorDisabled)
-            textview.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            textview.height = cardHeight
+            val textviewPrice = TextView(context)
+            CardHolderView.addView(textviewPrice)
+            textviewPrice.text = priceNumberFormat.format(currentCard.price).trim { it <= ' ' }
+            textviewPrice.setTextAppearance(R.style.TableTextView)
+            textviewPrice.gravity = Gravity.CENTER
+            textviewPrice.width = cardWidth
             i++
         }
+
+        //Filling Column with empty Cells if necessary
+        if (i < maxListLength - 1) {
+            while (i < maxListLength - 1) {
+                // Creating a Holder for Card and Price, to lay them out next to each other
+                val CardHolderView = LinearLayout(context)
+                chargeCardsColumn.addView(CardHolderView)
+                CardHolderView.gravity = Gravity.CENTER_VERTICAL
+                CardHolderView.layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                CardHolderView.orientation = LinearLayout.HORIZONTAL
+                if (i % 2 == 0) {
+                    //TableColorLight
+                    CardHolderView.setBackgroundColor(Color.parseColor("#F0EBDC"))
+                } else {
+                    // TableColorDark
+                    CardHolderView.setBackgroundColor(Color.parseColor("#E0D7C8"))
+                }
+                CardHolderView.setPadding(
+                    cardMarginLeft,
+                    cardMarginTop,
+                    cardMarginRight,
+                    cardMarginBottom
+                )
+
+                // Creating the TextView that will hold the Price
+                val textview = TextView(context)
+                CardHolderView.addView(textview)
+                textview.text = ("")
+                textview.setPadding(
+                    cardMarginLeft,
+                    cardMarginTop,
+                    cardMarginRight,
+                    cardMarginBottom
+                )
+                textview.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
+                textview.setTextAppearance(R.style.TableTextViewDisabled)
+                textview.setTextColor(R.color.TextColorDisabled)
+                textview.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+                )
+                textview.height = cardHeight
+                i++
+            }
+        }
+        printLog("Cards populated for $currentType")
     }
-    printLog("Cards populated for $currentType")
     return cardsDownloaded
 }
 

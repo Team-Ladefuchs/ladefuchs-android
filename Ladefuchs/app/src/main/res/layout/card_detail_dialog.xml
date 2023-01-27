@@ -1,70 +1,313 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/PrimaryBackground">
 
-    <ImageView
-        android:id="@+id/ladefuchs_logo"
-        android:layout_width="84dp"
-        android:layout_height="78dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/ladefuchs_logo_description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_ladefuchs_logo" />
-    <ImageButton
-        android:id="@+id/back_button"
-        android:layout_width="32dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:background="@color/PrimaryBackground"
-        app:srcCompat="@drawable/abc_vector_test"
-        app:layout_constraintBottom_toTopOf="@+id/detail_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/TextColorDark" />
     <TextView
-        android:id="@+id/detail_header"
+        android:id="@+id/detail_header1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/TableColorDark"
+        android:background="@drawable/rounded_top_card_details"
         android:fontFamily="sans-serif-black"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
         android:text="CardDetailHeader"
-        android:textAlignment="center"
         android:textAllCaps="true"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        android:textColor="@color/TextColorBlack"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/detail_header2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo" />
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:autoLink="web"
-        android:linksClickable="true"
-        android:textAlignment="textStart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detail_header" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/button_ok"
-        android:layout_width="wrap_content"
+        android:id="@+id/detail_header2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:background="@color/colorCardDetailsPrice"
+        android:fontFamily="sans-serif-black"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="CardDetailHeader2"
+        android:textAllCaps="true"
+        android:textColor="@color/TextColorDisabled"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_header1" />
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
         android:background="@color/TableColorDark"
-        android:padding="20dp"
-        android:text="OK"
+        android:contentDescription="@string/back_button_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_cancel_24" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardLogos"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_header2"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.4"
+        >
+
+        <ImageView
+            android:id="@+id/card_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/card_adac" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- AC Section-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardViewAC"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_card_details"
+        app:layout_constraintEnd_toStartOf="@id/cardViewDC"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardLogos"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.45">
+
+        <TextView
+            android:id="@+id/textViewAC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetails"
+            android:drawablePadding="5sp"
+            android:padding="5dp"
+            android:text="@string/ac"
+            android:textAlignment="center"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="10pt"
+            android:textStyle="bold"
+            app:drawableEndCompat="@drawable/ic_typ2_scaled_down"
+            app:layout_constraintBottom_toTopOf="@id/priceAC"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/priceAC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetailsPrice"
+            android:drawablePadding="5sp"
+            android:padding="10dp"
+            android:text="0,00"
+            android:textAlignment="center"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="15pt"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/dividerAC"
+            app:layout_constraintEnd_toEndOf="@id/textViewAC"
+            app:layout_constraintStart_toStartOf="@id/textViewAC" />
+
+        <View
+            android:id="@+id/dividerAC"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/TextColorLight"
+            app:layout_constraintBottom_toTopOf="@id/blockFeeACHeader"
+            app:layout_constraintEnd_toEndOf="@id/textViewAC"
+            app:layout_constraintStart_toStartOf="@id/textViewAC" />
+
+        <TextView
+            android:id="@+id/blockFeeACHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetailsPrice"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/blockFeeHeader"
+            android:textAllCaps="true"
+            android:textColor="@color/TextColorDisabled"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/blockFeeAC"
+            app:layout_constraintEnd_toEndOf="@id/textViewAC"
+            app:layout_constraintStart_toStartOf="@id/textViewAC" />
+
+        <TextView
+            android:id="@+id/blockFeeAC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_bottom_card_details"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:text="> ab Min. 0\n> 0 € MIn."
+            android:textAlignment="textStart"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="5pt"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- DC Section-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardViewDC"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/rounded_card_details"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cardViewAC"
+        app:layout_constraintTop_toBottomOf="@id/cardLogos"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.45">
+
+        <TextView
+            android:id="@+id/textViewDC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetails"
+            android:drawablePadding="5sp"
+            android:padding="5dp"
+            android:text="@string/dc"
+            android:textAlignment="center"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="10pt"
+            android:textStyle="bold"
+            app:drawableEndCompat="@drawable/ic_ccs_scaled_down"
+            app:layout_constraintBottom_toTopOf="@id/priceDC"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/priceDC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetailsPrice"
+            android:drawablePadding="5sp"
+            android:padding="10dp"
+            android:text="0,00"
+            android:textAlignment="center"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="15pt"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/dividerDC"
+            app:layout_constraintEnd_toEndOf="@id/textViewDC"
+            app:layout_constraintStart_toStartOf="@id/textViewDC" />
+
+        <View
+            android:id="@+id/dividerDC"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/TextColorLight"
+            app:layout_constraintBottom_toTopOf="@id/blockFeeDCHeader"
+            app:layout_constraintEnd_toEndOf="@id/textViewDC"
+            app:layout_constraintStart_toStartOf="@id/textViewDC" />
+
+        <TextView
+            android:id="@+id/blockFeeDCHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorCardDetailsPrice"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/blockFeeHeader"
+            android:textAllCaps="true"
+            android:textColor="@color/TextColorDisabled"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/blockFeeDC"
+            app:layout_constraintEnd_toEndOf="@id/textViewDC"
+            app:layout_constraintStart_toStartOf="@id/textViewDC" />
+
+        <TextView
+            android:id="@+id/blockFeeDC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_bottom_card_details"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:text="> ab Min. 0\n> 0 € MIn."
+            android:textAlignment="textStart"
+            android:textColor="@color/TextColorBlack"
+            android:textSize="5pt"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/textViewDC"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="@id/textViewDC" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Monthy Fee Section-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/monthlyFee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_card_details3"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="@id/cardViewDC"
+        app:layout_constraintStart_toStartOf="@id/cardViewAC"
+        app:layout_constraintTop_toBottomOf="@id/cardViewAC">
+
+        <TextView
+            android:id="@+id/monthlyFeeHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/monthlyFeeHeader"
+            android:textAlignment="textStart"
+            android:textAllCaps="true"
+            android:textColor="@color/TextColorDisabled"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/monthlyFeeContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="keine"
+            android:textAlignment="textStart"
+            android:textColor="@color/TextColorBlack"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/monthlyFeeHeader" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <Button
+        android:id="@+id/getCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/rounded_accent_bg"
+        android:text="@string/get_card_text"
+        android:textAllCaps="true"
+        android:textColor="@color/TextColorLight"
+        android:textSize="10pt"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/cardViewDC"
+        app:layout_constraintStart_toStartOf="@id/cardViewAC" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
