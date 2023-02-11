@@ -8,6 +8,8 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.text.TextPaint
 import android.view.Gravity
@@ -15,18 +17,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
-import com.makeramen.roundedimageview.RoundedImageView
 import java.io.File
 import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 
 private var cardWidth: Int = getScreenWidth() / 5
@@ -217,52 +218,40 @@ fun fillCards(
             imageView.layoutParams.width = cardWidth
             imageView.layoutParams.height = cardHeight
 
+            // add corner Background
+            val shape = GradientDrawable()
+            shape.shape = GradientDrawable.RECTANGLE;
+            shape.cornerRadius = globalCornerRadius
+            imageView.background = shape
+            imageView.clipToOutline = true
 
-            var resourceIdentifier: Int? = context.resources?.getIdentifier(
+            val resourceIdentifier: Int? = context.resources?.getIdentifier(
                 cardIdentifier,
                 "drawable",
                 context.packageName
+            ) ?: context.resources?.getIdentifier(
+                cardProviderIdentifier,
+                "drawable",
+                context.packageName
             )
-
-            if (resourceIdentifier == 0) {
-                resourceIdentifier = context.resources?.getIdentifier(
-                    cardProviderIdentifier,
-                    "drawable",
-                    context.packageName
-                )
-            }
-
+            // check whether a card image exists
             var cardImagePath: File? = null
-
             if (!currentCard.image.isNullOrEmpty()) {
                 val cardUri = URL(currentCard.image)
                 cardImagePath = getImagePath(cardUri, context)
             }
-
             val cardImageExists = cardImagePath != null && cardImagePath.exists()
 
+            // if there is a ressource one form or another -> use it
             if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
-                CardHolderView.removeView(imageView)
-                val imageCardView = RoundedImageView(context)
-                CardHolderView.addView(imageCardView)
-                imageCardView.layoutParams.width = cardWidth
-                imageCardView.layoutParams.height = cardHeight
-                (imageCardView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
+                (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
                     cardMarginLeft,
                     cardMarginTop,
                     cardMarginRight,
                     cardMarginBottom
                 )
-                imageCardView.scaleType = ImageView.ScaleType.FIT_XY
-                imageCardView.cornerRadius = globalCornerRadius
-                if (paintStroke) {
-                    imageCardView.borderWidth = 4.toFloat()
-                    imageCardView.borderColor = Color.DKGRAY
-                }
-                imageCardView.mutateBackground(true)
+                imageView.scaleType = ImageView.ScaleType.FIT_XY
 
-
-                //printLog("Card image file $cardImagePath")
                 if (cardImageExists) {
                     var cardImageDrawable: Drawable? = null
                     try {
@@ -275,8 +264,17 @@ fun fillCards(
                     }
 
                     if (cardImageDrawable != null) {
-                        imageCardView.background =
-                            Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
+                        val layers = arrayOfNulls<Drawable>(2)
+                        layers[0] = Drawable.createFromPath(cardImagePath!!.absolutePath)!!
+                        layers[1] = AppCompatResources.getDrawable(context, R.drawable.huetchen)
+                        val layerDrawable = LayerDrawable(layers)
+                        layerDrawable.setLayerInset(1, (cardWidth - 49), -1, 0, 0)
+                        //layerDrawable.setLayerGravity(1,Gravity.RIGHT)
+                        layerDrawable.setLayerHeight(1, 50)
+                        layerDrawable.setLayerWidth(1, 50)
+                        imageView.setImageDrawable(
+                            if (currentCard.blockingFee != null && currentCard.blockingFee != 0.0f) layerDrawable else layers[0]
+                        )
                         // This function provides the popup window with the card metadata
                         CardHolderView.setOnClickListener { view ->
                             // inflate the layout of the popup window
@@ -342,18 +340,12 @@ fun fillCards(
                         }
                     }
                 } else {
-                    resourceIdentifier?.let { imageCardView.setBackgroundResource(it) }
+                    resourceIdentifier?.let { imageView.setBackgroundResource(it) }
                 }
-
-                imageCardView.isOval = false
-                imageCardView.elevation = 25.0F
-                imageCardView.outlineProvider = OutlineProvider(5, 0)
-
-                imageCardView.tileModeX = Shader.TileMode.CLAMP
-                imageCardView.tileModeY = Shader.TileMode.CLAMP
-                imageCardView.requestLayout()
-
-            } else {
+                imageView.requestLayout()
+            }
+            // if there is no ressource yet get the image from the api
+            else {
                 if (!currentCard.image.isNullOrEmpty()) {
                     api.downloadImageToInternalStorage(
                         URL(currentCard.image)
