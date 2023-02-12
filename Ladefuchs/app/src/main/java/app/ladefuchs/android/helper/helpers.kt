@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
 import java.io.File
 import java.io.InputStream
@@ -163,7 +164,7 @@ fun NavController.safeNavigate(actionId: Int) {
  * This function retrieves the prices for a specific operator
  */
 fun getPrices(
-    pocOperator: String,
+    pocOperator: Operator,
     forceDownload: Boolean = false,
     context: Context,
     api: API,
@@ -173,23 +174,21 @@ fun getPrices(
 ): Boolean {
     //Load Prices JSON from File
     printLog("Getting prices for $pocOperator")
-    val imageDownloadedAC: Boolean
-    val imageDownloadedDC: Boolean
     val chargeCardsAC = api.readPrices(
-        pocOperator,
+        pocOperator.toString(),
         "ac",
         forceDownload,
         skipDownload
     ).sortedBy { it.price }
     val chargeCardsDC = api.readPrices(
-        pocOperator,
+        pocOperator.toString(),
         "dc",
         forceDownload,
         skipDownload
     ).sortedBy { it.price }
     printLog("Re-Filling Cards for $pocOperator")
     val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
-    return  fillCards(chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
+    return  fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {

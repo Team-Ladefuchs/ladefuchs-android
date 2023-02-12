@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.Operator
 import java.io.File
 import java.net.URL
 import java.text.DecimalFormat
@@ -138,6 +139,7 @@ fun drawChargeCard(
  */
 @SuppressLint("ResourceAsColor")
 fun fillCards(
+    operator: Operator,
     chargeCardsAC: List<ChargeCards>,
     chargeCardsDC: List<ChargeCards>,
     maxListLength: Int,
@@ -276,68 +278,7 @@ fun fillCards(
                             if (currentCard.blockingFee != null && currentCard.blockingFee != 0.0f) layerDrawable else layers[0]
                         )
                         // This function provides the popup window with the card metadata
-                        CardHolderView.setOnClickListener { view ->
-                            // inflate the layout of the popup window
-                            val inflater =
-                                view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                            val popupView: View =
-                                inflater.inflate(R.layout.card_detail_dialog, null)
-
-                            // create the popup window
-                            val width = view.context.resources.displayMetrics.widthPixels
-                            val height = view.context.resources.displayMetrics.heightPixels
-                            val focusable = true // lets taps outside the popup also dismiss it
-                            val popupWindow =
-                                PopupWindow(popupView, width, height, focusable)
-
-                            // show the popup window
-                            popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-
-                            // set onClick Listeners for backButtons
-                            popupView.findViewById<ImageButton>(R.id.back_button)
-                                .setOnClickListener {
-                                    popupWindow.dismiss()
-                                }
-
-
-                            popupView.findViewById<ImageView>(R.id.card_logo)
-                                .setImageDrawable(cardImageDrawable)
-                            val currentCardAc: ChargeCards? =
-                                if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
-                            val currentCardDc: ChargeCards? =
-                                if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
-                            popupView.findViewById<TextView>(R.id.detail_header1).text =
-                                currentCard.name
-                            popupView.findViewById<TextView>(R.id.detail_header2).text =
-                                currentCard.name
-                            if (currentCardAc !== null) {
-                                popupView.findViewById<TextView>(R.id.priceAC).text =
-                                    currentCardAc.price.toString()
-                                popupView.findViewById<TextView>(R.id.blockFeeAC).text =
-                                    "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
-                                popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
-                                    if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
-                            }
-                            if (currentCardDc !== null) {
-                                popupView.findViewById<TextView>(R.id.priceDC).text =
-                                    currentCardDc.price.toString()
-                                popupView.findViewById<TextView>(R.id.blockFeeDC).text =
-                                    "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
-                                popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
-                                    if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
-                            }
-                            popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
-                                val urlIntent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse(currentCard.url.toString())
-                                )
-                                context.startActivity(urlIntent)
-                            }
-
-                            if (currentCard.url == null){
-                                popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
-                            }
-                        }
+                        CardHolderView.setOnClickListener {view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, cardImageDrawable, null, context)}
                     }
                 } else {
                     resourceIdentifier?.let { imageView.setBackgroundResource(it) }
@@ -373,61 +314,7 @@ fun fillCards(
                     cardMarginRight,
                     cardMarginBottom
                 )
-                CardHolderView.setOnClickListener { view ->
-                    // inflate the layout of the popup window
-                    val inflater =
-                        view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                    val popupView: View = inflater.inflate(R.layout.card_detail_dialog, null)
-
-                    // create the popup window
-                    val width = view.context.resources.displayMetrics.widthPixels
-                    val height = view.context.resources.displayMetrics.heightPixels
-                    val focusable = true // lets taps outside the popup also dismiss it
-                    val popupWindow =
-                        PopupWindow(popupView, width, height, focusable)
-
-                    // show the popup window
-                    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-
-                    // set onClick Listeners for backButtons
-                    popupView.findViewById<ImageButton>(R.id.back_button).setOnClickListener {
-                        popupWindow.dismiss()
-                    }
-
-                    val currentCardAc: ChargeCards? =
-                        if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier === currentCard.identifier }
-                    val currentCardDc: ChargeCards? =
-                        if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier === currentCard.identifier }
-                    popupView.findViewById<TextView>(R.id.detail_header1).text = currentCard.name
-                    popupView.findViewById<TextView>(R.id.detail_header2).text = currentCard.name
-                    popupView.findViewById<ImageView>(R.id.card_logo).setImageBitmap(cardBitmap)
-                    if (currentCardAc !== null) {
-                        popupView.findViewById<TextView>(R.id.priceAC).text =
-                            currentCardAc.price.toString()
-                        popupView.findViewById<TextView>(R.id.blockFeeAC).text =
-                            "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
-                        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
-                            if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
-                    }
-                    if (currentCardDc !== null) {
-                        popupView.findViewById<TextView>(R.id.priceDC).text =
-                            currentCardDc.price.toString()
-                        popupView.findViewById<TextView>(R.id.blockFeeDC).text =
-                            "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
-                        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
-                            if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
-                    }
-                    popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
-                        val urlIntent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(currentCard.url)
-                        )
-                        context.startActivity(urlIntent)
-                    }
-                    if (currentCard.url == null){
-                        popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
-                    }
-                }
+                CardHolderView.setOnClickListener {view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, null, cardBitmap, context)}
             }
 
             // Format the price according to the user set locale
@@ -499,5 +386,76 @@ fun fillCards(
         printLog("Cards populated for $currentType")
     }
     return cardsDownloaded
+}
+
+fun createPopup(view: View, currentCard: ChargeCards, chargeCardsAC: List<ChargeCards>, chargeCardsDC: List<ChargeCards>, currentType: String, cardImageDrawable: Drawable?, cardBitmap:Bitmap?, context: Context) {
+    // inflate the layout of the popup window
+    val inflater =
+        view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    val popupView: View =
+        inflater.inflate(R.layout.card_detail_dialog, null)
+
+    // create the popup window
+    val width = view.context.resources.displayMetrics.widthPixels
+    val height = view.context.resources.displayMetrics.heightPixels
+    val focusable = true // lets taps outside the popup also dismiss it
+    val popupWindow =
+        PopupWindow(popupView, width, height, focusable)
+
+    // show the popup window
+    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+    // set onClick Listeners for backButtons
+    popupView.findViewById<ImageButton>(R.id.back_button)
+        .setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+    // Retrieve and set Operator Image
+
+    // Set card Image
+    if (cardImageDrawable!==null) {
+        popupView.findViewById<ImageView>(R.id.card_logo).setImageDrawable(cardImageDrawable)
+    }
+    else if (cardBitmap !==null){
+        popupView.findViewById<ImageView>(R.id.card_logo).setImageBitmap(cardBitmap)
+    }
+    // Set Card Details
+    val currentCardAc: ChargeCards? =
+        if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
+    val currentCardDc: ChargeCards? =
+        if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
+    popupView.findViewById<TextView>(R.id.detail_header1).text =
+        currentCard.name
+    popupView.findViewById<TextView>(R.id.detail_header2).text =
+        currentCard.name
+    if (currentCardAc !== null) {
+        popupView.findViewById<TextView>(R.id.priceAC).text =
+            currentCardAc.price.toString()
+        popupView.findViewById<TextView>(R.id.blockFeeAC).text =
+            "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
+    }
+    if (currentCardDc !== null) {
+        popupView.findViewById<TextView>(R.id.priceDC).text =
+            currentCardDc.price.toString()
+        popupView.findViewById<TextView>(R.id.blockFeeDC).text =
+            "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
+    }
+    popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
+        val urlIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(currentCard.url.toString())
+        )
+        context.startActivity(urlIntent)
+    }
+
+    if (currentCard.url == null){
+        popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
+    }
+
 }
 
