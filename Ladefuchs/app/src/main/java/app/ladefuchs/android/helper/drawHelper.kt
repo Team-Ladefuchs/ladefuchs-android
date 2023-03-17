@@ -278,7 +278,7 @@ fun fillCards(
                             if (currentCard.blockingFee != null && currentCard.blockingFee != 0.0f) layerDrawable else layers[0]
                         )
                         // This function provides the popup window with the card metadata
-                        CardHolderView.setOnClickListener {view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, cardImageDrawable, null, context)}
+                        CardHolderView.setOnClickListener { view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, cardImageDrawable, null, context) }
                     }
                 } else {
                     resourceIdentifier?.let { imageView.setBackgroundResource(it) }
@@ -314,7 +314,7 @@ fun fillCards(
                     cardMarginRight,
                     cardMarginBottom
                 )
-                CardHolderView.setOnClickListener {view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, null, cardBitmap, context)}
+                CardHolderView.setOnClickListener { view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, null, cardBitmap, context) }
             }
 
             // Format the price according to the user set locale
@@ -388,7 +388,16 @@ fun fillCards(
     return cardsDownloaded
 }
 
-fun createPopup(view: View, currentCard: ChargeCards, chargeCardsAC: List<ChargeCards>, chargeCardsDC: List<ChargeCards>, currentType: String, cardImageDrawable: Drawable?, cardBitmap:Bitmap?, context: Context) {
+fun createPopup(
+    view: View,
+    currentCard: ChargeCards,
+    chargeCardsAC: List<ChargeCards>,
+    chargeCardsDC: List<ChargeCards>,
+    currentType: String,
+    cardImageDrawable: Drawable?,
+    cardBitmap: Bitmap?,
+    context: Context
+) {
     // inflate the layout of the popup window
     val inflater =
         view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -414,12 +423,9 @@ fun createPopup(view: View, currentCard: ChargeCards, chargeCardsAC: List<Charge
     // Retrieve and set Operator Image
 
     // Set card Image
-    if (cardImageDrawable!==null) {
-        popupView.findViewById<ImageView>(R.id.card_logo).setImageDrawable(cardImageDrawable)
-    }
-    else if (cardBitmap !==null){
-        popupView.findViewById<ImageView>(R.id.card_logo).setImageBitmap(cardBitmap)
-    }
+    popupView.findViewById<ImageView>(R.id.card_logo).setImageDrawable(if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap))
+    popupView.findViewById<ImageView>(R.id.card_logo).setBackgroundResource(R.drawable.rounded_primary_bg)
+    popupView.findViewById<ImageView>(R.id.card_logo).clipToOutline = true
     // Set Card Details
     val currentCardAc: ChargeCards? =
         if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
@@ -453,8 +459,8 @@ fun createPopup(view: View, currentCard: ChargeCards, chargeCardsAC: List<Charge
         context.startActivity(urlIntent)
     }
 
-    if (currentCard.url == null){
-        popupView.findViewById<Button>(R.id.getCard).visibility=View.INVISIBLE
+    if (currentCard.url == null) {
+        popupView.findViewById<Button>(R.id.getCard).visibility = View.INVISIBLE
     }
 
 }
