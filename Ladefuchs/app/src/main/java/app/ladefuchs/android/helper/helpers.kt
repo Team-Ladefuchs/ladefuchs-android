@@ -265,7 +265,7 @@ fun createPopup(
     popupView.findViewById<TextView>(R.id.detail_header1).text =
         currentCard.name
     popupView.findViewById<TextView>(R.id.detail_header2).text =
-        currentCard.name
+        currentCard.provider
     if (currentCardAc !== null) {
         popupView.findViewById<TextView>(R.id.priceAC).text =
             currentCardAc.price.toString()
