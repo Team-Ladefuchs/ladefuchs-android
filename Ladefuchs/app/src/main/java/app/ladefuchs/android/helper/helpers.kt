@@ -254,9 +254,7 @@ fun createPopup(
     // Retrieve and set Operator Image
 
     // Set card Image
-    popupView.findViewById<ImageView>(R.id.card_logo).setImageDrawable(if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap))
-    popupView.findViewById<ImageView>(R.id.card_logo).setBackgroundResource(R.drawable.rounded_primary_bg)
-    popupView.findViewById<ImageView>(R.id.card_logo).clipToOutline = true
+    popupView.findViewById<ImageView>(R.id.card_logo).background = if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap)
     // Set Card Details
     val currentCardAc: ChargeCards? =
         if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
@@ -268,7 +266,7 @@ fun createPopup(
         currentCard.provider
     if (currentCardAc !== null) {
         popupView.findViewById<TextView>(R.id.priceAC).text =
-            currentCardAc.price.toString()
+            java.text.DecimalFormat("#,##0.00").format(currentCardAc.price)
         popupView.findViewById<TextView>(R.id.blockFeeAC).text =
             "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
         popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
@@ -280,7 +278,7 @@ fun createPopup(
     }
     if (currentCardDc !== null) {
         popupView.findViewById<TextView>(R.id.priceDC).text =
-            currentCardDc.price.toString()
+            java.text.DecimalFormat("#,##0.00").format(currentCardDc.price)
         popupView.findViewById<TextView>(R.id.blockFeeDC).text =
             "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
         popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =

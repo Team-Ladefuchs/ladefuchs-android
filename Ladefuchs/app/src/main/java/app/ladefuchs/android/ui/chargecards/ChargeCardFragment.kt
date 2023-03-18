@@ -352,6 +352,4 @@ class ChargeCardFragment : Fragment() {
             onboarding(step + 1)
         }
     }
-
-
 }

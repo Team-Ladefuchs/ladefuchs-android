@@ -57,23 +57,30 @@
 
     <!-- Image Section-->
 
-
-    <ImageView
-        android:id="@+id/card_logo"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_container"
         android:layout_width="93dp"
         android:layout_height="63dp"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/rounded_primary_bg"
-        android:clipToOutline="true"
-        android:rotation="-20"
         app:cardCornerRadius="16dp"
+        android:rotation="-20"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.283"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_header2"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.4"
-        app:srcCompat="@drawable/card_adac" />
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/card_logo"
+            android:background="@drawable/card_adac"
+            android:adjustViewBounds="true" />
+
+    </androidx.cardview.widget.CardView>
+
 
     <ImageView
         android:id="@+id/cpo_logo"
