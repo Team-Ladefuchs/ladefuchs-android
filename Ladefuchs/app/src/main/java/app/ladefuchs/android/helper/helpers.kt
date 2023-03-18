@@ -1,12 +1,22 @@
 package app.ladefuchs.android.helper
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.view.Gravity
+import android.view.LayoutInflater
 import androidx.preference.PreferenceManager
 import android.view.View
+import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
+import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
 import app.ladefuchs.android.dataClasses.Operator
@@ -188,7 +198,7 @@ fun getPrices(
     ).sortedBy { it.price }
     printLog("Re-Filling Cards for $pocOperator")
     val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
-    return  fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
+    return fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {
@@ -202,7 +212,112 @@ fun readCardMetadata(context: Context): List<CardMetaData>? {
     return cardMetadata
 }
 
-fun getImagePath(cardUri: URL, context: Context): File {
+fun getImagePath(cardUri: URL, context: Context, cpo: Boolean = false): File {
     val cardChecksum = cardUri.path.substring(cardUri.path.lastIndexOf('/') + 1)
-    return File("${context.filesDir}/card_${cardChecksum}.jpg")
+    return File("${context.filesDir}/${if (cpo) "card" else "cpo"}_${cardChecksum}.jpg")
+}
+
+fun createPopup(
+    view: View,
+    currentCard: ChargeCards,
+    chargeCardsAC: List<ChargeCards>,
+    chargeCardsDC: List<ChargeCards>,
+    currentType: String,
+    cardImageDrawable: Drawable?,
+    cardBitmap: Bitmap?,
+    operator: Operator,
+    api: API,
+    context: Context
+) {
+    // inflate the layout of the popup window
+    val inflater =
+        view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    val popupView: View =
+        inflater.inflate(R.layout.card_detail_dialog, null)
+
+    // create the popup window
+    val width = view.context.resources.displayMetrics.widthPixels
+    val height = view.context.resources.displayMetrics.heightPixels
+    val focusable = true // lets taps outside the popup also dismiss it
+    val popupWindow =
+        PopupWindow(popupView, width, height, focusable)
+
+    // show the popup window
+    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+    // set onClick Listeners for backButtons
+    popupView.findViewById<ImageButton>(R.id.back_button)
+        .setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+    // Retrieve and set Operator Image
+
+    // Set card Image
+    popupView.findViewById<ImageView>(R.id.card_logo).setImageDrawable(if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap))
+    popupView.findViewById<ImageView>(R.id.card_logo).setBackgroundResource(R.drawable.rounded_primary_bg)
+    popupView.findViewById<ImageView>(R.id.card_logo).clipToOutline = true
+    // Set Card Details
+    val currentCardAc: ChargeCards? =
+        if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
+    val currentCardDc: ChargeCards? =
+        if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
+    popupView.findViewById<TextView>(R.id.detail_header1).text =
+        currentCard.name
+    popupView.findViewById<TextView>(R.id.detail_header2).text =
+        currentCard.name
+    if (currentCardAc !== null) {
+        popupView.findViewById<TextView>(R.id.priceAC).text =
+            currentCardAc.price.toString()
+        popupView.findViewById<TextView>(R.id.blockFeeAC).text =
+            "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
+        if (currentCardAc.blockingFee == 0.0f)
+            popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.GONE
+        else
+            popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.VISIBLE
+    }
+    if (currentCardDc !== null) {
+        popupView.findViewById<TextView>(R.id.priceDC).text =
+            currentCardDc.price.toString()
+        popupView.findViewById<TextView>(R.id.blockFeeDC).text =
+            "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
+        if (currentCardDc.blockingFee == 0.0f)
+            popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.GONE
+        else
+            popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
+    }
+    popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
+        val urlIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(currentCard.url.toString())
+        )
+        context.startActivity(urlIntent)
+    }
+
+    if (currentCard.url == null) {
+        popupView.findViewById<Button>(R.id.getCard).visibility = View.INVISIBLE
+    }
+
+    // Retrieve Operator Image
+    var operatorImage: Drawable? = null
+    if (!operator.image.isNullOrEmpty()) {
+        val imgPath = getImagePath(URL(operator.image), context, true)
+        if (!imgPath.exists())
+            api.downloadImageToInternalStorage(imageURL = URL(operator.image), cpo = true)
+        try {
+            operatorImage = Drawable.createFromPath(imgPath.absolutePath)!!
+        } catch (e: Exception) {
+            //Download was to slow or failed no need for error handling because generated image will be used
+        }
+    }
+    // creating an own image
+    if(operatorImage==null){
+        // TODO add text to placeholder
+        operatorImage = AppCompatResources.getDrawable(context, R.drawable.cpo_generic)
+    }
+    popupView.findViewById<ImageView>(R.id.cpo_logo).setImageDrawable(operatorImage)
 }

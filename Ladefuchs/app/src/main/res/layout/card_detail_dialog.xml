@@ -21,6 +21,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/detail_header2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -54,33 +55,49 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_cancel_24" />
 
+    <!-- Image Section-->
 
-        <ImageView
-            android:id="@+id/card_logo"
-            app:srcCompat="@drawable/card_adac"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="16dp"
-            android:background="@drawable/rounded_primary_bg"
-            android:clipToOutline="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_header2"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.4"
-            />
 
+    <ImageView
+        android:id="@+id/card_logo"
+        android:layout_width="93dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/rounded_primary_bg"
+        android:clipToOutline="true"
+        android:rotation="-20"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.283"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_header2"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.4"
+        app:srcCompat="@drawable/card_adac" />
+
+    <ImageView
+        android:id="@+id/cpo_logo"
+        android:layout_width="121dp"
+        android:layout_height="122dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.713"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_header2"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.4"
+        app:srcCompat="@drawable/cpo_generic" />
     <!-- AC Section-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardViewAC"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_card_details"
         app:layout_constraintEnd_toStartOf="@id/cardViewDC"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_logo"
+        app:layout_constraintTop_toBottomOf="@id/cpo_logo"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.45">
 
@@ -160,17 +177,26 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <ImageView
+        android:id="@+id/huetchen_ac"
+        android:layout_width="47dp"
+        android:layout_height="36dp"
+        app:srcCompat="@drawable/huetchen"
+        app:layout_constraintEnd_toEndOf="@id/cardViewAC"
+        app:layout_constraintTop_toTopOf="@id/cardViewAC"
+        android:layout_marginEnd="-7dp"
+        android:layout_marginTop="-2dp"
+        />
     <!-- DC Section-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardViewDC"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_card_details"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cardViewAC"
-        app:layout_constraintTop_toBottomOf="@id/card_logo"
+        app:layout_constraintTop_toBottomOf="@id/cpo_logo"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.45">
 
@@ -252,7 +278,16 @@
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="@id/textViewDC" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <ImageView
+        android:id="@+id/huetchen_dc"
+        android:layout_width="47dp"
+        android:layout_height="36dp"
+        app:srcCompat="@drawable/huetchen"
+        app:layout_constraintEnd_toEndOf="@id/cardViewDC"
+        app:layout_constraintTop_toTopOf="@id/cardViewDC"
+        android:layout_marginEnd="-7dp"
+        android:layout_marginTop="-2dp"
+        />
     <!-- Monthy Fee Section-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/monthlyFee"
