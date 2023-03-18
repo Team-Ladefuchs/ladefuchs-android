@@ -244,7 +244,7 @@ fun fillCards(
             }
             val cardImageExists = cardImagePath != null && cardImagePath.exists()
 
-            // if there is a ressource one form or another -> use it
+            // if there is a resource one form or another -> use it
             if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
                 (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
                     cardMarginLeft,

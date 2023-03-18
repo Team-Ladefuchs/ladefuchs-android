@@ -8,12 +8,14 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
 import androidx.preference.PreferenceManager
 import android.view.View
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
@@ -237,10 +239,18 @@ fun createPopup(
 
     // create the popup window
     val width = view.context.resources.displayMetrics.widthPixels
-    val height = view.context.resources.displayMetrics.heightPixels*0.95
+    val statusbarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val insets = view.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+        insets.top
+    } else {
+        val statusbarResId = context.resources?.getIdentifier("status_bar_height", "dimen", "android")
+        if (statusbarResId != null) context.resources?.getDimensionPixelSize(statusbarResId)!! else 0
+    }
+    printLog("StatusbarHeight is: ${statusbarHeight}" )
+    val height = view.context.resources.displayMetrics.heightPixels - if (statusbarHeight>110) 0 else 110
     val focusable = true // lets taps outside the popup also dismiss it
     val popupWindow =
-        PopupWindow(popupView, width, height.toInt(), focusable)
+        PopupWindow(popupView, width, height, focusable)
     popupWindow.isOutsideTouchable = false
     popupWindow.animationStyle = R.style.popup_window_animation;
     // show the popup window
@@ -314,7 +324,7 @@ fun createPopup(
         }
     }
     // creating an own image
-    if(operatorImage==null){
+    if (operatorImage == null) {
         // TODO add text to placeholder
         operatorImage = AppCompatResources.getDrawable(context, R.drawable.cpo_generic)
     }
