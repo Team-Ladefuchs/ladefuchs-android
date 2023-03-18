@@ -184,16 +184,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ImageView
         android:id="@+id/huetchen_ac"
-        android:layout_width="47dp"
-        android:layout_height="36dp"
-        app:srcCompat="@drawable/huetchen"
+        android:layout_width="25dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="-2dp"
+        android:layout_marginEnd="-5dp"
         app:layout_constraintEnd_toEndOf="@id/cardViewAC"
         app:layout_constraintTop_toTopOf="@id/cardViewAC"
-        android:layout_marginEnd="-7dp"
-        android:layout_marginTop="-2dp"
-        />
+        app:srcCompat="@drawable/huetchen" />
     <!-- DC Section-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardViewDC"
@@ -285,16 +285,16 @@
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="@id/textViewDC" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ImageView
         android:id="@+id/huetchen_dc"
-        android:layout_width="47dp"
-        android:layout_height="36dp"
-        app:srcCompat="@drawable/huetchen"
+        android:layout_width="25dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="-2dp"
+        android:layout_marginEnd="-5dp"
         app:layout_constraintEnd_toEndOf="@id/cardViewDC"
         app:layout_constraintTop_toTopOf="@id/cardViewDC"
-        android:layout_marginEnd="-7dp"
-        android:layout_marginTop="-2dp"
-        />
+        app:srcCompat="@drawable/huetchen" />
     <!-- Monthy Fee Section-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/monthlyFee"

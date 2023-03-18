@@ -237,13 +237,14 @@ fun createPopup(
 
     // create the popup window
     val width = view.context.resources.displayMetrics.widthPixels
-    val height = view.context.resources.displayMetrics.heightPixels
+    val height = view.context.resources.displayMetrics.heightPixels*0.95
     val focusable = true // lets taps outside the popup also dismiss it
     val popupWindow =
-        PopupWindow(popupView, width, height, focusable)
-
+        PopupWindow(popupView, width, height.toInt(), focusable)
+    popupWindow.isOutsideTouchable = false
+    popupWindow.animationStyle = R.style.popup_window_animation;
     // show the popup window
-    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+    popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0)
 
     // set onClick Listeners for backButtons
     popupView.findViewById<ImageButton>(R.id.back_button)
