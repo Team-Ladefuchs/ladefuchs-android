@@ -127,7 +127,7 @@ class API(private var context: Context) {
     /**
      * This function retrieves the current list of operators
      */
-    fun retrieveOperatorList(): List<String> {
+    fun retrieveOperatorList(): List<Operator> {
 
         val JSONUrl = apiBaseURL + apiVersionPath + "operators/enabled"
         val JSONFileName = "operators.json"
@@ -153,7 +153,7 @@ class API(private var context: Context) {
         }
         if (operators != null) {
             // operators are presorted from the API .
-            return operators.map { item -> item.displayName }.sortedBy { it.lowercase() }
+            return operators.sortedBy { it.displayName.lowercase() }
         }
         return listOf()
     }
@@ -161,13 +161,13 @@ class API(private var context: Context) {
     /**
      * This function downloads an image from the API and saves it in local storage
      */
-    fun downloadImageToInternalStorage(imageURL: URL, imgPath: File? = null) {
+    fun downloadImageToInternalStorage(imageURL: URL, imgPath: File? = null, cpo: Boolean = false) {
 
         if (isOffline()) {
             printLog("Device is offline", "network")
             return
         }
-        val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context)
+        val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context, cpo)
         printLog("Downloading image: ${imageURL.path}", "network")
 
         Thread {

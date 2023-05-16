@@ -28,9 +28,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.ladefuchs.android.R
 import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
 import app.ladefuchs.android.dataClasses.Banner
+import app.ladefuchs.android.dataClasses.Operator
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
-
 import java.io.File
 import java.nio.file.Paths
 
@@ -40,8 +40,8 @@ class ChargeCardFragment : Fragment() {
     private var useBetaAPI: Boolean = false
     private var onboarding: Boolean = true
     private var showBanner: Boolean = true
-    private var pocOperatorList: List<String> = listOf()
-    private var currentPoc: String = ""
+    private var pocOperatorList: List<Operator> = listOf()
+    private var currentPoc: Operator? = null
     private var api: API? = null
     private var prefs: SharedPreferences? = null
     private var cardsNeedRefresh: Boolean = false
@@ -62,8 +62,7 @@ class ChargeCardFragment : Fragment() {
     }
 
     /**
-     * This is the initia
-     lisation function that will be called on creation
+     * This is the initialisation function that will be called on creation
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -114,13 +113,12 @@ class ChargeCardFragment : Fragment() {
             return
 
         currentPoc = pocOperatorList[0]
-        printLog("First Operator is $currentPoc")
         // add easterEggOnclickListener
         easterEgg(view)
         //initialize Price List
         printLog("Triggering Refresh with $currentPoc")
         cardsNeedRefresh = getPrices(
-            currentPoc,
+            currentPoc!!,
             forceDownload = false,
             requireContext(),
             api!!,
@@ -129,7 +127,7 @@ class ChargeCardFragment : Fragment() {
         )
         if (cardsNeedRefresh) {
             printLog("Triggering view Refresh @124")
-            refreshCardView(currentPoc)
+            refreshCardView(currentPoc!!)
         }
         // initialize picker
         val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
@@ -142,7 +140,7 @@ class ChargeCardFragment : Fragment() {
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
             printLog("CPO selected: $data")
             cardsNeedRefresh = getPrices(
-                data.toString().lowercase(),
+                data as Operator,
                 forceDownload = false,
                 requireContext(),
                 api!!,
@@ -151,9 +149,9 @@ class ChargeCardFragment : Fragment() {
             )
             printLog("Picker Switched to CPO: $data")
             if (cardsNeedRefresh) {
-                refreshCardView(currentPoc)
+                refreshCardView(currentPoc!!)
             }
-            currentPoc = data.toString().lowercase()
+            currentPoc = data
         }
         // set the colors of the Pull To Refresh View
         requireContext().let {
@@ -166,7 +164,7 @@ class ChargeCardFragment : Fragment() {
         // RefreshListener
         swipetorefresh.setOnRefreshListener {
             printLog("Swipe to Refresh with $currentPoc")
-            getPrices(currentPoc, forceDownload = true, requireContext(), api!!, view, resources)
+            getPrices(currentPoc!!, forceDownload = true, requireContext(), api!!, view, resources)
             swipetorefresh.isRefreshing = false
         }
         // check whether onboarding should be shown
@@ -197,7 +195,7 @@ class ChargeCardFragment : Fragment() {
 
     }
 
-    private fun refreshCardView(CPOSelected: String) {
+    private fun refreshCardView(CPOSelected: Operator) {
         printLog("Refreshing Charge Card View with $CPOSelected")
         view?.let {
             getPrices(
@@ -354,6 +352,4 @@ class ChargeCardFragment : Fragment() {
             onboarding(step + 1)
         }
     }
-
-
 }

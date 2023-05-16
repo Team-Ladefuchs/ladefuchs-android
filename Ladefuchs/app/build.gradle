@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    // id 'kotlin-parcelize' only needed later for the card infos
+    id 'kotlin-parcelize'
 }
 
 android {

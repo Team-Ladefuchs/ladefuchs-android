@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_navigation_chargecards_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_card_to_detail"
+            app:destination="@id/card_detail" />
     </fragment>
     <fragment
         android:id="@+id/feedbackfuchs"
@@ -71,6 +74,18 @@
         <action
             android:id="@+id/action_acknowledgement_to_navigation_about"
             app:destination="@id/navigation_about" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/card_detail"
+        android:name="app.ladefuchs.android.ui.chargecards.ChargeCardDetail"
+        android:label="CardDetail">
+        <action
+            android:id="@+id/action_detail_to_main_screen"
+            app:destination="@id/navigation_chargecards" />
+        <argument
+            android:name="cardData"
+            app:argType="app.ladefuchs.android.dataClasses.ChargeCards" />
     </fragment>
 
 </navigation>
