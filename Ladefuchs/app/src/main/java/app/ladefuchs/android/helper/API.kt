@@ -3,12 +3,17 @@ package app.ladefuchs.android.helper
 import android.content.Context
 import android.provider.Settings
 import app.ladefuchs.android.BuildConfig
+import app.ladefuchs.android.dataClasses.AllCardsRequest
+import app.ladefuchs.android.dataClasses.AllCardsResponse
 import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -17,12 +22,13 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
+
 class API(private var context: Context) {
     private val apiToken: String = BuildConfig.apiKey
 
     // current configuration
-    private var apiBaseURL: String = "https://api.ladefuchs.app/"
-    private var apiVersionPath: String = "v2/"
+    private var apiBaseURL: String = "https://api.ladefuchs.app"
+    private var apiVersionPath: String = "v2"
 
     // production settings
     private val apiBaseRegularURL: String = "https://api.ladefuchs.app/"
@@ -31,6 +37,10 @@ class API(private var context: Context) {
     // beta settings
     private val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
     private val apiVersionBetaPath: String = ""
+
+
+    private val jsonType = "application/json; charset=utf-8".toMediaType();
+    private val client = OkHttpClient()
 
     /**
      * This function switches to production API
@@ -77,7 +87,6 @@ class API(private var context: Context) {
         }
 
         printLog("Downloading to Internal Storage $JSONUrl", "network")
-        val client = OkHttpClient()
         val url = URL(JSONUrl)
         val request = Request.Builder()
             .url(url)
@@ -129,7 +138,7 @@ class API(private var context: Context) {
      */
     fun retrieveOperatorList(): List<Operator> {
 
-        val JSONUrl = apiBaseURL + apiVersionPath + "operators/enabled"
+        val JSONUrl = "$apiBaseURL/$apiVersionPath/operators/enabled"
         val JSONFileName = "operators.json"
         // download the latest operator list
         downloadJSONToInternalStorage(JSONUrl, JSONFileName)
@@ -158,7 +167,61 @@ class API(private var context: Context) {
         return listOf()
     }
 
-    /**
+
+    fun downloadAllCards(operatorList: List<Operator>){
+
+        val t = Thread {
+            try {
+                val operatorIds =  operatorList.map { it.identifier }
+                val requestBody = Klaxon().toJsonString(AllCardsRequest(operatorIds)).toRequestBody(jsonType);
+                val request = Request.Builder()
+                    .url("$apiBaseURL/$apiVersionPath/cards/de")
+                    .post(requestBody)
+                    .header("Authorization", "Bearer $apiToken")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    if (response.code != 200) {
+                        printLog("Couldn't retrieve all cards: ${response.code}:$response", "error")
+                        return@Thread;
+                    }
+                    val allCards = response.body!!.byteStream().use { body ->
+                        Klaxon().parseArray<AllCardsResponse>(body)
+                    } ?: emptyList()
+
+                    for(card in allCards){
+                        writeCardToStorage(card.operator, ChargeType.AC, card.ac)
+                        writeCardToStorage(card.operator, ChargeType.DC, card.dc)
+                    }
+                }
+            } catch (e: Exception) {
+                printLog("exception retrieve all cards, error: ${e.message}", "error")
+            }
+        }
+
+        t.start();
+        t.join();
+
+    }
+    private fun writeCardToStorage( operatorId: String, chargeType: ChargeType, cards: List<ChargeCards> ) {
+        val JSONFileName = getCardFileName(operatorId, chargeType);
+        val path = context.getFileStreamPath(JSONFileName).toPath()
+        val JSONFile = File(path.toString())
+        if (JSONFile.exists()){
+            return
+        }
+        printLog("write card for $operatorId ac/dc to disk");
+        try {
+            Files.write(path, Klaxon().toJsonString(cards).toByteArray())
+        }catch (e: Exception) {
+            println("An error occurred while writing the file: ")
+            printLog("An error occurred while writing the file $chargeType, $JSONFile, $operatorId: ${e.message}", "error")
+
+        }
+    }
+
+
+
+        /**
      * This function downloads an image from the API and saves it in local storage
      */
     fun downloadImageToInternalStorage(imageURL: URL, imgPath: File? = null, cpo: Boolean = false) {
@@ -178,7 +241,6 @@ class API(private var context: Context) {
                     .get()
                     .header("Authorization", "Bearer $apiToken")
                     .build()
-                val client = OkHttpClient()
                 client.newCall(request).execute().use { response ->
                     if (response.code == 200) {
                         response.body!!.byteStream().use { input ->
@@ -197,22 +259,22 @@ class API(private var context: Context) {
         }.start()
     }
 
+    private fun getCardFileName(pocOperatorId:String, currentType: ChargeType): String {
+        return "de-$pocOperatorId-$currentType.json"
+    }
+
     /**
      * This function retrieves the prices for a specific chargecard-chargetype combination
      */
     fun readPrices(
-        pocOperator: String,
-        currentType: String,
+        pocOperatorId: String,
+        currentType: ChargeType,
         forceDownload: Boolean = false,
         skipDownload: Boolean = false
     ): List<ChargeCards> {
 
         //Load Prices JSON from File
-        val country = "de"
-        val replaceRule = Regex("[^A-Za-z0-9.+-]")
-        val pocOperatorClean = replaceRule.replace(pocOperator, "").lowercase(Locale.getDefault())
-        printLog("ReadPrices for $pocOperatorClean")
-        val JSONFileName = "$country-$pocOperatorClean-$currentType.json"
+        val JSONFileName = getCardFileName(pocOperatorId, currentType)
         var chargeCards: List<ChargeCards> = listOf()
         var forceInitialDownload = forceDownload
 
@@ -244,8 +306,7 @@ class API(private var context: Context) {
                     forceDownload ||
                     forceInitialDownload)
         ) {
-            val JSONUrl =
-                apiBaseURL + apiVersionPath + "cards/" + country.lowercase() + "/" + pocOperatorClean.lowercase() + "/" + currentType.lowercase()
+            val JSONUrl = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId/currentType"
             printLog("Data in $JSONFileName is outdated or update was forced, Updating from API: $JSONUrl")
             downloadJSONToInternalStorage(JSONUrl, JSONFileName)
             // load the freshly downloaded JSON file
@@ -260,13 +321,6 @@ class API(private var context: Context) {
             }
         }
 
-
-        val maingauPrices = getMaingauPrices(currentType, pocOperatorClean, context)
-        if (maingauPrices.name.isNotEmpty() && pocOperatorClean.lowercase() != "ladeverbund+") {
-            chargeCards = chargeCards.toMutableList()
-            chargeCards.add(maingauPrices)
-        }
-
         return chargeCards
     }
 
@@ -276,11 +330,10 @@ class API(private var context: Context) {
             printLog("Getting Banners")
             try {
                 val request = Request.Builder()
-                    .url(apiBaseURL + "banners")
+                    .url("$apiBaseURL/banners")
                     .get()
                     .header("Authorization", "Bearer $apiToken")
                     .build()
-                val client = OkHttpClient()
                 client.newCall(request).execute().use { response ->
                     if (response.code == 200) {
                         Klaxon().parseArray<Banner>(response.body!!.string())?.forEach { banner ->

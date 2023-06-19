@@ -334,6 +334,58 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+
+    <ImageView
+        android:id="@+id/huetchenNotes"
+        android:layout_width="25dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="-2dp"
+        android:layout_marginEnd="-5dp"
+        android:visibility="gone"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="@id/notes"
+        app:layout_constraintTop_toTopOf="@id/notes"
+        app:srcCompat="@drawable/huetchen" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/notes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:background="@drawable/rounded_card_details3"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="@id/monthlyFee"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/monthlyFee"
+        app:layout_constraintTop_toBottomOf="@id/monthlyFee">
+
+        <TextView
+            android:id="@+id/notesHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:text="@string/NotesHeader"
+            android:textAlignment="textStart"
+            android:textAllCaps="true"
+            android:textColor="@color/TextColorDisabled"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/notesText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="keine"
+            android:textAlignment="textStart"
+            android:textColor="@color/TextColorBlack"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/notesHeader" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <Button
         android:id="@+id/getCard"
         android:layout_width="0dp"
