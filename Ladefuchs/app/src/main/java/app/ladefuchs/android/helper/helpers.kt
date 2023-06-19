@@ -15,23 +15,28 @@ import androidx.preference.PreferenceManager
 import android.view.View
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
 import java.io.File
 import java.io.InputStream
 import java.net.URL
+import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+private val pricesSemaphore = Semaphore(1)
+var currentPopup: PopupWindow? = null
 
 /**
- * Function to log while in Debug mode
+ Function to log while in Debug mode
  */
 fun printLog(message: String, type: String = "info") {
     if (BuildConfig.DEBUG) {
@@ -185,22 +190,25 @@ fun getPrices(
     skipDownload: Boolean = false
 ): Boolean {
     //Load Prices JSON from File
-    printLog("Getting prices for $pocOperator")
-    val chargeCardsAC = api.readPrices(
-        pocOperator.toString(),
-        "ac",
-        forceDownload,
-        skipDownload
-    ).sortedBy { it.price }
-    val chargeCardsDC = api.readPrices(
-        pocOperator.toString(),
-        "dc",
-        forceDownload,
-        skipDownload
-    ).sortedBy { it.price }
-    printLog("Re-Filling Cards for $pocOperator")
-    val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
-    return fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
+        pricesSemaphore.acquire();
+        printLog("Getting prices for $pocOperator")
+        val chargeCardsAC = api.readPrices(
+            pocOperator.identifier,
+            ChargeType.AC,
+            forceDownload,
+            skipDownload
+        ).sortedBy { it.price }
+        val chargeCardsDC = api.readPrices(
+            pocOperator.identifier,
+            ChargeType.DC,
+            forceDownload,
+            skipDownload
+        ).sortedBy { it.price }
+        printLog("Re-Filling Cards for $pocOperator")
+        val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
+        pricesSemaphore.release()
+        return fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
+
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {
@@ -224,7 +232,7 @@ fun createPopup(
     currentCard: ChargeCards,
     chargeCardsAC: List<ChargeCards>,
     chargeCardsDC: List<ChargeCards>,
-    currentType: String,
+    currentType: ChargeType,
     cardImageDrawable: Drawable?,
     cardBitmap: Bitmap?,
     operator: Operator,
@@ -232,6 +240,9 @@ fun createPopup(
     context: Context
 ) {
     // inflate the layout of the popup window
+
+    currentPopup?.dismiss()
+
     val inflater =
         view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     val popupView: View =
@@ -249,17 +260,16 @@ fun createPopup(
     printLog("StatusbarHeight is: ${statusbarHeight}" )
     val height = view.context.resources.displayMetrics.heightPixels - if (statusbarHeight>110) 0 else 110
     val focusable = true // lets taps outside the popup also dismiss it
-    val popupWindow =
-        PopupWindow(popupView, width, height, focusable)
-    popupWindow.isOutsideTouchable = false
-    popupWindow.animationStyle = R.style.popup_window_animation;
+    currentPopup = PopupWindow(popupView, width, height, focusable)
+    currentPopup?.isOutsideTouchable = false
+    currentPopup?.animationStyle = R.style.popup_window_animation;
     // show the popup window
-    popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0)
+    currentPopup?.showAtLocation(view, Gravity.BOTTOM, 0, 0)
 
     // set onClick Listeners for backButtons
     popupView.findViewById<ImageButton>(R.id.back_button)
         .setOnClickListener {
-            popupWindow.dismiss()
+            currentPopup?.dismiss()
         }
 
     // Retrieve and set Operator Image
@@ -268,9 +278,9 @@ fun createPopup(
     popupView.findViewById<ImageView>(R.id.card_logo).background = if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap)
     // Set Card Details
     val currentCardAc: ChargeCards? =
-        if (currentType == "ac") currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
+        if (currentType == ChargeType.AC) currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
     val currentCardDc: ChargeCards? =
-        if (currentType == "dc") currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
+        if (currentType == ChargeType.DC) currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
     popupView.findViewById<TextView>(R.id.detail_header1).text =
         currentCard.name
     popupView.findViewById<TextView>(R.id.detail_header2).text =
@@ -299,6 +309,13 @@ fun createPopup(
         else
             popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
     }
+
+    if (!currentCard.note.isNullOrEmpty()){
+        popupView.findViewById<ConstraintLayout>(R.id.notes).visibility = View.VISIBLE
+        popupView.findViewById<ImageView>(R.id.huetchenNotes).visibility = View.VISIBLE
+        popupView.findViewById<TextView>(R.id.notesText).text =  currentCard.note;
+    }
+
     popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
         val urlIntent = Intent(
             Intent.ACTION_VIEW,

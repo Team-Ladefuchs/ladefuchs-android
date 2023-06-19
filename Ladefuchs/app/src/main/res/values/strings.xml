@@ -99,4 +99,5 @@
     <string name="get_card_text">Hol dir die Karte!</string>
     <string name="blockFeeHeader">Blockiergebühr</string>
     <string name="monthlyFeeHeader">Monatliche Gebühr</string>
+    <string name="NotesHeader">Notizen</string>
 </resources>

@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
 import java.io.File
 import java.net.URL
@@ -149,7 +150,7 @@ fun fillCards(
     resources: Resources,
     paintStroke: Boolean = false,
 ): Boolean {
-    val types = listOf("ac", "dc")
+    val types = listOf(ChargeType.AC, ChargeType.DC)
     var cardsDownloaded = false
     types.forEach { currentType ->
         printLog("Filling cards for $currentType")
@@ -158,9 +159,9 @@ fun fillCards(
         val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
         val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
         // Define Views to attach Card Tables to and required Variables
-        val columnSide = if (currentType.lowercase() == "dc") "right" else "left"
+        val columnSide = if (currentType== ChargeType.DC) "right" else "left"
         var i = 0
-        val columnName = "chargeCardsTableHolder" + currentType.uppercase()
+        val columnName = "chargeCardsTableHolder" + currentType.toString().uppercase()
         val chargeCardsColumn: LinearLayout =
             view.findViewById(
                 resources.getIdentifier(
@@ -170,7 +171,7 @@ fun fillCards(
                 )
             ) ?: return false
         chargeCardsColumn.removeAllViews()
-        val chargeCards = if (currentType == "ac") chargeCardsAC else chargeCardsDC
+        val chargeCards = if (currentType == ChargeType.AC) chargeCardsAC else chargeCardsDC
         chargeCards.forEach cards@{ currentCard ->
 
             val cardIdentifier = "card_" + currentCard.identifier
