@@ -110,10 +110,10 @@ class ChargeCardFragment : Fragment() {
 
         printLog("Operator List $pocOperatorList")
 
+
         if (pocOperatorList.isEmpty()) {
             return
         }
-
 
         api!!.downloadAllCards(pocOperatorList)
 
@@ -255,21 +255,18 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
+
         if (showBanner) {
-            val banner: Banner = api!!.retrieveBanners()
-            if (File("${requireContext().filesDir}/${banner.filename}").exists()) {
-                drawPromoBanner(
-                    view,
-                    banner
-                )
+            val banner = api?.retrieveBanners()
+            if (banner != null && File("${requireContext().filesDir}/${banner.filename}").exists()) {
+                drawPromoBanner(view, banner)
                 return
             }
         }
-        val phrases =
-            requireContext().applicationContext.assets?.open("phrases.txt")?.bufferedReader()
-                .use { it?.readLines() }
+
+        val phrases = requireContext().applicationContext.assets.open("phrases.txt").bufferedReader().readLines()
         printLog("Falling back on your mom", "debug")
-        phraseView.text = phrases?.random() ?: ""
+        phraseView.text = phrases.randomOrNull() ?: ""
 
     }
 

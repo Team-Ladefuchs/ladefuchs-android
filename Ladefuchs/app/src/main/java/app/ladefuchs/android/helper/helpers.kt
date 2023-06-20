@@ -26,8 +26,8 @@ import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
 import java.io.File
-import java.io.InputStream
 import java.net.URL
+import java.nio.file.Files
 import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -64,20 +64,17 @@ fun printLog(message: String, type: String = "info") {
  * Stores a file in internal storage
  */
 fun storeFileInInternalStorage(
-    inputStream: InputStream,
+    input: String,
     internalStorageFileName: String,
     context: Context
 ) {
-    val outputStream = context.openFileOutput(internalStorageFileName, Context.MODE_PRIVATE)
-    val buffer = ByteArray(1024)
-    inputStream.use {
-        while (true) {
-            val byeCount = it.read(buffer)
-            if (byeCount < 0) break
-            outputStream?.write(buffer, 0, byeCount)
-        }
-        outputStream?.close()
-        printLog("Writing File: " + internalStorageFileName + " to " + context.filesDir.toString())
+    try {
+        val file = File(context.getFileStreamPath(internalStorageFileName).toString())
+        file.writeText(input)
+        printLog("Writing File: $internalStorageFileName to ${context.filesDir}");
+    }catch (e: Exception){
+        printLog("could not save file $internalStorageFileName", "error")
+        e.printStackTrace()
     }
 }
 
@@ -192,22 +189,15 @@ fun getPrices(
     //Load Prices JSON from File
         pricesSemaphore.acquire();
         printLog("Getting prices for $pocOperator")
-        val chargeCardsAC = api.readPrices(
+        val (_, acCards, dcCards) = api.readPrices(
             pocOperator.identifier,
-            ChargeType.AC,
             forceDownload,
             skipDownload
-        ).sortedBy { it.price }
-        val chargeCardsDC = api.readPrices(
-            pocOperator.identifier,
-            ChargeType.DC,
-            forceDownload,
-            skipDownload
-        ).sortedBy { it.price }
+        )
         printLog("Re-Filling Cards for $pocOperator")
-        val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
+        val maxListLength = maxOf(acCards.size, dcCards.size)
         pricesSemaphore.release()
-        return fillCards(pocOperator, chargeCardsAC, chargeCardsDC, maxListLength, context, view, api, resources)
+        return fillCards(pocOperator, acCards, dcCards, maxListLength, context, view, api, resources)
 
 }
 
