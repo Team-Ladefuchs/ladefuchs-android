@@ -68,7 +68,6 @@ class API(private var context: Context) {
     }
 
     private inline fun downloadJson(JSONUrl: String): String {
-
         if (isOffline()) {
             printLog("Device is offline", "network")
             return ""
@@ -167,7 +166,6 @@ class API(private var context: Context) {
                     } ?: emptyList()
 
                     allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
-
                 }
             } catch (e: Exception) {
                 printLog("exception retrieve all cards, error: ${e.message}", "error")
@@ -259,7 +257,6 @@ class API(private var context: Context) {
         pocOperatorId: String,
         forceDownload: Boolean = false,
     ): AllCardsResponse {
-
         val found = if (!forceDownload) allCardsCache.getOrDefault(pocOperatorId, null) else null
         if (found != null) {
             printLog("Found cards for $pocOperatorId in cache")
@@ -281,6 +278,7 @@ class API(private var context: Context) {
             if (dcJson.isNotEmpty()) {
                 chargeCards.dc = klaxon.parseArray(dcJson) ?: emptyList()
             }
+            allCardsCache[pocOperatorId] = chargeCards
             printLog("Write ac/dc cards for operator: $pocOperatorId to file: $cardFileName")
             writeJsonToStorage(klaxon.toJsonString(chargeCards), cardFileName)
             return chargeCards;
@@ -294,6 +292,7 @@ class API(private var context: Context) {
             }
             val cards = Klaxon().parse<AllCardsResponse>(json);
             if (cards != null) {
+                chargeCards = cards
                 allCardsCache[pocOperatorId] = cards
             }
         } catch (e: Exception) {
@@ -307,7 +306,6 @@ class API(private var context: Context) {
     }
 
     fun retrieveBanners(): Banner? {
-
         if (isOffline()) {
             return null
         }
