@@ -27,7 +27,6 @@ import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
 import java.io.File
 import java.net.URL
-import java.nio.file.Files
 import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -36,7 +35,7 @@ private val pricesSemaphore = Semaphore(1)
 var currentPopup: PopupWindow? = null
 
 /**
- Function to log while in Debug mode
+Function to log while in Debug mode
  */
 fun printLog(message: String, type: String = "info") {
     if (BuildConfig.DEBUG) {
@@ -46,12 +45,15 @@ fun printLog(message: String, type: String = "info") {
             "error" -> {
                 typeIcon = "🛑"
             }
+
             "warning" -> {
                 typeIcon = "⚠️"
             }
+
             "heart" -> {
                 typeIcon = "❤️"
             }
+
             "network" -> {
                 typeIcon = "⏬️"
             }
@@ -68,11 +70,14 @@ fun storeFileInInternalStorage(
     internalStorageFileName: String,
     context: Context
 ) {
+    if (input.isEmpty()) {
+        return
+    }
     try {
         val file = File(context.getFileStreamPath(internalStorageFileName).toString())
         file.writeText(input)
         printLog("Writing File: $internalStorageFileName to ${context.filesDir}");
-    }catch (e: Exception){
+    } catch (e: Exception) {
         printLog("could not save file $internalStorageFileName", "error")
         e.printStackTrace()
     }
@@ -102,72 +107,6 @@ fun manipulateColor(color: Int, factor: Float): Int {
 }
 
 /**
- * Returns Maingau prices depending whether the charger is from ionity and whether ac or dc prices are requested
- */
-fun getMaingauPrices(type: String, pocOperator: String, context: Context): ChargeCards {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    //Load Pricetoggle from prefs
-    val hasMaingauCustomerPrices = prefs.getBoolean("specialMaingauCustomer", false)
-
-    val maingauIonityPrice = 0.75F
-    val maingauAcPrice = 0.49F
-    val maingauDcPrice = 0.59F
-
-    var maingauPrice = ChargeCards(
-        identifier = "",
-        name = "",
-        provider = "",
-        price = 0.0f,
-        updated = System.currentTimeMillis() / 1000L,
-        "",
-        blockingFeeStart = 0,
-        monthlyFee = 0f
-    )
-    if (hasMaingauCustomerPrices) {
-        when {
-            pocOperator.lowercase() == "ionity" && type == "dc" -> {
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauIonityPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-            type == "ac" && pocOperator.lowercase() != "ionity" -> {
-
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauAcPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-            type == "dc" && pocOperator.lowercase() != "ionity" -> {
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauDcPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-        }
-    }
-    return maingauPrice
-}
-
-/**
  * A function to safely open other pages
  */
 fun NavController.safeNavigate(actionId: Int) {
@@ -177,27 +116,25 @@ fun NavController.safeNavigate(actionId: Int) {
 /**
  * This function retrieves the prices for a specific operator
  */
-fun getPrices(
+fun getPricesByOperatorId(
     pocOperator: Operator,
-    forceDownload: Boolean = false,
     context: Context,
     api: API,
     view: View,
     resources: Resources,
-    skipDownload: Boolean = false
+    forceDownload: Boolean = false,
 ): Boolean {
     //Load Prices JSON from File
-        pricesSemaphore.acquire();
-        printLog("Getting prices for $pocOperator")
-        val (_, acCards, dcCards) = api.readPrices(
-            pocOperator.identifier,
-            forceDownload,
-            skipDownload
-        )
-        printLog("Re-Filling Cards for $pocOperator")
-        val maxListLength = maxOf(acCards.size, dcCards.size)
-        pricesSemaphore.release()
-        return fillCards(pocOperator, acCards, dcCards, maxListLength, context, view, api, resources)
+    pricesSemaphore.acquire();
+    printLog("Getting prices for $pocOperator")
+    val (_, acCards, dcCards) = api.retrieveCards(
+        pocOperator.identifier,
+        forceDownload
+    )
+    printLog("Re-Filling Cards for $pocOperator")
+    val maxListLength = maxOf(acCards.size, dcCards.size)
+    pricesSemaphore.release()
+    return fillCards(pocOperator, acCards, dcCards, maxListLength, context, view, api, resources)
 
 }
 
@@ -244,11 +181,13 @@ fun createPopup(
         val insets = view.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
         insets.top
     } else {
-        val statusbarResId = context.resources?.getIdentifier("status_bar_height", "dimen", "android")
+        val statusbarResId =
+            context.resources?.getIdentifier("status_bar_height", "dimen", "android")
         if (statusbarResId != null) context.resources?.getDimensionPixelSize(statusbarResId)!! else 0
     }
-    printLog("StatusbarHeight is: ${statusbarHeight}" )
-    val height = view.context.resources.displayMetrics.heightPixels - if (statusbarHeight>110) 0 else 110
+    printLog("StatusbarHeight is: ${statusbarHeight}")
+    val height =
+        view.context.resources.displayMetrics.heightPixels - if (statusbarHeight > 110) 0 else 110
     val focusable = true // lets taps outside the popup also dismiss it
     currentPopup = PopupWindow(popupView, width, height, focusable)
     currentPopup?.isOutsideTouchable = false
@@ -265,7 +204,11 @@ fun createPopup(
     // Retrieve and set Operator Image
 
     // Set card Image
-    popupView.findViewById<ImageView>(R.id.card_logo).background = if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(context.resources, cardBitmap)
+    popupView.findViewById<ImageView>(R.id.card_logo).background =
+        if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(
+            context.resources,
+            cardBitmap
+        )
     // Set Card Details
     val currentCardAc: ChargeCards? =
         if (currentType == ChargeType.AC) currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
@@ -300,10 +243,10 @@ fun createPopup(
             popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
     }
 
-    if (!currentCard.note.isNullOrEmpty()){
+    if (!currentCard.note.isNullOrEmpty()) {
         popupView.findViewById<ConstraintLayout>(R.id.notes).visibility = View.VISIBLE
         popupView.findViewById<ImageView>(R.id.huetchenNotes).visibility = View.VISIBLE
-        popupView.findViewById<TextView>(R.id.notesText).text =  currentCard.note;
+        popupView.findViewById<TextView>(R.id.notesText).text = currentCard.note;
     }
 
     popupView.findViewById<Button>(R.id.getCard).setOnClickListener {

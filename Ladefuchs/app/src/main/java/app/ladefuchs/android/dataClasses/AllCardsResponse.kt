@@ -1,3 +1,7 @@
 package app.ladefuchs.android.dataClasses
 
-data class AllCardsResponse(val operator: String, val ac: List<ChargeCards>, val dc: List<ChargeCards>)
+data class AllCardsResponse(
+    val operator: String,
+    var ac: List<ChargeCards>,
+    var dc: List<ChargeCards>
+)
