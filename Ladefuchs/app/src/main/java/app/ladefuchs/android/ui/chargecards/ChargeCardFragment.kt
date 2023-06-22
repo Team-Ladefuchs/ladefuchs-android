@@ -3,6 +3,7 @@ package app.ladefuchs.android.ui.chargecards
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -33,7 +34,6 @@ import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
 import java.io.File
 import java.nio.file.Paths
-import java.util.concurrent.Semaphore
 
 //import com.tylerthrailkill.helpers.prettyprint
 
@@ -110,6 +110,12 @@ class ChargeCardFragment : Fragment() {
 
         printLog("Operator List $pocOperatorList")
 
+        // initialize picker
+        val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
+        //Switch to a more 3D, iOS-style Look
+        wheelPicker.setAtmospheric(true)
+        wheelPicker.isCurved = true
+        wheelPicker.data = pocOperatorList
 
         if (pocOperatorList.isEmpty()) {
             return
@@ -122,9 +128,9 @@ class ChargeCardFragment : Fragment() {
         easterEgg(view)
         //initialize Price List
         printLog("Triggering Refresh with $currentPoc")
-        cardsNeedRefresh = getPrices(
+
+        cardsNeedRefresh = getPricesByOperatorId(
             currentPoc!!,
-            forceDownload = false,
             requireContext(),
             api!!,
             view,
@@ -134,33 +140,11 @@ class ChargeCardFragment : Fragment() {
             printLog("Triggering view Refresh @124")
             refreshCardView(currentPoc!!)
         }
-        // initialize picker
-        val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
-        //Switch to a more 3D, iOS-style Look
-        wheelPicker.setAtmospheric(true)
-        wheelPicker.isCurved = true
-        wheelPicker.data = pocOperatorList.toMutableList()
+
         // Loading the pocList into the Picker Library
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
-
-
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
-            currentPoc = data as Operator;
-            val currentPocCopy = currentPoc!!.copy()
-            printLog("CPO selected: $currentPocCopy, ${currentPocCopy?.identifier}")
-            cardsNeedRefresh = getPrices(
-                currentPocCopy!!,
-                forceDownload = false,
-                requireContext(),
-                api!!,
-                view,
-                resources
-            )
-
-            printLog("Picker Switched to CPO: $currentPocCopy")
-            if (cardsNeedRefresh) {
-                refreshCardView(currentPocCopy!!)
-            }
+            handleOperatorSelected(data as Operator, view, resources)
 
         }
         // set the colors of the Pull To Refresh View
@@ -174,15 +158,27 @@ class ChargeCardFragment : Fragment() {
         // RefreshListener
         swipetorefresh.setOnRefreshListener {
             printLog("Swipe to Refresh with $currentPoc")
-            getPrices(currentPoc!!.copy(), forceDownload = true, requireContext(), api!!, view, resources)
+            getPricesByOperatorId(
+                currentPoc!!.copy(),
+                requireContext(),
+                api!!,
+                view,
+                resources,
+                forceDownload = true,
+            )
             swipetorefresh.isRefreshing = false
         }
         // check whether onboarding should be shown
         if (onboarding) {
             onboarding()
         }
+        legacyCardsNotice()
+    }
 
-        //check if user previously selected cards
+    /**
+     * check if user previously selected cards
+     */
+    private fun legacyCardsNotice() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val selectedCards = sharedPreferences.getString("selectedChargeCards", null)
         printLog("Selected Cards: $selectedCards")
@@ -202,15 +198,34 @@ class ChargeCardFragment : Fragment() {
             val preferences: SharedPreferences.Editor? = sharedPreferences.edit()
             preferences?.remove("selectedChargeCards")?.apply()
         }
+    }
 
+    private fun handleOperatorSelected(operator: Operator, view: View, resources: Resources) {
+        val currentPocCopy = operator.copy()
+        printLog("CPO selected: $currentPocCopy, ${currentPocCopy?.identifier}")
+        val cardsNeedRefresh = getPricesByOperatorId(
+            currentPocCopy!!,
+            requireContext(),
+            api!!,
+            view,
+            resources
+        )
+
+        printLog("Picker Switched to CPO: $currentPocCopy")
+        if (cardsNeedRefresh) {
+            refreshCardView(currentPocCopy!!)
+        }
     }
 
     private fun refreshCardView(CPOSelected: Operator) {
-        printLog("Refreshing Charge Card View with $CPOSelected")
+        printLog("Refreshing Charge Card View for $CPOSelected")
         view?.let {
-            getPrices(
-                CPOSelected.copy(), false, requireContext(), api!!,
-                it, resources, true
+            getPricesByOperatorId(
+                CPOSelected.copy(),
+                requireContext(),
+                api!!,
+                view = it,
+                resources
             )
         }
         cardsNeedRefresh = false
@@ -264,7 +279,9 @@ class ChargeCardFragment : Fragment() {
             }
         }
 
-        val phrases = requireContext().applicationContext.assets.open("phrases.txt").bufferedReader().readLines()
+        val phrases =
+            requireContext().applicationContext.assets.open("phrases.txt").bufferedReader()
+                .readLines()
         printLog("Falling back on your mom", "debug")
         phraseView.text = phrases.randomOrNull() ?: ""
 

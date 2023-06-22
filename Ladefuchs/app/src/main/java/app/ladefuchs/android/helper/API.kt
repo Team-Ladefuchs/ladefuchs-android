@@ -1,7 +1,8 @@
 package app.ladefuchs.android.helper
 
 import android.content.Context
-import android.provider.Settings
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.AllCardsRequest
 import app.ladefuchs.android.dataClasses.AllCardsResponse
@@ -35,7 +36,7 @@ class API(private var context: Context) {
     private val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
     private val apiVersionBetaPath: String = ""
 
-    private var allCardsCache: Map<String, AllCardsResponse> = mapOf()
+    private var allCardsCache: MutableMap<String, AllCardsResponse> = mutableMapOf()
 
     private val jsonType = "application/json; charset=utf-8".toMediaType();
     private val client = OkHttpClient()
@@ -57,32 +58,21 @@ class API(private var context: Context) {
     }
 
     private fun isOffline(): Boolean {
-        val wifiOn =
-            Settings.System.getInt(context.contentResolver, Settings.Global.WIFI_ON, 0) != 0
-        if (wifiOn) {
-            return false
-        }
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork ?: return true
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return true
 
-        val airplaneOn = Settings.System.getInt(
-            context.contentResolver,
-            Settings.Global.AIRPLANE_MODE_ON,
-            0
-        ) != 0
-        if (airplaneOn) {
-            return true
-        }
-        return Settings.Secure.getInt(context.contentResolver, "mobile_data", 0) == 0
+        return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    private inline fun downloadJSONToInternalStorage(
-        JSONUrl: String,
-        JSONFileName: String,
-    ): String {
-
+    private inline fun downloadJson(JSONUrl: String): String {
         if (isOffline()) {
             printLog("Device is offline", "network")
             return ""
         }
+
         printLog("Downloading to Internal Storage $JSONUrl", "network")
         var jsonResponse = ""
 
@@ -115,13 +105,6 @@ class API(private var context: Context) {
         t.start()
         t.join()
 
-        if (!jsonResponse.isEmpty()) {
-            val t2 = Thread {
-                storeFileInInternalStorage(jsonResponse, JSONFileName, context)
-            }
-            t2.start()
-        }
-
         return jsonResponse;
     }
 
@@ -130,19 +113,31 @@ class API(private var context: Context) {
      * This function retrieves the current list of operators
      */
     fun retrieveOperatorList(): List<Operator> {
-        val JSONUrl = "$apiBaseURL/$apiVersionPath/operators/enabled"
-        val json = downloadJSONToInternalStorage(JSONUrl, "operators.json")
-
-        return if (json.isNullOrEmpty()) {
-            // Operators are presorted from the API.
+        val operatorFileName = "operators.json"
+        val operatorJson = if (isOffline()) {
+            try {
+                val operatorsFile = File(context.getFileStreamPath(operatorFileName).toString())
+                printLog("Trying to read $operatorsFile")
+                operatorsFile.readText()
+            } catch (e: Exception) {
+                printLog("Could not read: $operatorFileName", "error")
+                printLog(e.toString(), "error")
+                ""
+            }
+        } else {
+            val json = downloadJson(
+                "$apiBaseURL/$apiVersionPath/operators/enabled",
+            )
+            writeJsonToStorage(operatorFileName, json)
+            json
+        }
+        return if (operatorJson.isEmpty()) {
             emptyList()
         } else {
-            Klaxon().parseArray<Operator>(json)?.sortedBy { it.displayName.lowercase() }
+            Klaxon().parseArray<Operator>(operatorJson)?.sortedBy { it.displayName.lowercase() }
                 ?: emptyList()
         }
-
     }
-
 
     fun downloadAllCards(operatorList: List<Operator>) {
 
@@ -170,8 +165,7 @@ class API(private var context: Context) {
                         Klaxon().parseArray(body)
                     } ?: emptyList()
 
-                    allCardsCache = allCardsResponse.associateBy { it.operator }
-
+                    allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
                 }
             } catch (e: Exception) {
                 printLog("exception retrieve all cards, error: ${e.message}", "error")
@@ -180,36 +174,33 @@ class API(private var context: Context) {
 
         t.start();
         t.join()
-
         Thread {
             for (cards in allCardsResponse) {
-                writeCardToStorage(cards.operator, ChargeType.AC, cards)
+                val fileName = getCardsFileName(cards.operator)
+                printLog("write card for ${cards.operator} ac/dc with filename $fileName to disk");
+                writeJsonToStorage(fileName, Klaxon().toJsonString(cards))
             }
         }.start()
-
     }
 
-    private fun writeCardToStorage(
-        operatorId: String,
-        chargeType: ChargeType,
-        cards: AllCardsResponse
+    private fun writeJsonToStorage(
+        fileName: String,
+        json: String
     ) {
-        val JSONFileName = getCardFileName(operatorId);
-        val path = context.getFileStreamPath(JSONFileName).toPath()
-        val JSONFile = File(path.toString())
-        if (JSONFile.exists()) {
+        if (json.isEmpty()) {
             return
         }
-        printLog("write card for $operatorId ac/dc to disk");
         try {
-            Files.write(path, Klaxon().toJsonString(cards).toByteArray())
+            val path = context.getFileStreamPath(fileName).toPath()
+            Files.write(path, json.toByteArray())
         } catch (e: Exception) {
-            println("An error occurred while writing the file: ")
             printLog(
-                "An error occurred while writing the file $chargeType, $JSONFile, $operatorId: ${e.message}",
+                "An error occurred while writing the file: ${fileName}, error ${e.message}",
                 "error"
             )
-
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -247,84 +238,78 @@ class API(private var context: Context) {
                 }
             } catch (e: Exception) {
                 printLog("Couldn't open stream $imageURL, error: ${e.message}", "error")
+                if (BuildConfig.DEBUG) {
+                    e.printStackTrace()
+                }
             }
         }.start()
     }
 
-    private fun getCardFileName(pocOperatorId: String): String {
+    private fun getCardsFileName(pocOperatorId: String): String {
         return "de-$pocOperatorId.json"
     }
 
+
     /**
-     * This function retrieves the prices for a specific chargecard-ac/dc combination
+     * This function retrieves the prices for chargecards-ac/dc
      */
-    fun readPrices(
+    fun retrieveCards(
         pocOperatorId: String,
         forceDownload: Boolean = false,
-        skipDownload: Boolean = false
     ): AllCardsResponse {
-
-        printLog("read Prices for operator $pocOperatorId")
-        //Load Prices JSON from File
-
         val found = if (!forceDownload) allCardsCache.getOrDefault(pocOperatorId, null) else null
         if (found != null) {
             printLog("Found cards for $pocOperatorId in cache")
             return found
         }
-        
-        var forceInitialDownload = forceDownload
-        val JSONFileName = getCardFileName(pocOperatorId)
+
+        val cardFileName = getCardsFileName(pocOperatorId)
         var chargeCards = AllCardsResponse(pocOperatorId, emptyList(), emptyList())
 
-        // check whether forceDownload was activated
-        if (!forceDownload || skipDownload) {
-            val JSONFile = File(context.getFileStreamPath(JSONFileName).toString())
-            val JSONFileExists = JSONFile.exists()
+        if (forceDownload && !isOffline()) {
+            val url = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId"
 
-            if (!JSONFileExists) {
-                printLog("No current file Found")
-                forceInitialDownload = true
-            } else {
-                try {
-                    printLog("JSON file ${context.getFileStreamPath(JSONFileName)}")
-                    chargeCards = JSONFile.let { Klaxon().parse(it) }!!
-                } catch (e: Exception) {
-                    forceInitialDownload = true
-                    printLog("Error reading prices from cache ${e.message}")
-                    if (BuildConfig.DEBUG) {
-                        e.message?.let { printLog(it, "error") }
-                    }
-                }
+            val acJson = downloadJson("$url/${ChargeType.AC}")
+            val dcJson = downloadJson("$url/${ChargeType.DC}")
+            val klaxon = Klaxon()
+            if (acJson.isNotEmpty()) {
+                chargeCards.ac = klaxon.parseArray(acJson) ?: emptyList()
             }
+            if (dcJson.isNotEmpty()) {
+                chargeCards.dc = klaxon.parseArray(dcJson) ?: emptyList()
+            }
+            allCardsCache[pocOperatorId] = chargeCards
+            printLog("Write ac/dc cards for operator: $pocOperatorId to file: $cardFileName")
+            writeJsonToStorage(klaxon.toJsonString(chargeCards), cardFileName)
+            return chargeCards;
         }
-        if (!skipDownload && (
-                    (chargeCards.dc.isNotEmpty() && chargeCards.ac.isNotEmpty() && (System.currentTimeMillis() / 1000L - chargeCards.dc.first().updated > 86400))
-                            || forceDownload
-                            || forceInitialDownload
-                    )
-        ) {
-            val JSONUrl = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId/currentType"
-            printLog("Data in $JSONFileName is outdated or update was forced, Updating from API: $JSONUrl")
+        val cardsFile = File(context.getFileStreamPath(cardFileName).toString())
 
-            var json = downloadJSONToInternalStorage(JSONUrl, JSONFileName)
-
-            val value = Klaxon().parse<AllCardsResponse>(json)
-            chargeCards = value ?: chargeCards
-
+        try {
+            val json = cardsFile.readText()
+            if (json.isEmpty()) {
+                return chargeCards
+            }
+            val cards = Klaxon().parse<AllCardsResponse>(json);
+            if (cards != null) {
+                chargeCards = cards
+                allCardsCache[pocOperatorId] = cards
+            }
+        } catch (e: Exception) {
+            printLog("Error while reading cards from file $cardsFile, error: ${e.message}")
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
         }
 
         return chargeCards
     }
 
     fun retrieveBanners(): Banner? {
-
         if (isOffline()) {
             return null
         }
-
         val probabilities: MutableList<Banner> = mutableListOf()
-
         val t = Thread {
             printLog("Getting Banners")
             try {
