@@ -67,7 +67,7 @@ class API(private var context: Context) {
         return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    private inline fun downloadJson(JSONUrl: String): String {
+    private fun downloadJson(JSONUrl: String): String {
         if (isOffline()) {
             printLog("Device is offline", "network")
             return ""
@@ -114,29 +114,22 @@ class API(private var context: Context) {
      */
     fun retrieveOperatorList(): List<Operator> {
         val operatorFileName = "operators.json"
-        val operatorJson = if (isOffline()) {
+        val operatorsJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled")
+        val operatorJson = if (operatorsJson.isEmpty()) {
             try {
                 val operatorsFile = File(context.getFileStreamPath(operatorFileName).toString())
-                printLog("Trying to read $operatorsFile")
                 operatorsFile.readText()
             } catch (e: Exception) {
-                printLog("Could not read: $operatorFileName", "error")
-                printLog(e.toString(), "error")
-                ""
+                printLog("Could not read: $operatorFileName, error: ${e.message}", "error")
+                operatorsJson
             }
         } else {
-            val json = downloadJson(
-                "$apiBaseURL/$apiVersionPath/operators/enabled",
-            )
-            writeJsonToStorage(operatorFileName, json)
-            json
+            writeJsonToStorage(operatorFileName, operatorsJson)
+            operatorsJson
         }
-        return if (operatorJson.isEmpty()) {
-            emptyList()
-        } else {
-            Klaxon().parseArray<Operator>(operatorJson)?.sortedBy { it.displayName.lowercase() }
-                ?: emptyList()
-        }
+
+        return Klaxon().parseArray<Operator>(operatorJson)?.sortedBy { it.displayName.lowercase() }
+            ?: emptyList()
     }
 
     fun downloadAllCards(operatorList: List<Operator>) {
