@@ -35,8 +35,6 @@ import com.aigestudio.wheelpicker.WheelPicker
 import java.io.File
 import java.nio.file.Paths
 
-//import com.tylerthrailkill.helpers.prettyprint
-
 class ChargeCardFragment : Fragment() {
     private var useBetaAPI: Boolean = false
     private var onboarding: Boolean = true
@@ -202,9 +200,9 @@ class ChargeCardFragment : Fragment() {
 
     private fun handleOperatorSelected(operator: Operator, view: View, resources: Resources) {
         val currentPocCopy = operator.copy()
-        printLog("CPO selected: $currentPocCopy, ${currentPocCopy?.identifier}")
+        printLog("CPO selected: $currentPocCopy, ${currentPocCopy.identifier}")
         val cardsNeedRefresh = getPricesByOperatorId(
-            currentPocCopy!!,
+            currentPocCopy,
             requireContext(),
             api!!,
             view,
@@ -213,7 +211,7 @@ class ChargeCardFragment : Fragment() {
 
         printLog("Picker Switched to CPO: $currentPocCopy")
         if (cardsNeedRefresh) {
-            refreshCardView(currentPocCopy!!)
+            refreshCardView(currentPocCopy)
         }
     }
 
