@@ -1,18 +1,28 @@
 package app.ladefuchs.android.helper
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
 import android.view.Gravity
 import android.view.LayoutInflater
-import androidx.preference.PreferenceManager
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -31,8 +41,10 @@ import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+
 private val pricesSemaphore = Semaphore(1)
-var currentPopup: PopupWindow? = null
+
+var currentDialog: Dialog? = null
 
 /**
 Function to log while in Debug mode
@@ -62,26 +74,6 @@ fun printLog(message: String, type: String = "info") {
     }
 }
 
-/**
- * Stores a file in internal storage
- */
-fun storeFileInInternalStorage(
-    input: String,
-    internalStorageFileName: String,
-    context: Context
-) {
-    if (input.isEmpty()) {
-        return
-    }
-    try {
-        val file = File(context.getFileStreamPath(internalStorageFileName).toString())
-        file.writeText(input)
-        printLog("Writing File: $internalStorageFileName to ${context.filesDir}");
-    } catch (e: Exception) {
-        printLog("could not save file $internalStorageFileName", "error")
-        e.printStackTrace()
-    }
-}
 
 /**
  * Returns the screens width
@@ -134,7 +126,16 @@ fun getPricesByOperatorId(
     printLog("Re-Filling Cards for $pocOperator")
     val maxListLength = maxOf(acCards.size, dcCards.size)
     pricesSemaphore.release()
-    return fillCards(pocOperator, acCards, dcCards, maxListLength, context, view, api, resources)
+    return fillCards(
+        pocOperator,
+        acCards,
+        dcCards,
+        maxListLength,
+        context,
+        view,
+        api,
+        resources,
+    )
 
 }
 
@@ -154,7 +155,116 @@ fun getImagePath(cardUri: URL, context: Context, cpo: Boolean = false): File {
     return File("${context.filesDir}/${if (cpo) "card" else "cpo"}_${cardChecksum}.jpg")
 }
 
-fun createPopup(
+private fun TextView.removeLinksUnderline() {
+    val spannable = SpannableString(text)
+    for (u in spannable.getSpans(0, spannable.length, URLSpan::class.java)) {
+        spannable.setSpan(object : URLSpan(u.url) {
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = false
+            }
+        }, spannable.getSpanStart(u), spannable.getSpanEnd(u), 0)
+    }
+    text = spannable
+}
+
+fun createAboutPopup(context: Context, view: View) {
+    currentDialog?.dismiss()
+
+    val popUpView: View = LayoutInflater.from(context).inflate(R.layout.fragment_about, null)
+    currentDialog = createDialog(popUpView, view, context)
+    currentDialog?.show()
+
+    popUpView.findViewById<ImageButton>(R.id.back_button)
+        .setOnClickListener {
+            currentDialog?.dismiss()
+        }
+
+    aboutPopUpSetUp(popUpView, context)
+}
+
+
+@SuppressLint("SetTextI18n")
+fun aboutPopUpSetUp(view: View, context: Context) {
+
+    val acknowledgementText = view.findViewById(R.id.acknowledgement_text) as TextView
+    acknowledgementText.movementMethod = LinkMovementMethod.getInstance()
+
+    val versionName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        context.packageManager
+            .getPackageInfo(
+                context.packageName,
+                PackageManager.PackageInfoFlags.of(0)
+            ).versionName
+    } else {
+        context.packageManager
+            .getPackageInfo(context.packageName, 0).versionName
+    }
+    val versionHolder: TextView = view.findViewById(R.id.version_info)
+    versionHolder.text = "Ladefuchs Version $versionName"
+
+    // Making Links in Textviews Clickable... well... really...
+    val schlingelSL2 = view.findViewById(R.id.bastiSL2) as TextView
+    schlingelSL2.movementMethod = LinkMovementMethod.getInstance()
+    schlingelSL2.removeLinksUnderline()
+    val schlingelSL3 = view.findViewById(R.id.bastiSL3) as TextView
+    schlingelSL3.removeLinksUnderline()
+
+    val malikSL2 = view.findViewById(R.id.malikSL2) as TextView
+    malikSL2.movementMethod = LinkMovementMethod.getInstance()
+    malikSL2.removeLinksUnderline()
+    val malikSL3 = view.findViewById(R.id.malikSL3) as TextView
+    malikSL3.removeLinksUnderline()
+
+    val flowinhoSL2 = view.findViewById(R.id.flowinhoSL2) as TextView
+    flowinhoSL2.movementMethod = LinkMovementMethod.getInstance()
+    flowinhoSL2.removeLinksUnderline()
+    val flowinhoSL3 = view.findViewById(R.id.flowinhoSL3) as TextView
+    flowinhoSL3.removeLinksUnderline()
+
+    val thorstenSL2 = view.findViewById(R.id.thorstenSL2) as TextView
+    thorstenSL2.movementMethod = LinkMovementMethod.getInstance()
+    thorstenSL2.removeLinksUnderline()
+    val thorstenSL3 = view.findViewById(R.id.thorstenSL3) as TextView
+    thorstenSL3.removeLinksUnderline()
+
+    val dominicSL2 = view.findViewById(R.id.dominicSL2) as TextView
+    dominicSL2.movementMethod = LinkMovementMethod.getInstance()
+    dominicSL2.removeLinksUnderline()
+
+    val roddiSL2 = view.findViewById(R.id.roddiSL2) as TextView
+    roddiSL2.movementMethod = LinkMovementMethod.getInstance()
+    roddiSL2.removeLinksUnderline()
+    val roddiSL3 = view.findViewById(R.id.roddiSL3) as TextView
+    roddiSL3.removeLinksUnderline()
+
+    val illuSL2 = view.findViewById(R.id.illufuchsSL) as TextView
+    illuSL2.movementMethod = LinkMovementMethod.getInstance()
+    illuSL2.removeLinksUnderline()
+
+    // On Click Listeners for Images
+    val chargePriceLogo = view.findViewById(R.id.chargeprice_logo) as ImageView
+    chargePriceLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), context)
+    }
+
+    val audiodDumpLogo = view.findViewById(R.id.podcast_audiodump) as ImageView
+    audiodDumpLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), context)
+    }
+
+    val bitsundsoLogo = view.findViewById(R.id.podcast_bitsundso) as ImageView
+    bitsundsoLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), context)
+    }
+}
+
+fun opeLinkInBrowser(url: String, context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
+
+fun createCardDetailPopup(
     view: View,
     currentCard: ChargeCards,
     chargeCardsAC: List<ChargeCards>,
@@ -164,44 +274,27 @@ fun createPopup(
     cardBitmap: Bitmap?,
     operator: Operator,
     api: API,
-    context: Context
+    context: Context,
 ) {
-    // inflate the layout of the popup window
+    currentDialog?.dismiss()
 
-    currentPopup?.dismiss()
-
+    val overlayView = View(context)
+    overlayView.setBackgroundColor(Color.parseColor("#80000000"))
+    val params = view.layoutParams
+    val parentViewGroup = view.parent as ViewGroup
+    parentViewGroup.addView(overlayView, params)
     val inflater =
         view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     val popupView: View =
         inflater.inflate(R.layout.card_detail_dialog, null)
 
-    // create the popup window
-    val width = view.context.resources.displayMetrics.widthPixels
-    val statusbarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val insets = view.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-        insets.top
-    } else {
-        val statusbarResId =
-            context.resources?.getIdentifier("status_bar_height", "dimen", "android")
-        if (statusbarResId != null) context.resources?.getDimensionPixelSize(statusbarResId)!! else 0
-    }
-    printLog("StatusbarHeight is: ${statusbarHeight}")
-    val height =
-        view.context.resources.displayMetrics.heightPixels - if (statusbarHeight > 110) 0 else 110
-    val focusable = true // lets taps outside the popup also dismiss it
-    currentPopup = PopupWindow(popupView, width, height, focusable)
-    currentPopup?.isOutsideTouchable = false
-    currentPopup?.animationStyle = R.style.popup_window_animation;
-    // show the popup window
-    currentPopup?.showAtLocation(view, Gravity.BOTTOM, 0, 0)
-
+    currentDialog = createDialog(popupView, view, context)
+    currentDialog?.show()
     // set onClick Listeners for backButtons
     popupView.findViewById<ImageButton>(R.id.back_button)
         .setOnClickListener {
-            currentPopup?.dismiss()
+            currentDialog?.dismiss()
         }
-
-    // Retrieve and set Operator Image
 
     // Set card Image
     popupView.findViewById<ImageView>(R.id.card_logo).background =
@@ -280,3 +373,33 @@ fun createPopup(
     }
     popupView.findViewById<ImageView>(R.id.cpo_logo).setImageDrawable(operatorImage)
 }
+
+private fun createDialog(
+    dialogView: View,
+    anchorView: View,
+    context: Context
+): Dialog {
+
+    val statusbarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val insets = anchorView.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+        insets.top
+    } else {
+        val statusBarResId =
+            context.resources?.getIdentifier("status_bar_height", "dimen", "android")
+        if (statusBarResId != null) context.resources?.getDimensionPixelSize(statusBarResId)!! else 0
+    }
+
+    val height =
+        anchorView.context.resources.displayMetrics.heightPixels - if (statusbarHeight > 110) 0 else 110
+    val width = anchorView.context.resources.displayMetrics.widthPixels
+
+    val dialog = Dialog(context)
+    (dialogView.parent as? ViewGroup)?.removeView(dialogView) // Remove view from its current parent
+    dialog.setContentView(dialogView)
+    dialog.window?.setLayout(width, height - 20)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.window?.attributes?.windowAnimations = R.style.popup_window_animation
+
+    return dialog
+}
+
