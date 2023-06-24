@@ -24,10 +24,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.ladefuchs.android.R
-import app.ladefuchs.android.R.id.action_navigation_chargecards_to_navigation_about
 import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.dataClasses.Operator
 import app.ladefuchs.android.helper.*
@@ -97,10 +95,13 @@ class ChargeCardFragment : Fragment() {
             // add cool nerd glasses
             nerdGlasses.visibility = VISIBLE
         }
-        // fix the about navigation which lead to crashed previously
-        view.findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
-            findNavController().safeNavigate(action_navigation_chargecards_to_navigation_about)
+
+        val aboutButton = view.findViewById<ImageButton>(R.id.aboutButton)
+
+        aboutButton.setOnClickListener {
+            context?.let { createAboutPopup(it, view) }
         }
+
         // retrieve what shall be shown in the footer
         retrieveFooterContent(view)
         // retrieve all operators
@@ -109,7 +110,7 @@ class ChargeCardFragment : Fragment() {
         printLog("Operator List $pocOperatorList")
 
         // initialize picker
-        val wheelPicker = view.findViewById(R.id.pocSelector) as WheelPicker
+        val wheelPicker = view.findViewById<WheelPicker>(R.id.pocSelector)
         //Switch to a more 3D, iOS-style Look
         wheelPicker.setAtmospheric(true)
         wheelPicker.isCurved = true
@@ -127,13 +128,14 @@ class ChargeCardFragment : Fragment() {
         //initialize Price List
         printLog("Triggering Refresh with $currentPoc")
 
-        cardsNeedRefresh = getPricesByOperatorId(
-            currentPoc!!,
-            requireContext(),
-            api!!,
-            view,
-            resources
-        )
+        cardsNeedRefresh =
+            getPricesByOperatorId(
+                currentPoc!!,
+                requireContext(),
+                api!!,
+                view,
+                resources,
+            )
         if (cardsNeedRefresh) {
             printLog("Triggering view Refresh @124")
             refreshCardView(currentPoc!!)
@@ -162,8 +164,8 @@ class ChargeCardFragment : Fragment() {
                 api!!,
                 view,
                 resources,
-                forceDownload = true,
             )
+
             swipetorefresh.isRefreshing = false
         }
         // check whether onboarding should be shown
@@ -201,7 +203,7 @@ class ChargeCardFragment : Fragment() {
     private fun handleOperatorSelected(operator: Operator, view: View, resources: Resources) {
         val currentPocCopy = operator.copy()
         printLog("CPO selected: $currentPocCopy, ${currentPocCopy.identifier}")
-        val cardsNeedRefresh = getPricesByOperatorId(
+        getPricesByOperatorId(
             currentPocCopy,
             requireContext(),
             api!!,
@@ -223,8 +225,9 @@ class ChargeCardFragment : Fragment() {
                 requireContext(),
                 api!!,
                 view = it,
-                resources
+                resources,
             )
+
         }
         cardsNeedRefresh = false
     }

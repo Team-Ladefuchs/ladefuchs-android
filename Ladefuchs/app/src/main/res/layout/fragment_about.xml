@@ -5,33 +5,21 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/PrimaryBackground"
+    android:background="@drawable/rounded_header_card"
     tools:context=".ui.about.AboutFragment">
-
-    <ImageView
-        android:id="@+id/ladefuchs_logo"
-        android:layout_width="84dp"
-        android:layout_height="78dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/ladefuchs_logo_description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_ladefuchs_logo" />
 
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="32dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="6dp"
         android:background="@color/PrimaryBackground"
         android:contentDescription="@string/zurueck"
-        app:tint="@color/TextColorDark"
         app:layout_constraintBottom_toTopOf="@+id/einstellungen"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/abc_vector_test" />
-
+        app:srcCompat="@drawable/ic_baseline_cancel_24" />
 
     <LinearLayout
         android:id="@+id/einstellungen"
@@ -39,53 +27,24 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingTop="16dp"
+        android:paddingTop="0dp"
         android:paddingRight="16dp"
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ladefuchs_logo">
+        app:layout_constraintTop_toBottomOf="@id/back_button">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/einstellungenHeader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <TextView
-                android:id="@+id/einstellungenHeaderText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Einstellungen"
-                android:textAppearance="@style/AboutTopHeader"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/disclosure_triangle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/disclosure_triangle"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:foregroundTint="#000000"
-                android:src="@drawable/arrow_down"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/einstellungenHeaderText"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@android:color/black" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/settingsFragment"
-            android:name="app.ladefuchs.android.ui.settings.SettingsFragment"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/einstellungenHeaderText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView"
-            app:layout_constraintEnd_toStartOf="parent"
+            android:text="@string/settings"
+            android:paddingBottom="8dp"
+            android:textAppearance="@style/AboutTopHeader"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/einstellungen" />
+            app:layout_constraintTop_toTopOf="parent" />
+
     </LinearLayout>
 
 
@@ -93,29 +52,26 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="1.0"
         android:background="@color/PrimaryBackground"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/handcrafted"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/einstellungen"
         app:layout_constraintTop_toBottomOf="@+id/einstellungen">
-
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="16dp"
+            android:paddingBottom="100dp"
             android:paddingRight="16dp">
 
             <TextView
                 android:id="@+id/teamfuchs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="1dp"
                 android:text="@string/teamfuchs_header"
                 android:textAllCaps="true"
                 android:textAppearance="@style/AboutHeader"
@@ -344,6 +300,7 @@
                         android:text="@string/ios_at_ladefuchs_app"
                         android:textAppearance="@style/AboutSubHeaderSans"
                         android:textColorLink="@color/TextColorDark" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -555,7 +512,7 @@
                 android:id="@+id/teamfuchs2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="42dp"
                 android:fontFamily="@font/roboto_black"
                 android:text="@string/podcastfuchs"
                 android:textAllCaps="true"
@@ -568,13 +525,13 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/podcastfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="120dp"
                 android:weightSum="99">
 
 
@@ -582,7 +539,6 @@
                     android:id="@+id/podcast_audiodump"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="4dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="33"
@@ -595,28 +551,10 @@
                     android:tag="https://www.audiodump.de" />
 
                 <ImageView
-                    android:id="@+id/podcast_cleanelectric"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="33"
-                    android:adjustViewBounds="true"
-                    android:clickable="true"
-                    android:contentDescription="@string/cleanelectric_logo"
-                    android:focusable="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/cleanelectric_600"
-                    android:tag="https://www.cleanelectric.de" />
-
-                <ImageView
                     android:id="@+id/podcast_bitsundso"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="33"
                     android:adjustViewBounds="true"
@@ -634,7 +572,7 @@
                 android:id="@+id/datenfuchs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="42dp"
                 android:fontFamily="@font/roboto_black"
                 android:text="@string/datenfuchs"
                 android:textAllCaps="true"
@@ -647,16 +585,15 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
-                android:layout_marginBottom="25dp"
                 android:text="@string/datenfuchs_sl"
                 android:textAppearance="@style/AboutSubHeader" />
 
             <ImageView
                 android:id="@+id/chargeprice_logo"
-                android:layout_width="match_parent"
+                android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginBottom="0dp"
                 android:adjustViewBounds="true"
                 android:clickable="true"
                 android:contentDescription="@string/chargeprice_logo"
@@ -668,7 +605,7 @@
                 android:id="@+id/illufuchs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="42dp"
                 android:fontFamily="@font/roboto_black"
                 android:text="@string/illufuchs"
                 android:textAllCaps="true"
@@ -681,79 +618,75 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
-                android:layout_marginBottom="25dp"
                 android:text="@string/illusfuchs_SL"
                 android:textAppearance="@style/AboutSubHeader" />
 
+            <TextView
+                android:id="@+id/imprint_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:fontFamily="@font/bitter"
+                android:text="@string/imprint_header"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/imprint_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/bitter"
+                android:text="@string/imprint_text"
+                android:textAppearance="@style/AboutSubHeader" />
+
+            <TextView
+                android:id="@+id/acknowledgement_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:fontFamily="@font/bitter"
+                android:text="@string/acknowledgement_header"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AboutHeader"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/acknowledgement_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/bitter"
+                android:layout_marginBottom="20dp"
+
+                android:textColorLink="#000"
+                android:text="@string/acknowledgement_text"
+                android:textAppearance="@style/AboutSubHeader" />
+
+            <TextView
+                android:id="@+id/handcraftedText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/bitter"
+                android:layout_marginBottom="20dp"
+                android:text="@string/handcrafted"
+                android:textAppearance="@style/AboutSubHeader" />
+
+            <TextView
+                android:id="@+id/version_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="48dp"
+                android:fontFamily="@font/bitter"
+                android:textAppearance="@style/AboutSubHeader" />
 
         </LinearLayout>
 
     </ScrollView>
 
-    <TextView
-        android:id="@+id/handcrafted"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/UIColorDark"
-        android:fontFamily="@font/roboto"
-        android:padding="10dp"
-        android:text="@string/handcrafted"
-        android:textAlignment="center"
-        android:textColor="@color/TextColorDark"
-        app:layout_constraintBottom_toTopOf="@id/imprint_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollView" />
-
-    <Button
-        android:id="@+id/imprint_button"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/UIColorDark"
-        android:fontFamily="@font/roboto"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingBottom="5dp"
-        android:text="@string/impressum"
-        android:textAllCaps="false"
-        android:textColor="@color/TextColorDisabled"
-        android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@id/ack_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/handcrafted" />
-
-    <Button
-        android:id="@+id/ack_button"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/UIColorDark"
-        android:fontFamily="@font/roboto"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingBottom="5dp"
-        android:text="@string/acknowledgement_header"
-        android:textAllCaps="false"
-        android:textColor="@color/TextColorDisabled"
-        android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@id/version_info"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imprint_button" />
-
-    <TextView
-        android:id="@+id/version_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/UIColorDark"
-        android:fontFamily="@font/roboto"
-        android:textAlignment="center"
-        android:textColor="@color/TextColorDisabled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

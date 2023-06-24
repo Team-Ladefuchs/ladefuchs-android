@@ -159,14 +159,16 @@ class API(private var context: Context) {
                     } ?: emptyList()
 
                     allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
+
+
                 }
             } catch (e: Exception) {
                 printLog("exception retrieve all cards, error: ${e.message}", "error")
             }
         }
-
-        t.start();
+        t.start()
         t.join()
+
         Thread {
             for (cards in allCardsResponse) {
                 val fileName = getCardsFileName(cards.operator)
@@ -346,4 +348,5 @@ class API(private var context: Context) {
 
         return probabilities.randomOrNull()
     }
+
 }

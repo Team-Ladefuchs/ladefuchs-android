@@ -20,16 +20,7 @@ class Imprint : Fragment() {
     }
 
     private lateinit var viewModel: ImprintViewModel
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        return inflater.inflate(R.layout.fragment_imprint, container, false)
-    }
-
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         view.findViewById<ImageButton>(app.ladefuchs.android.R.id.back_button).setOnClickListener {

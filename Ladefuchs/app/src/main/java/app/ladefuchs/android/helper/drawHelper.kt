@@ -2,20 +2,17 @@ package app.ladefuchs.android.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.LAYOUT_INFLATER_SERVICE
-import android.content.Intent
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
-import android.net.Uri
 import android.text.TextPaint
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.PreferenceManager
@@ -159,7 +156,7 @@ fun fillCards(
         val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
         val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
         // Define Views to attach Card Tables to and required Variables
-        val columnSide = if (currentType== ChargeType.DC) "right" else "left"
+        val columnSide = if (currentType == ChargeType.DC) "right" else "left"
         var i = 0
         val columnName = "chargeCardsTableHolder" + currentType.toString().uppercase()
         val chargeCardsColumn: LinearLayout =
@@ -279,7 +276,20 @@ fun fillCards(
                             if (currentCard.blockingFee != null && currentCard.blockingFee != 0.0f) layerDrawable else layers[0]
                         )
                         // This function provides the popup window with the card metadata
-                        CardHolderView.setOnClickListener { view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, cardImageDrawable, null, operator, api, context) }
+                        CardHolderView.setOnClickListener { view ->
+                            createCardDetailPopup(
+                                view,
+                                currentCard,
+                                chargeCardsAC,
+                                chargeCardsDC,
+                                currentType,
+                                cardImageDrawable,
+                                null,
+                                operator,
+                                api,
+                                context
+                            )
+                        }
                     }
                 } else {
                     resourceIdentifier?.let { imageView.setBackgroundResource(it) }
@@ -315,7 +325,20 @@ fun fillCards(
                     cardMarginRight,
                     cardMarginBottom
                 )
-                CardHolderView.setOnClickListener { view -> createPopup(view, currentCard, chargeCardsAC, chargeCardsDC, currentType, null, cardBitmap, operator, api, context) }
+                CardHolderView.setOnClickListener { view ->
+                    createCardDetailPopup(
+                        view,
+                        currentCard,
+                        chargeCardsAC,
+                        chargeCardsDC,
+                        currentType,
+                        null,
+                        cardBitmap,
+                        operator,
+                        api,
+                        context
+                    )
+                }
             }
 
             // Format the price according to the user set locale
