@@ -91,6 +91,11 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/chargeCardsTableHeaderDCContainer"
             android:layout_width="match_parent"
@@ -171,6 +176,11 @@
                     android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder" />
 
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white" />
+
                 <LinearLayout
                     android:id="@+id/chargeCardsTableHolderDC"
                     android:layout_width="match_parent"
@@ -234,7 +244,7 @@
     <com.aigestudio.wheelpicker.WheelPicker
         android:id="@+id/pocSelector"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="145dp"
         android:background="@drawable/border_light_bg_left"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

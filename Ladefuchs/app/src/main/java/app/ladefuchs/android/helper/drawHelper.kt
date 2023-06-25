@@ -1,21 +1,15 @@
 package app.ladefuchs.android.helper
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.text.TextPaint
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.*
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.preference.PreferenceManager
+import androidx.cardview.widget.CardView
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
@@ -31,10 +25,11 @@ import kotlin.math.ceil
 
 private var cardWidth: Int = getScreenWidth() / 5
 private var cardHeight: Int = 176 * cardWidth / 280
+
 private const val cardMarginLeft: Int = 50
-private const val cardMarginRight: Int = 20
-private const val cardMarginTop: Int = 20
-private const val cardMarginBottom: Int = 20
+private const val cardMarginRight: Int = 50
+private const val cardMarginTop: Int = 30
+private const val cardMarginBottom: Int = 30
 private const val globalCornerRadius: Float = 15F
 
 /**
@@ -135,280 +130,259 @@ fun drawChargeCard(
 /**
  * This function will fill a chargecard with its content
  */
-@SuppressLint("ResourceAsColor")
+
 fun fillCards(
     operator: Operator,
-    chargeCardsAC: List<ChargeCards>,
-    chargeCardsDC: List<ChargeCards>,
-    maxListLength: Int,
+    allChargeCards: Map<ChargeType, List<ChargeCards>>,
     context: Context,
-    view: View,
+    parentView: View,
     api: API,
-    resources: Resources,
-    paintStroke: Boolean = false,
 ): Boolean {
     val types = listOf(ChargeType.AC, ChargeType.DC)
     var cardsDownloaded = false
-    types.forEach { currentType ->
-        printLog("Filling cards for $currentType")
-        val cardMetadata = readCardMetadata(context)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val hasADACPrices = prefs!!.getBoolean("specialEnbwAdac", false)
-        val hasCustomerMaingauPrices = prefs.getBoolean("specialMaingauCustomer", false)
-        // Define Views to attach Card Tables to and required Variables
-        val columnSide = if (currentType == ChargeType.DC) "right" else "left"
-        var i = 0
-        val columnName = "chargeCardsTableHolder" + currentType.toString().uppercase()
-        val chargeCardsColumn: LinearLayout =
-            view.findViewById(
-                resources.getIdentifier(
-                    columnName,
+    val priceFormat = getPriceFormatter()
+    var columnIsEven = false
+    types.forEach { chargeType ->
+        columnIsEven = true
+        printLog("Filling cards for $chargeType")
+        val column: LinearLayout =
+            parentView.findViewById(
+                context.resources.getIdentifier(
+                    "chargeCardsTableHolder${chargeType.toString().uppercase()}",
                     "id",
                     context.packageName
                 )
-            ) ?: return false
-        chargeCardsColumn.removeAllViews()
-        val chargeCards = if (currentType == ChargeType.AC) chargeCardsAC else chargeCardsDC
+            ) ?: return false;
+        column.removeAllViews()
+
+        val chargeCards = allChargeCards.getOrDefault(chargeType, emptyList())
         chargeCards.forEach cards@{ currentCard ->
+            val cell = createSingleCell(context, chargeType, columnIsEven)
+            columnIsEven = !columnIsEven
 
-            val cardIdentifier = "card_" + currentCard.identifier
-            val cardProviderIdentifier = "card_" + currentCard.provider
-
-            // Skip ADAC card if not enabled
-            if (currentCard.identifier == "adac" && !hasADACPrices) {
-                printLog("ADAC prices will be skipped")
-                return@cards
+            val cardView = CardView(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    cardWidth, cardHeight
+                ).apply {
+                    setMargins(cardMarginLeft, cardMarginTop, cardMarginRight, cardMarginBottom)
+                }
+                cardElevation = 20F
+                radius = 15F
+                setCardBackgroundColor(Color.WHITE)
             }
 
-            // Skip Maingau Prices if personalized processes are available
-            if (currentCard.identifier == "maingau_energie" && hasCustomerMaingauPrices) {
-                return@cards
+            val frameLayout = FrameLayout(context).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+            frameLayout.addView(cardView)
+
+            val imageView = ImageView(context).apply {
+                scaleType = ImageView.ScaleType.FIT_XY
+                setBackgroundColor(Color.WHITE)
+                layoutParams = ViewGroup.LayoutParams(cardWidth, cardHeight)
+            }
+            cardView.addView(imageView)
+
+
+            if (currentCard.note.isNotEmpty() || currentCard.blockingFee > 0) {
+                addHuedchen(context, cardView, frameLayout)
             }
 
-            var cardMeta = cardMetadata?.find { it.identifier == cardIdentifier }
-            if (cardMeta == null) {
-                cardMeta = cardMetadata?.find { it.identifier == "default" }
-            }
-
-
-            // Creating a Holder for Card and Price, to lay them out next to each other
-            val CardHolderView = LinearLayout(context)
-            chargeCardsColumn.addView(CardHolderView)
-            printLog("Creating CardHolderView for $currentType")
-            CardHolderView.gravity = Gravity.CENTER_VERTICAL
-            CardHolderView.orientation = LinearLayout.HORIZONTAL
-
-            val backgroundUri: String = if (i % 2 == 0) {
-                "@drawable/border_light_bg_$columnSide"
+            cell.addView(frameLayout)
+            val (imageDrawable, downloaded) = getCardImageDrawable(currentCard, api, context)
+            cardsDownloaded = downloaded
+            if (imageDrawable != null) {
+                imageView.setImageDrawable(imageDrawable)
             } else {
-                "@drawable/border_dark_bg_$columnSide"
-            }
-
-            CardHolderView.setBackgroundResource(
-                resources.getIdentifier(
-                    backgroundUri, "drawable",
-                    context.packageName
-                )
-            )
-
-            // Creating a View that will Hold the card image as a Background
-            val imageView = ImageView(context)
-            CardHolderView.addView(imageView)
-            imageView.requestLayout()
-            imageView.layoutParams.width = cardWidth
-            imageView.layoutParams.height = cardHeight
-
-            // add corner Background
-            val shape = GradientDrawable()
-            shape.shape = GradientDrawable.RECTANGLE;
-            shape.cornerRadius = globalCornerRadius
-            imageView.background = shape
-            imageView.clipToOutline = true
-
-            val resourceIdentifier: Int? = context.resources?.getIdentifier(
-                cardIdentifier,
-                "drawable",
-                context.packageName
-            ) ?: context.resources?.getIdentifier(
-                cardProviderIdentifier,
-                "drawable",
-                context.packageName
-            )
-            // check whether a card image exists
-            var cardImagePath: File? = null
-            if (!currentCard.image.isNullOrEmpty()) {
-                val cardUri = URL(currentCard.image)
-                cardImagePath = getImagePath(cardUri, context)
-            }
-            val cardImageExists = cardImagePath != null && cardImagePath.exists()
-
-            // if there is a resource one form or another -> use it
-            if ((resourceIdentifier != 0 && resourceIdentifier != null) || cardImageExists) {
-                (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                    cardMarginLeft,
-                    cardMarginTop,
-                    cardMarginRight,
-                    cardMarginBottom
-                )
-                imageView.scaleType = ImageView.ScaleType.FIT_XY
-
-                if (cardImageExists) {
-                    var cardImageDrawable: Drawable? = null
-                    try {
-                        cardImageDrawable =
-                            Drawable.createFromPath(cardImagePath!!.absolutePath)!! as BitmapDrawable
-                    } catch (e: Exception) {
-                        if (BuildConfig.DEBUG) {
-                            e.printStackTrace()
-                        }
-                    }
-
-                    if (cardImageDrawable != null) {
-                        val layers = arrayOfNulls<Drawable>(2)
-                        layers[0] = Drawable.createFromPath(cardImagePath!!.absolutePath)!!
-                        layers[1] = AppCompatResources.getDrawable(context, R.drawable.huetchen)
-                        val layerDrawable = LayerDrawable(layers)
-                        layerDrawable.setLayerInset(1, (cardWidth - 49), -1, 0, 0)
-                        //layerDrawable.setLayerGravity(1,Gravity.RIGHT)
-                        layerDrawable.setLayerHeight(1, 50)
-                        layerDrawable.setLayerWidth(1, 50)
-                        imageView.setImageDrawable(
-                            if (currentCard.blockingFee != null && currentCard.blockingFee != 0.0f) layerDrawable else layers[0]
-                        )
-                        // This function provides the popup window with the card metadata
-                        CardHolderView.setOnClickListener { view ->
-                            createCardDetailPopup(
-                                view,
-                                currentCard,
-                                chargeCardsAC,
-                                chargeCardsDC,
-                                currentType,
-                                cardImageDrawable,
-                                null,
-                                operator,
-                                api,
-                                context
-                            )
-                        }
-                    }
-                } else {
-                    resourceIdentifier?.let { imageView.setBackgroundResource(it) }
-                }
-                imageView.requestLayout()
-            }
-            // if there is no ressource yet get the image from the api
-            else {
-                if (!currentCard.image.isNullOrEmpty()) {
-                    api.downloadImageToInternalStorage(
-                        URL(currentCard.image)
-                    )
-                    cardsDownloaded = true
-                }
                 var cardText = currentCard.name
                 if (currentCard.provider != currentCard.name) {
                     cardText = currentCard.provider
                 }
                 val cardBitmap = drawChargeCard(
                     textToDraw = cardText,
-                    textSize = 26F,
-                    textColor = Color.parseColor("#" + cardMeta?.textColor),
-                    rectangleColor = Color.parseColor("#" + cardMeta?.borderColor),
-                    backgroundColor = Color.parseColor("#" + cardMeta?.backgroundColor),
-                    paintStroke = paintStroke
+                    textSize = 29F,
+                    textColor = Color.BLACK,
+                    backgroundColor = Color.WHITE,
                 )
-                imageView.background = BitmapDrawable(resources, cardBitmap)
-                imageView.elevation = 30.0F
+                imageView.background = BitmapDrawable(context.resources, cardBitmap)
                 imageView.outlineProvider = OutlineProvider(10, 10)
-                (imageView.layoutParams as ViewGroup.MarginLayoutParams).setMargins(
-                    cardMarginLeft,
-                    cardMarginTop,
-                    cardMarginRight,
-                    cardMarginBottom
-                )
-                CardHolderView.setOnClickListener { view ->
-                    createCardDetailPopup(
-                        view,
-                        currentCard,
-                        chargeCardsAC,
-                        chargeCardsDC,
-                        currentType,
-                        null,
-                        cardBitmap,
-                        operator,
-                        api,
-                        context
-                    )
-                }
             }
 
-            // Format the price according to the user set locale
-            val priceNumberFormat = NumberFormat.getCurrencyInstance()
-            val decimalFormatSymbols: DecimalFormatSymbols =
-                (priceNumberFormat as DecimalFormat).decimalFormatSymbols
-            decimalFormatSymbols.currencySymbol = ""
-            priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
-            (priceNumberFormat.format(currentCard.price).trim { it <= ' ' })
+            cell.setOnClickListener { view ->
+                val currentCardAc: ChargeCards? =
+                    if (chargeType == ChargeType.AC) currentCard else allChargeCards[ChargeType.AC]?.find { it.identifier == currentCard.identifier }
+                val currentCardDc: ChargeCards? =
+                    if (chargeType == ChargeType.DC) currentCard else allChargeCards[ChargeType.DC]?.find { it.identifier == currentCard.identifier }
 
-            // Creating the TextView that will hold the Price
-            val textviewPrice = TextView(context)
-            CardHolderView.addView(textviewPrice)
-            textviewPrice.text = priceNumberFormat.format(currentCard.price).trim { it <= ' ' }
-            textviewPrice.setTextAppearance(R.style.TableTextView)
-            textviewPrice.gravity = Gravity.CENTER
-            textviewPrice.width = cardWidth
-            i++
-        }
-
-        //Filling Column with empty Cells if necessary
-        if (i < maxListLength - 1) {
-            while (i < maxListLength - 1) {
-                // Creating a Holder for Card and Price, to lay them out next to each other
-                val CardHolderView = LinearLayout(context)
-                chargeCardsColumn.addView(CardHolderView)
-                CardHolderView.gravity = Gravity.CENTER_VERTICAL
-                CardHolderView.layoutParams =
-                    LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                CardHolderView.orientation = LinearLayout.HORIZONTAL
-                if (i % 2 == 0) {
-                    //TableColorLight
-                    CardHolderView.setBackgroundColor(Color.parseColor("#F0EBDC"))
-                } else {
-                    // TableColorDark
-                    CardHolderView.setBackgroundColor(Color.parseColor("#E0D7C8"))
-                }
-                CardHolderView.setPadding(
-                    cardMarginLeft,
-                    cardMarginTop,
-                    cardMarginRight,
-                    cardMarginBottom
+                createCardDetailPopup(
+                    view,
+                    currentCard = currentCard,
+                    currentCardAc = currentCardAc,
+                    currentCardDc = currentCardDc,
+                    operator,
+                    api,
+                    context
                 )
-
-                // Creating the TextView that will hold the Price
-                val textview = TextView(context)
-                CardHolderView.addView(textview)
-                textview.text = ("")
-                textview.setPadding(
-                    cardMarginLeft,
-                    cardMarginTop,
-                    cardMarginRight,
-                    cardMarginBottom
-                )
-                textview.gravity = Gravity.CENTER_VERTICAL or Gravity.CENTER_HORIZONTAL
-                textview.setTextAppearance(R.style.TableTextViewDisabled)
-                textview.setTextColor(R.color.TextColorDisabled)
-                textview.layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
-                )
-                textview.height = cardHeight
-                i++
             }
+
+            val textviewPrice = TextView(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.CENTER_VERTICAL
+                    setTextAppearance(R.style.TableTextView)
+                }
+                text = priceFormat.format(currentCard.price).trim { it <= ' ' }
+            }
+            cell.addView(textviewPrice)
+            column.addView(cell)
         }
-        printLog("Cards populated for $currentType")
+
+
     }
+
+
+    val acCardCount = allChargeCards[ChargeType.AC]?.size ?: 0
+    val dcCardCount = allChargeCards[ChargeType.DC]?.size ?: 0
+
+    val pair: Pair<ChargeType?, Int> = if (acCardCount > dcCardCount) {
+        Pair(ChargeType.DC, acCardCount - dcCardCount)
+    } else if (acCardCount < dcCardCount) {
+        Pair(ChargeType.AC, dcCardCount - acCardCount)
+    } else {
+        Pair(null, 0)
+    }
+    val diff = pair.second
+    if (pair.first != null && pair.second > 0) {
+        val column: LinearLayout =
+            parentView.findViewById(
+                context.resources.getIdentifier(
+                    "chargeCardsTableHolder${pair.first.toString().uppercase()}",
+                    "id",
+                    context.packageName
+                )
+            ) ?: return false;
+        for (i in 0..diff) {
+            val cell = createSingleCell(context, pair.first!!, columnIsEven)
+            columnIsEven = !columnIsEven
+            val textView = TextView(context).apply {
+                text = ""
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    cardHeight + 60
+                )
+            }
+            textView.setPadding(
+                cardMarginLeft,
+                cardMarginTop,
+                cardMarginRight,
+                cardMarginBottom
+            )
+            cell.addView(textView)
+            column.addView(cell)
+        }
+    }
+
     return cardsDownloaded
+}
+
+private fun addHuedchen(
+    context: Context,
+    cardView: CardView,
+    frameLayout: FrameLayout
+) {
+    val redImageView = ImageView(context).apply {
+        layoutParams = FrameLayout.LayoutParams(32, 32).apply {
+            gravity = Gravity.TOP or Gravity.END
+            setMargins(0, 28, 48, 0)
+        }
+        setImageResource(R.drawable.huetchen)
+        elevation = cardView.cardElevation + 4F
+    }
+
+    val shadowImage = ImageView(context).apply {
+        layoutParams = FrameLayout.LayoutParams(34, 34).apply {
+            gravity = Gravity.TOP or Gravity.END
+            setMargins(0, 28, 48, 0)
+        }
+        setImageResource(R.drawable.shadow)
+        elevation = cardView.cardElevation + 2F
+    }
+    frameLayout.addView(shadowImage)
+    frameLayout.addView(redImageView)
+}
+
+private fun createSingleCell(
+    context: Context,
+    chargeType: ChargeType,
+    isEven: Boolean
+): LinearLayout {
+    val cell = LinearLayout(context).apply {
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        gravity = Gravity.CENTER_VERTICAL
+        orientation = LinearLayout.HORIZONTAL
+    }
+
+
+    val columnSide = if (chargeType == ChargeType.DC) "right" else "left"
+    val backgroundUri: String = if (!isEven) {
+        "@drawable/border_light_bg_$columnSide"
+    } else {
+        "@drawable/border_dark_bg_$columnSide"
+
+    }
+    cell.setBackgroundResource(
+        context.resources.getIdentifier(
+            backgroundUri,
+            "drawable",
+            context.packageName
+        )
+    )
+    return cell
+}
+
+
+private fun getPriceFormatter(): NumberFormat {
+    val priceNumberFormat = NumberFormat.getCurrencyInstance()
+    val decimalFormatSymbols: DecimalFormatSymbols =
+        (priceNumberFormat as DecimalFormat).decimalFormatSymbols
+    decimalFormatSymbols.currencySymbol = ""
+    priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
+    return priceNumberFormat
+}
+
+
+fun getCardImageDrawable(card: ChargeCards, api: API, context: Context): Pair<Drawable?, Boolean> {
+
+    if (card.image.isNullOrEmpty()) {
+        return null to false
+    }
+    val cardUri = URL(card.image)
+    var cardImagePath: File? = getImagePath(cardUri, context)
+
+    if (cardImagePath?.exists() == false) {
+        api.downloadImageToInternalStorage(
+            cardUri
+        )
+    }
+
+    if (cardImagePath?.exists() == true) {
+        try {
+            cardImagePath = getImagePath(cardUri, context)
+            return Drawable.createFromPath(cardImagePath.absolutePath) to false
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
+        }
+    }
+    return null to false
 }
 

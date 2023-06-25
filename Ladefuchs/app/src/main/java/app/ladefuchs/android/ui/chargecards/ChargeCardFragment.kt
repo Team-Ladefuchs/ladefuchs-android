@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.text.StaticLayout
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.Banner
@@ -145,7 +145,6 @@ class ChargeCardFragment : Fragment() {
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
             handleOperatorSelected(data as Operator, view, resources)
-
         }
         // set the colors of the Pull To Refresh View
         requireContext().let {
@@ -297,7 +296,7 @@ class ChargeCardFragment : Fragment() {
         banner: Banner
     ) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 280 * viewWidth / 1100
+        val viewHeight = 235 * viewWidth / 1100
         val phraseContainer = view.findViewById(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams

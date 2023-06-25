@@ -1,28 +1,28 @@
 package app.ladefuchs.android.helper
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.renderscript.Allocation
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
 import android.text.SpannableString
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.URLSpan
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -124,19 +124,20 @@ fun getPricesByOperatorId(
         forceDownload
     )
     printLog("Re-Filling Cards for $pocOperator")
-    val maxListLength = maxOf(acCards.size, dcCards.size)
-    pricesSemaphore.release()
-    return fillCards(
+
+    val allCards = mapOf(
+        ChargeType.AC to acCards,
+        ChargeType.DC to dcCards
+    )
+    val needsRefresh = fillCards(
         pocOperator,
-        acCards,
-        dcCards,
-        maxListLength,
+        allCards,
         context,
         view,
         api,
-        resources,
     )
-
+    pricesSemaphore.release()
+    return needsRefresh
 }
 
 fun readCardMetadata(context: Context): List<CardMetaData>? {
@@ -264,14 +265,12 @@ fun opeLinkInBrowser(url: String, context: Context) {
     context.startActivity(intent)
 }
 
+@SuppressLint("SetTextI18n")
 fun createCardDetailPopup(
     view: View,
     currentCard: ChargeCards,
-    chargeCardsAC: List<ChargeCards>,
-    chargeCardsDC: List<ChargeCards>,
-    currentType: ChargeType,
-    cardImageDrawable: Drawable?,
-    cardBitmap: Bitmap?,
+    currentCardAc: ChargeCards?,
+    currentCardDc: ChargeCards?,
     operator: Operator,
     api: API,
     context: Context,
@@ -297,16 +296,11 @@ fun createCardDetailPopup(
         }
 
     // Set card Image
-    popupView.findViewById<ImageView>(R.id.card_logo).background =
-        if (cardImageDrawable !== null) cardImageDrawable else BitmapDrawable(
-            context.resources,
-            cardBitmap
-        )
+    val image = getCardImageDrawable(currentCard, api, context)
+    if (image == null) {
+        popupView.findViewById<ImageView>(R.id.card_logo).background = image
+    }
     // Set Card Details
-    val currentCardAc: ChargeCards? =
-        if (currentType == ChargeType.AC) currentCard else chargeCardsAC.find { it.identifier == currentCard.identifier }
-    val currentCardDc: ChargeCards? =
-        if (currentType == ChargeType.DC) currentCard else chargeCardsDC.find { it.identifier == currentCard.identifier }
     popupView.findViewById<TextView>(R.id.detail_header1).text =
         currentCard.name
     popupView.findViewById<TextView>(R.id.detail_header2).text =
@@ -336,7 +330,7 @@ fun createCardDetailPopup(
             popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
     }
 
-    if (!currentCard.note.isNullOrEmpty()) {
+    if (currentCard.note.isNotEmpty()) {
         popupView.findViewById<ConstraintLayout>(R.id.notes).visibility = View.VISIBLE
         popupView.findViewById<ImageView>(R.id.huetchenNotes).visibility = View.VISIBLE
         popupView.findViewById<TextView>(R.id.notesText).text = currentCard.note;
@@ -396,10 +390,9 @@ private fun createDialog(
     val dialog = Dialog(context)
     (dialogView.parent as? ViewGroup)?.removeView(dialogView) // Remove view from its current parent
     dialog.setContentView(dialogView)
-    dialog.window?.setLayout(width, height - 20)
+    dialog.window?.setLayout(width, height)
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.window?.attributes?.windowAnimations = R.style.popup_window_animation
 
     return dialog
 }
-

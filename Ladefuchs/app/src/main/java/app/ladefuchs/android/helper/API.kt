@@ -1,8 +1,10 @@
 package app.ladefuchs.android.helper
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.AllCardsRequest
 import app.ladefuchs.android.dataClasses.AllCardsResponse
@@ -19,6 +21,7 @@ import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 
 
 class API(private var context: Context) {
@@ -114,22 +117,41 @@ class API(private var context: Context) {
      */
     fun retrieveOperatorList(): List<Operator> {
         val operatorFileName = "operators.json"
-        val operatorsJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled")
-        val operatorJson = if (operatorsJson.isEmpty()) {
-            try {
-                val operatorsFile = File(context.getFileStreamPath(operatorFileName).toString())
-                operatorsFile.readText()
-            } catch (e: Exception) {
-                printLog("Could not read: $operatorFileName, error: ${e.message}", "error")
-                operatorsJson
+        val operatorJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled")
+        val json =
+            if (operatorJson.isEmpty()) {
+                try {
+                    val operatorsFile = File(context.getFileStreamPath(operatorFileName).toString())
+                    operatorsFile.readText()
+                } catch (e: Exception) {
+                    printLog("Could not read: $operatorFileName, error: ${e.message}", "error")
+                    ""
+                }
+            } else {
+
+                val sharedPreferences = context?.let {
+                    PreferenceManager.getDefaultSharedPreferences(
+                        it
+                    )
+                }
+                val timeDifferenceHours =
+                    getHoursForPreference(sharedPreferences, "cached_operator_timestamp")
+                if (timeDifferenceHours > 24) {
+                    Thread {
+                        writeJsonToStorage(operatorFileName, operatorJson)
+                        writeTimeToPreferences(sharedPreferences, "cached_operator_timestamp")
+                    }.start()
+                }
+                operatorJson
             }
-        } else {
-            writeJsonToStorage(operatorFileName, operatorsJson)
-            operatorsJson
+
+        if (json.isEmpty()) {
+            return emptyList()
         }
 
-        return Klaxon().parseArray<Operator>(operatorJson)?.sortedBy { it.displayName.lowercase() }
+        return Klaxon().parseArray<Operator>(json)?.sortedBy { it.displayName.lowercase() }
             ?: emptyList()
+
     }
 
     fun downloadAllCards(operatorList: List<Operator>) {
@@ -142,6 +164,7 @@ class API(private var context: Context) {
         val t = Thread {
             try {
                 val operatorIds = operatorList.map { it.identifier }
+                printLog("Downloading all charge cards", "network")
                 val requestBody =
                     Klaxon().toJsonString(AllCardsRequest(operatorIds)).toRequestBody(jsonType);
                 val request = Request.Builder()
@@ -160,14 +183,29 @@ class API(private var context: Context) {
 
                     allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
 
-
                 }
             } catch (e: Exception) {
+                allCardsCache = mutableMapOf()
                 printLog("exception retrieve all cards, error: ${e.message}", "error")
             }
         }
         t.start()
         t.join()
+
+
+        val sharedPreferences = context.let {
+            PreferenceManager.getDefaultSharedPreferences(
+                it
+            )
+        }
+
+        val timeDifferenceHours = getHoursForPreference(sharedPreferences, "cached_card_timestamp")
+
+        // only cache every 8h
+        if (timeDifferenceHours < 8) {
+            printLog("Skip caching all charge cards", "network")
+            return
+        }
 
         Thread {
             for (cards in allCardsResponse) {
@@ -175,7 +213,26 @@ class API(private var context: Context) {
                 printLog("write card for ${cards.operator} ac/dc with filename $fileName to disk");
                 writeJsonToStorage(fileName, Klaxon().toJsonString(cards))
             }
+            writeTimeToPreferences(sharedPreferences, "cached_card_timestamp")
         }.start()
+
+    }
+
+    private fun writeTimeToPreferences(sharedPreferences: SharedPreferences?, key: String) {
+        val currentTimestamp = System.currentTimeMillis()
+        val editor = sharedPreferences?.edit()
+        editor?.putLong(key, currentTimestamp)
+        editor?.apply()
+    }
+
+    private fun getHoursForPreference(sharedPreferences: SharedPreferences?, key: String): Long {
+        val cachedCardTimestamp = sharedPreferences?.getLong(key, 0) ?: 0
+        if (cachedCardTimestamp == 0L) {
+            return 25L
+        }
+        val currentTimestamp = System.currentTimeMillis()
+        val timeDifferenceMillis = currentTimestamp - cachedCardTimestamp
+        return TimeUnit.MILLISECONDS.toHours(timeDifferenceMillis)
     }
 
     private fun writeJsonToStorage(
@@ -212,7 +269,7 @@ class API(private var context: Context) {
         val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context, cpo)
         printLog("Downloading image: ${imageURL.path}", "network")
 
-        Thread {
+        var t = Thread {
             printLog("Getting Image Path: $storagePath")
             try {
                 val request = Request.Builder()
@@ -237,7 +294,9 @@ class API(private var context: Context) {
                     e.printStackTrace()
                 }
             }
-        }.start()
+        }
+        t.start()
+        t.join()
     }
 
     private fun getCardsFileName(pocOperatorId: String): String {
