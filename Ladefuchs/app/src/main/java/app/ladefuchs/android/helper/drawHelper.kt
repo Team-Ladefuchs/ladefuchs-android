@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
@@ -134,33 +135,25 @@ fun drawChargeCard(
 fun fillCards(
     operator: Operator,
     allChargeCards: Map<ChargeType, List<ChargeCards>>,
-    context: Context,
     parentView: View,
-    api: API,
 ): Boolean {
-    val types = listOf(ChargeType.AC, ChargeType.DC)
     var cardsDownloaded = false
     val priceFormat = getPriceFormatter()
     var columnIsEven = false
-    types.forEach { chargeType ->
+    listOf(ChargeType.AC, ChargeType.DC).forEach { chargeType ->
         columnIsEven = true
         printLog("Filling cards for $chargeType")
-        val column: LinearLayout =
-            parentView.findViewById(
-                context.resources.getIdentifier(
-                    "chargeCardsTableHolder${chargeType.toString().uppercase()}",
-                    "id",
-                    context.packageName
-                )
-            ) ?: return false;
+        val column: LinearLayout = when (chargeType) {
+            ChargeType.AC -> parentView.findViewById(R.id.chargeCardsTableHolderAC)
+            ChargeType.DC -> parentView.findViewById(R.id.chargeCardsTableHolderDC)
+        }
         column.removeAllViews()
-
         val chargeCards = allChargeCards.getOrDefault(chargeType, emptyList())
         chargeCards.forEach cards@{ currentCard ->
-            val cell = createSingleCell(context, chargeType, columnIsEven)
+            val cell = createSingleCell(parentView.context, chargeType, columnIsEven)
             columnIsEven = !columnIsEven
 
-            val cardView = CardView(context).apply {
+            val cardView = CardView(parentView.context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     cardWidth, cardHeight
                 ).apply {
@@ -171,7 +164,7 @@ fun fillCards(
                 setCardBackgroundColor(Color.WHITE)
             }
 
-            val frameLayout = FrameLayout(context).apply {
+            val frameLayout = FrameLayout(parentView.context).apply {
                 layoutParams = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT
@@ -179,7 +172,7 @@ fun fillCards(
             }
             frameLayout.addView(cardView)
 
-            val imageView = ImageView(context).apply {
+            val imageView = ImageView(parentView.context).apply {
                 scaleType = ImageView.ScaleType.FIT_XY
                 setBackgroundColor(Color.WHITE)
                 layoutParams = ViewGroup.LayoutParams(cardWidth, cardHeight)
@@ -188,11 +181,11 @@ fun fillCards(
 
 
             if (currentCard.note.isNotEmpty() || currentCard.blockingFee > 0) {
-                addHuedchen(context, cardView, frameLayout)
+                addHuedchen(parentView.context, cardView, frameLayout)
             }
 
             cell.addView(frameLayout)
-            val (imageDrawable, downloaded) = getCardImageDrawable(currentCard, api, context)
+            val (imageDrawable, downloaded) = getCardImageDrawable(currentCard, parentView.context)
             cardsDownloaded = downloaded
             if (imageDrawable != null) {
                 imageView.setImageDrawable(imageDrawable)
@@ -207,7 +200,7 @@ fun fillCards(
                     textColor = Color.BLACK,
                     backgroundColor = Color.WHITE,
                 )
-                imageView.background = BitmapDrawable(context.resources, cardBitmap)
+                imageView.background = BitmapDrawable(parentView.context.resources, cardBitmap)
                 imageView.outlineProvider = OutlineProvider(10, 10)
             }
 
@@ -223,12 +216,10 @@ fun fillCards(
                     currentCardAc = currentCardAc,
                     currentCardDc = currentCardDc,
                     operator,
-                    api,
-                    context
                 )
             }
 
-            val textviewPrice = TextView(context).apply {
+            val textviewPrice = TextView(parentView.context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -245,7 +236,17 @@ fun fillCards(
 
     }
 
+    fillEmptyCells(allChargeCards, parentView, columnIsEven)
 
+    return cardsDownloaded
+}
+
+private fun fillEmptyCells(
+    allChargeCards: Map<ChargeType, List<ChargeCards>>,
+    parentView: View,
+    columnIsEven: Boolean
+) {
+    var columnIsEven1 = columnIsEven
     val acCardCount = allChargeCards[ChargeType.AC]?.size ?: 0
     val dcCardCount = allChargeCards[ChargeType.DC]?.size ?: 0
 
@@ -258,18 +259,14 @@ fun fillCards(
     }
     val diff = pair.second
     if (pair.first != null && pair.second > 0) {
-        val column: LinearLayout =
-            parentView.findViewById(
-                context.resources.getIdentifier(
-                    "chargeCardsTableHolder${pair.first.toString().uppercase()}",
-                    "id",
-                    context.packageName
-                )
-            ) ?: return false;
-        for (i in 0..diff) {
-            val cell = createSingleCell(context, pair.first!!, columnIsEven)
-            columnIsEven = !columnIsEven
-            val textView = TextView(context).apply {
+        val column: LinearLayout = when (pair.first!!) {
+            ChargeType.AC -> parentView.findViewById(R.id.chargeCardsTableHolderAC)
+            ChargeType.DC -> parentView.findViewById(R.id.chargeCardsTableHolderDC)
+        }
+        for (i in 0 until diff) {
+            val cell = createSingleCell(parentView.context, pair.first!!, columnIsEven1)
+            columnIsEven1 = !columnIsEven1
+            val textView = TextView(parentView.context).apply {
                 text = ""
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -286,8 +283,6 @@ fun fillCards(
             column.addView(cell)
         }
     }
-
-    return cardsDownloaded
 }
 
 private fun addHuedchen(
@@ -296,18 +291,18 @@ private fun addHuedchen(
     frameLayout: FrameLayout
 ) {
     val redImageView = ImageView(context).apply {
-        layoutParams = FrameLayout.LayoutParams(32, 32).apply {
+        layoutParams = FrameLayout.LayoutParams(50, 50).apply {
             gravity = Gravity.TOP or Gravity.END
-            setMargins(0, 28, 48, 0)
+            setMargins(0, 26, 46, 0)
         }
         setImageResource(R.drawable.huetchen)
         elevation = cardView.cardElevation + 4F
     }
 
     val shadowImage = ImageView(context).apply {
-        layoutParams = FrameLayout.LayoutParams(34, 34).apply {
+        layoutParams = FrameLayout.LayoutParams(53, 53).apply {
             gravity = Gravity.TOP or Gravity.END
-            setMargins(0, 28, 48, 0)
+            setMargins(0, 26, 46, 0)
         }
         setImageResource(R.drawable.shadow)
         elevation = cardView.cardElevation + 2F
@@ -330,21 +325,22 @@ private fun createSingleCell(
         orientation = LinearLayout.HORIZONTAL
     }
 
+    cell.background = when (chargeType) {
+        ChargeType.AC -> {
+            if (isEven) {
+                ContextCompat.getDrawable(context, R.drawable.border_dark_bg_left)
+            } else {
+                ContextCompat.getDrawable(context, R.drawable.border_light_bg_left)
+            }
+        }
 
-    val columnSide = if (chargeType == ChargeType.DC) "right" else "left"
-    val backgroundUri: String = if (!isEven) {
-        "@drawable/border_light_bg_$columnSide"
-    } else {
-        "@drawable/border_dark_bg_$columnSide"
-
+        ChargeType.DC -> if (isEven) {
+            ContextCompat.getDrawable(context, R.drawable.border_dark_bg_right)
+        } else {
+            ContextCompat.getDrawable(context, R.drawable.border_light_bg_right)
+        }
     }
-    cell.setBackgroundResource(
-        context.resources.getIdentifier(
-            backgroundUri,
-            "drawable",
-            context.packageName
-        )
-    )
+
     return cell
 }
 
@@ -359,7 +355,7 @@ private fun getPriceFormatter(): NumberFormat {
 }
 
 
-fun getCardImageDrawable(card: ChargeCards, api: API, context: Context): Pair<Drawable?, Boolean> {
+fun getCardImageDrawable(card: ChargeCards, context: Context): Pair<Drawable?, Boolean> {
 
     if (card.image.isNullOrEmpty()) {
         return null to false
@@ -368,8 +364,9 @@ fun getCardImageDrawable(card: ChargeCards, api: API, context: Context): Pair<Dr
     var cardImagePath: File? = getImagePath(cardUri, context)
 
     if (cardImagePath?.exists() == false) {
-        api.downloadImageToInternalStorage(
-            cardUri
+        downloadImageToInternalStorage(
+            cardUri,
+            context
         )
     }
 

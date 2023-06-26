@@ -111,16 +111,15 @@ fun NavController.safeNavigate(actionId: Int) {
 fun getPricesByOperatorId(
     pocOperator: Operator,
     context: Context,
-    api: API,
     view: View,
-    resources: Resources,
     forceDownload: Boolean = false,
 ): Boolean {
     //Load Prices JSON from File
     pricesSemaphore.acquire();
     printLog("Getting prices for $pocOperator")
-    val (_, acCards, dcCards) = api.retrieveCards(
+    val (_, acCards, dcCards) = retrieveCards(
         pocOperator.identifier,
+        context,
         forceDownload
     )
     printLog("Re-Filling Cards for $pocOperator")
@@ -132,23 +131,10 @@ fun getPricesByOperatorId(
     val needsRefresh = fillCards(
         pocOperator,
         allCards,
-        context,
         view,
-        api,
     )
     pricesSemaphore.release()
     return needsRefresh
-}
-
-fun readCardMetadata(context: Context): List<CardMetaData>? {
-    //Load Metadata JSON from File
-    printLog("Reading de-card_metadata.json")
-    val cardMetadata = context.assets?.open("de-card_metadata.json")?.let {
-        Klaxon().parseArray<CardMetaData>(
-            it
-        )
-    }
-    return cardMetadata
 }
 
 fun getImagePath(cardUri: URL, context: Context, cpo: Boolean = false): File {
@@ -173,7 +159,7 @@ fun createAboutPopup(context: Context, view: View) {
     currentDialog?.dismiss()
 
     val popUpView: View = LayoutInflater.from(context).inflate(R.layout.fragment_about, null)
-    currentDialog = createDialog(popUpView, view, context)
+    currentDialog = createDialog(popUpView, view)
     currentDialog?.show()
 
     popUpView.findViewById<ImageButton>(R.id.back_button)
@@ -181,25 +167,25 @@ fun createAboutPopup(context: Context, view: View) {
             currentDialog?.dismiss()
         }
 
-    aboutPopUpSetUp(popUpView, context)
+    aboutPopUpSetUp(popUpView)
 }
 
 
 @SuppressLint("SetTextI18n")
-fun aboutPopUpSetUp(view: View, context: Context) {
+fun aboutPopUpSetUp(view: View) {
 
     val acknowledgementText = view.findViewById(R.id.acknowledgement_text) as TextView
     acknowledgementText.movementMethod = LinkMovementMethod.getInstance()
 
     val versionName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        context.packageManager
+        view.context.packageManager
             .getPackageInfo(
-                context.packageName,
+                view.context.packageName,
                 PackageManager.PackageInfoFlags.of(0)
             ).versionName
     } else {
-        context.packageManager
-            .getPackageInfo(context.packageName, 0).versionName
+        view.context.packageManager
+            .getPackageInfo(view.context.packageName, 0).versionName
     }
     val versionHolder: TextView = view.findViewById(R.id.version_info)
     versionHolder.text = "Ladefuchs Version $versionName"
@@ -246,17 +232,17 @@ fun aboutPopUpSetUp(view: View, context: Context) {
     // On Click Listeners for Images
     val chargePriceLogo = view.findViewById(R.id.chargeprice_logo) as ImageView
     chargePriceLogo.setOnClickListener {
-        opeLinkInBrowser(it.tag.toString(), context)
+        opeLinkInBrowser(it.tag.toString(), view.context)
     }
 
     val audiodDumpLogo = view.findViewById(R.id.podcast_audiodump) as ImageView
     audiodDumpLogo.setOnClickListener {
-        opeLinkInBrowser(it.tag.toString(), context)
+        opeLinkInBrowser(it.tag.toString(), view.context)
     }
 
     val bitsundsoLogo = view.findViewById(R.id.podcast_bitsundso) as ImageView
     bitsundsoLogo.setOnClickListener {
-        opeLinkInBrowser(it.tag.toString(), context)
+        opeLinkInBrowser(it.tag.toString(), view.context)
     }
 }
 
@@ -272,12 +258,10 @@ fun createCardDetailPopup(
     currentCardAc: ChargeCards?,
     currentCardDc: ChargeCards?,
     operator: Operator,
-    api: API,
-    context: Context,
 ) {
     currentDialog?.dismiss()
 
-    val overlayView = View(context)
+    val overlayView = View(view.context)
     overlayView.setBackgroundColor(Color.parseColor("#80000000"))
     val params = view.layoutParams
     val parentViewGroup = view.parent as ViewGroup
@@ -287,7 +271,7 @@ fun createCardDetailPopup(
     val popupView: View =
         inflater.inflate(R.layout.card_detail_dialog, null)
 
-    currentDialog = createDialog(popupView, view, context)
+    currentDialog = createDialog(popupView, view)
     currentDialog?.show()
     // set onClick Listeners for backButtons
     popupView.findViewById<ImageButton>(R.id.back_button)
@@ -296,9 +280,11 @@ fun createCardDetailPopup(
         }
 
     // Set card Image
-    val image = getCardImageDrawable(currentCard, api, context)
-    if (image == null) {
-        popupView.findViewById<ImageView>(R.id.card_logo).background = image
+    val (image, _) = getCardImageDrawable(currentCard, view.context)
+    if (image != null) {
+        val imageView = popupView.findViewById<ImageView>(R.id.card_logo)
+        imageView.setImageDrawable(image)
+        imageView.scaleType = ImageView.ScaleType.FIT_XY;
     }
     // Set Card Details
     popupView.findViewById<TextView>(R.id.detail_header1).text =
@@ -341,7 +327,7 @@ fun createCardDetailPopup(
             Intent.ACTION_VIEW,
             Uri.parse(currentCard.url.toString())
         )
-        context.startActivity(urlIntent)
+        view.context.startActivity(urlIntent)
     }
 
     if (currentCard.url == null) {
@@ -351,9 +337,9 @@ fun createCardDetailPopup(
     // Retrieve Operator Image
     var operatorImage: Drawable? = null
     if (!operator.image.isNullOrEmpty()) {
-        val imgPath = getImagePath(URL(operator.image), context, true)
+        val imgPath = getImagePath(URL(operator.image), view.context, true)
         if (!imgPath.exists())
-            api.downloadImageToInternalStorage(imageURL = URL(operator.image), cpo = true)
+            downloadImageToInternalStorage(imageURL = URL(operator.image), view.context, cpo = true)
         try {
             operatorImage = Drawable.createFromPath(imgPath.absolutePath)!!
         } catch (e: Exception) {
@@ -363,31 +349,35 @@ fun createCardDetailPopup(
     // creating an own image
     if (operatorImage == null) {
         // TODO add text to placeholder
-        operatorImage = AppCompatResources.getDrawable(context, R.drawable.cpo_generic)
+        operatorImage = AppCompatResources.getDrawable(view.context, R.drawable.cpo_generic)
     }
     popupView.findViewById<ImageView>(R.id.cpo_logo).setImageDrawable(operatorImage)
 }
 
+@SuppressLint("DiscouragedApi")
 private fun createDialog(
     dialogView: View,
     anchorView: View,
-    context: Context
 ): Dialog {
 
-    val statusbarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    val statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         val insets = anchorView.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
         insets.top
     } else {
-        val statusBarResId =
-            context.resources?.getIdentifier("status_bar_height", "dimen", "android")
-        if (statusBarResId != null) context.resources?.getDimensionPixelSize(statusBarResId)!! else 0
+        val resourceId =
+            dialogView.context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId != 0) {
+            dialogView.context.resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
     }
 
     val height =
-        anchorView.context.resources.displayMetrics.heightPixels - if (statusbarHeight > 110) 0 else 110
+        anchorView.context.resources.displayMetrics.heightPixels - if (statusBarHeight > 110) 0 else 110
     val width = anchorView.context.resources.displayMetrics.widthPixels
 
-    val dialog = Dialog(context)
+    val dialog = Dialog(dialogView.context)
     (dialogView.parent as? ViewGroup)?.removeView(dialogView) // Remove view from its current parent
     dialog.setContentView(dialogView)
     dialog.window?.setLayout(width, height)

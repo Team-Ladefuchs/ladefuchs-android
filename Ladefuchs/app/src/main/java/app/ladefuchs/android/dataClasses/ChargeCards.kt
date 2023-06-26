@@ -14,7 +14,7 @@ data class ChargeCards(
     val url: String? = null,
     val blockingFeeStart: Int,
     val blockingFee: Float = 0F,
-    val monthlyFee: Float,
+    val monthlyFee: Float = 0F,
     val note: String = "",
     val msp: String? = null
 ) : Parcelable

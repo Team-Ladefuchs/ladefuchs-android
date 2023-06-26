@@ -64,7 +64,7 @@
     <string name="avatar_dominic">Avatar Dominic</string>
     <string name="avatar_roddi">Avatar Roddi</string>
     <string name="twitter_flowinho"><a href="https://twitter.com/flowinho">@flowinho</a></string>
-    <string name="twitter_schlingel"><a href="https://twitter.com/schlingel">@schlingel</a></string>
+    <string name="mastodon_schlingel"><a href="https://mastodon.social/@schlingel">@schlingel@mastodon.social </a></string>
     <string name="mastodon_malik"><a href="https://mastodon.social/@Malik">@Malik@mastodon.social</a></string>
     <string name="twitter_thorsten"><a href="https://twitter.com/Thorsten_1">@Thorsten_1</a></string>
     <string name="twitter_roddi"><a href="https://twitter.com/roddi">@roddi</a></string>
@@ -74,7 +74,6 @@
     <string name="imprint_text">Angaben gemäß § 5 TMG:\n\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck\n\nKontakt:\info@schlingel.de\n\nVerantwortlich für den Inhalt nach § 55 Abs. 2 RStV:\nBastian Wölfle\nSchwabenstraße 11\n82256 Fürstenfeldbruck</string>
     <string name="acknowledgement_text">
     \t• <a href="https://github.com/cbeust/klaxon/blob/master/LICENSE.txt">Klaxon: 5.6.0</a>\n\n
-    \t• <a href="https://github.com/takisoft/preferencex-android/blob/master/LICENSE">AndroidX Preference eXtended: 1.1.0</a>\n\n
     \t• <a href="https://github.com/AigeStudio/WheelPicker/blob/master/LICENSE">WheelPicker: 1.1.3</a>\n\n
     \t• <a href="https://square.github.io/okhttp/#license">OkHttp: 4.10.0</a>\n\n
     \t• <a href="https://github.com/hdodenhof/CircleImageView/blob/master/LICENSE.txt">CircleImageView: 3.1.0</a>\n
