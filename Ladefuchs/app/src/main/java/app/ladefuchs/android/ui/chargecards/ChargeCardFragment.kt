@@ -1,17 +1,17 @@
 package app.ladefuchs.android.ui.chargecards
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.text.StaticLayout
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.util.lruCache
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.Banner
@@ -31,20 +32,20 @@ import app.ladefuchs.android.dataClasses.Operator
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.exists
 
 class ChargeCardFragment : Fragment() {
-    private var useBetaAPI: Boolean = false
     private var onboarding: Boolean = true
     private var showBanner: Boolean = true
     private var pocOperatorList: List<Operator> = listOf()
     private var currentPoc: Operator? = null
-    private var api: API? = null
     private var prefs: SharedPreferences? = null
     private var cardsNeedRefresh: Boolean = false
     private lateinit var phraseView: TextView
     private lateinit var swipetorefresh: SwipeRefreshLayout
-
 
     object StaticLayoutCache {
         private const val MAX_SIZE = 50 // Arbitrary max number of cached items
@@ -65,12 +66,9 @@ class ChargeCardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Update vars to represent User Preferences
-        api = API(requireContext().applicationContext)
-        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        useBetaAPI = prefs!!.getBoolean("useBetaAPI", false)
-        onboarding = prefs!!.getBoolean("firstStart", true)
-        showBanner = prefs!!.getBoolean("showBanner", true)
+        prefs = PreferenceManager.getDefaultSharedPreferences(inflater.context)
+        onboarding = prefs?.getBoolean("firstStart", true) ?: true
+        showBanner = prefs?.getBoolean("showBanner", true) ?: true
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chargecards, container, false)
     }
@@ -88,9 +86,10 @@ class ChargeCardFragment : Fragment() {
             // deactivate the banner while in onboarding
             showBanner = false
         }
+
         // check whether the beta API is used
-        if (useBetaAPI) {
-            api?.useBeta()
+        if (prefs?.getBoolean("useBetaAPI", false) == true) {
+            useBeta()
             phraseView.text = getString(R.string.betaInfoText)
             // add cool nerd glasses
             nerdGlasses.visibility = VISIBLE
@@ -105,7 +104,7 @@ class ChargeCardFragment : Fragment() {
         // retrieve what shall be shown in the footer
         retrieveFooterContent(view)
         // retrieve all operators
-        pocOperatorList = api!!.retrieveOperatorList()
+        pocOperatorList = retrieveOperatorList(view.context)
 
         printLog("Operator List $pocOperatorList")
 
@@ -120,7 +119,7 @@ class ChargeCardFragment : Fragment() {
             return
         }
 
-        api!!.downloadAllCards(pocOperatorList)
+        downloadAllCards(pocOperatorList, view.context)
 
         currentPoc = pocOperatorList[0]
         // add easterEggOnclickListener
@@ -132,9 +131,7 @@ class ChargeCardFragment : Fragment() {
             getPricesByOperatorId(
                 currentPoc!!,
                 requireContext(),
-                api!!,
                 view,
-                resources,
             )
         if (cardsNeedRefresh) {
             printLog("Triggering view Refresh @124")
@@ -144,8 +141,7 @@ class ChargeCardFragment : Fragment() {
         // Loading the pocList into the Picker Library
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
-            handleOperatorSelected(data as Operator, view, resources)
-
+            handleOperatorSelected(data as Operator, view)
         }
         // set the colors of the Pull To Refresh View
         requireContext().let {
@@ -161,9 +157,7 @@ class ChargeCardFragment : Fragment() {
             getPricesByOperatorId(
                 currentPoc!!.copy(),
                 requireContext(),
-                api!!,
                 view,
-                resources,
             )
 
             swipetorefresh.isRefreshing = false
@@ -179,8 +173,8 @@ class ChargeCardFragment : Fragment() {
      * check if user previously selected cards
      */
     private fun legacyCardsNotice() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val selectedCards = sharedPreferences.getString("selectedChargeCards", null)
+
+        val selectedCards = prefs?.getString("selectedChargeCards", null)
         printLog("Selected Cards: $selectedCards")
         if (selectedCards != null) {
             val builder = AlertDialog.Builder(context)
@@ -195,20 +189,18 @@ class ChargeCardFragment : Fragment() {
             builder.setPositiveButton(android.R.string.ok) { _, _ ->
             }
             builder.show()
-            val preferences: SharedPreferences.Editor? = sharedPreferences.edit()
+            val preferences: SharedPreferences.Editor? = prefs?.edit()
             preferences?.remove("selectedChargeCards")?.apply()
         }
     }
 
-    private fun handleOperatorSelected(operator: Operator, view: View, resources: Resources) {
+    private fun handleOperatorSelected(operator: Operator, view: View) {
         val currentPocCopy = operator.copy()
         printLog("CPO selected: $currentPocCopy, ${currentPocCopy.identifier}")
         getPricesByOperatorId(
             currentPocCopy,
             requireContext(),
-            api!!,
             view,
-            resources
         )
 
         printLog("Picker Switched to CPO: $currentPocCopy")
@@ -223,9 +215,7 @@ class ChargeCardFragment : Fragment() {
             getPricesByOperatorId(
                 CPOSelected.copy(),
                 requireContext(),
-                api!!,
                 view = it,
-                resources,
             )
 
         }
@@ -244,16 +234,16 @@ class ChargeCardFragment : Fragment() {
                 phraseView.text = getString(R.string.eastereggInfoText)
                 easterEggClickCounter = 0
             } else if (easterEggClickCounter == 10) {
-                useBetaAPI = !useBetaAPI
+                val useBetaAPI = prefs?.getBoolean("useBetaAPI", false) ?: false
                 if (useBetaAPI) {
-                    api?.useBeta()
+                    useBeta()
                     phraseView.text =
                         getString(R.string.betaInfoText)
                     nerdGlasses.visibility = VISIBLE
                 } else {
                     phraseView.text =
                         getString(R.string.prodInfoText)
-                    api?.useProd()
+                    useProd()
                     nerdGlasses.visibility = View.INVISIBLE
                 }
                 with(prefs!!.edit()) {
@@ -272,20 +262,22 @@ class ChargeCardFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
 
-        if (showBanner) {
-            val banner = api?.retrieveBanners()
-            if (banner != null && File("${requireContext().filesDir}/${banner.filename}").exists()) {
-                drawPromoBanner(view, banner)
-                return
-            }
+        if (!showBanner) {
+            return
         }
 
-        val phrases =
-            requireContext().applicationContext.assets.open("phrases.txt").bufferedReader()
-                .readLines()
-        printLog("Falling back on your mom", "debug")
-        phraseView.text = phrases.randomOrNull() ?: ""
+        val banner = retrieveBanners(view.context) ?: return
+        val bannerFilePath = Paths.get("${view.context.filesDir}/${banner.filename}")
+        if (!bannerFilePath.exists()) {
+            val phrases =
+                view.context.assets.open("phrases.txt").bufferedReader()
+                    .readLines()
+            printLog("Falling back on your mom", "debug")
+            phraseView.text = phrases.randomOrNull() ?: ""
+            return
+        }
 
+        drawPromoBanner(view, banner, bannerFilePath)
     }
 
     /**
@@ -294,10 +286,11 @@ class ChargeCardFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.R)
     private fun drawPromoBanner(
         view: View,
-        banner: Banner
+        banner: Banner,
+        filename: Path
     ) {
         val viewWidth = getScreenWidth()
-        val viewHeight = 280 * viewWidth / 1100
+        val viewHeight = 240 * viewWidth / 1100
         val phraseContainer = view.findViewById(R.id.phraseContainer) as LinearLayout
         phraseContainer.removeView(phraseView)
         val phraseContainerParams = phraseContainer.layoutParams
@@ -305,36 +298,36 @@ class ChargeCardFragment : Fragment() {
         phraseContainer.setBackgroundColor(Color.parseColor("#FFCEC0AC"))
         phraseContainer.layoutParams = phraseContainerParams
 
-        val bannerView = view.findViewById(R.id.bannerView) as LinearLayout
-        bannerView.visibility = VISIBLE
-        val bannerButton = view.findViewById(R.id.bannerImage) as ImageButton
-        val bitmapImage = Drawable.createFromPath(
-            Paths.get(requireContext().filesDir.toString() + "/" + banner.filename)
-                .toString()
-        )!! as BitmapDrawable
+        val bannerButton = view.findViewById<ImageButton>(R.id.bannerImage)
+
+        val bitmapImage = BitmapFactory.decodeFile(filename.toString())
+        val drawable = BitmapDrawable(resources, bitmapImage)
+        bannerButton.setImageDrawable(drawable)
         val drawableImage = BitmapDrawable(
             resources,
             Bitmap.createBitmap(
-                bitmapImage.bitmap,
+                bitmapImage,
                 70,
                 0,
-                bitmapImage.bitmap.width - 130,
+                bitmapImage.width - 130,
                 viewHeight + 55
             )
         )
-
+        val bannerView = view.findViewById(R.id.bannerView) as LinearLayout
+        bannerView.visibility = VISIBLE
         bannerButton.setImageDrawable(
             drawableImage
         )
 
         bannerButton.requestLayout()
-        bannerView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
+        val color = Color.parseColor("#00FFFFFF")
+        bannerView.setBackgroundColor(color)
         val buttonURL = Uri.parse(banner.link)
         val bannerParams = bannerButton.layoutParams
         bannerParams.width = viewWidth
         bannerParams.height = viewHeight
         bannerButton.scaleType = ScaleType.CENTER_INSIDE
-        bannerButton.setBackgroundColor(Color.parseColor("#00FFFFFF"))
+        bannerButton.setBackgroundColor(color)
         bannerButton.layoutParams = bannerParams
 
         bannerButton.setOnClickListener {

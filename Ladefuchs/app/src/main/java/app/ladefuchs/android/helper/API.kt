@@ -1,8 +1,10 @@
 package app.ladefuchs.android.helper
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.preference.PreferenceManager
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.dataClasses.AllCardsRequest
 import app.ladefuchs.android.dataClasses.AllCardsResponse
@@ -19,334 +21,407 @@ import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 
 
-class API(private var context: Context) {
-    private val apiToken: String = BuildConfig.apiKey
+private const val apiToken: String = BuildConfig.apiKey
 
-    // current configuration
-    private var apiBaseURL: String = "https://api.ladefuchs.app"
-    private var apiVersionPath: String = "v2"
+// current configuration
+private var apiBaseURL: String = "https://api.ladefuchs.app"
+private var apiVersionPath: String = "v2"
 
-    // production settings
-    private val apiBaseRegularURL: String = "https://api.ladefuchs.app/"
-    private val apiVersionRegularPath: String = ""
+// production settings
+private const val apiBaseRegularURL: String = "https://api.ladefuchs.app/"
+private const val apiVersionRegularPath: String = ""
 
-    // beta settings
-    private val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
-    private val apiVersionBetaPath: String = ""
+// beta settings
+private const val apiBaseBetaURL: String = "https://beta.api.ladefuchs.app/"
+private const val apiVersionBetaPath: String = ""
 
-    private var allCardsCache: MutableMap<String, AllCardsResponse> = mutableMapOf()
+private var allCardsCache: MutableMap<String, AllCardsResponse> = mutableMapOf()
 
-    private val jsonType = "application/json; charset=utf-8".toMediaType();
-    private val client = OkHttpClient()
+private val client = OkHttpClient()
+private val jsonType = "application/json; charset=utf-8".toMediaType();
 
-    /**
-     * This function switches to production API
-     */
-    fun useProd() {
-        this.apiBaseURL = apiBaseRegularURL
-        this.apiVersionPath = apiVersionRegularPath
+/**
+ * This function switches to production API
+ */
+
+fun useProd() {
+    apiBaseURL = apiBaseRegularURL
+    apiVersionPath = apiVersionRegularPath
+}
+
+/**
+ * This function switches to beta API
+ */
+fun useBeta() {
+    apiBaseURL = apiBaseBetaURL
+    apiVersionPath = apiVersionBetaPath
+}
+
+private fun isOffline(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkCapabilities = connectivityManager.activeNetwork ?: return true
+    val capabilities =
+        connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return true
+
+    return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+}
+
+/**
+ * This function retrieves the prices for chargecards-ac/dc
+ */
+fun retrieveCards(
+    pocOperatorId: String,
+    context: Context,
+    forceDownload: Boolean = false,
+): AllCardsResponse {
+    val found = if (!forceDownload) allCardsCache.getOrDefault(pocOperatorId, null) else null
+    if (found != null) {
+        printLog("Found cards for $pocOperatorId in cache")
+        return found
     }
 
-    /**
-     * This function switches to beta API
-     */
-    fun useBeta() {
-        this.apiBaseURL = apiBaseBetaURL
-        this.apiVersionPath = apiVersionBetaPath
-    }
+    val cardFileName = getCardsFileName(pocOperatorId)
+    var chargeCards = AllCardsResponse(pocOperatorId, emptyList(), emptyList())
 
-    private fun isOffline(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkCapabilities = connectivityManager.activeNetwork ?: return true
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return true
+    if (forceDownload && !isOffline(context)) {
+        val url = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId"
 
-        return !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
-
-    private fun downloadJson(JSONUrl: String): String {
-        if (isOffline()) {
-            printLog("Device is offline", "network")
-            return ""
+        val acJson = downloadJson("$url/${ChargeType.AC}", context)
+        val dcJson = downloadJson("$url/${ChargeType.DC}", context)
+        val klaxon = Klaxon()
+        if (acJson.isNotEmpty()) {
+            chargeCards.ac = klaxon.parseArray(acJson) ?: emptyList()
         }
+        if (dcJson.isNotEmpty()) {
+            chargeCards.dc = klaxon.parseArray(dcJson) ?: emptyList()
+        }
+        allCardsCache[pocOperatorId] = chargeCards
+        printLog("Write ac/dc cards for operator: $pocOperatorId to file: $cardFileName")
+        writeJsonToStorage(klaxon.toJsonString(chargeCards), cardFileName, context)
+        return chargeCards;
+    }
+    val cardsFile = File(context.getFileStreamPath(cardFileName).toString())
 
-        printLog("Downloading to Internal Storage $JSONUrl", "network")
-        var jsonResponse = ""
+    try {
+        val json = cardsFile.readText()
+        if (json.isEmpty()) {
+            return chargeCards
+        }
+        val cards = Klaxon().parse<AllCardsResponse>(json);
+        if (cards != null) {
+            chargeCards = cards
+            allCardsCache[pocOperatorId] = cards
+        }
+    } catch (e: Exception) {
+        printLog("Error while reading cards from file $cardsFile, error: ${e.message}")
+        if (BuildConfig.DEBUG) {
+            e.printStackTrace()
+        }
+    }
 
-        val url = URL(JSONUrl)
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .header("Authorization", "Bearer $apiToken")
-            .build()
-        val t = Thread {
-            try {
-                client.newCall(request).execute().use { response ->
-                    if (response.code == 200) {
-                        response.body?.byteStream()?.use { body ->
-                            jsonResponse = body.bufferedReader().use { it.readText() }
+    return chargeCards
+}
 
-                        }
-                    } else {
-                        printLog("Downloading failed! StatusCode: ${response.code} Message: ${response.message}")
+private fun downloadJson(JSONUrl: String, context: Context): String {
+    if (isOffline(context)) {
+        printLog("Device is offline", "network")
+        return ""
+    }
+
+    printLog("Downloading to Internal Storage $JSONUrl", "network")
+    var jsonResponse = ""
+
+    val url = URL(JSONUrl)
+    val request = Request.Builder()
+        .url(url)
+        .get()
+        .header("Authorization", "Bearer $apiToken")
+        .build()
+    val t = Thread {
+        try {
+            client.newCall(request).execute().use { response ->
+                if (response.code == 200) {
+                    response.body?.byteStream()?.use { body ->
+                        jsonResponse = body.bufferedReader().use { it.readText() }
+
                     }
-                }
-            } catch (e: Exception) {
-                e.message?.let { printLog("downloadJSONToInternalStorage $it", "error") };
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
+                } else {
+                    printLog("Downloading failed! StatusCode: ${response.code} Message: ${response.message}")
                 }
             }
+        } catch (e: Exception) {
+            e.message?.let { printLog("downloadJSONToInternalStorage $it", "error") };
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
         }
-
-        t.start()
-        t.join()
-
-        return jsonResponse;
     }
 
+    t.start()
+    t.join()
 
-    /**
-     * This function retrieves the current list of operators
-     */
-    fun retrieveOperatorList(): List<Operator> {
-        val operatorFileName = "operators.json"
-        val operatorsJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled")
-        val operatorJson = if (operatorsJson.isEmpty()) {
+    return jsonResponse;
+}
+
+fun retrieveOperatorList(context: Context): List<Operator> {
+    val operatorFileName = "operators.json"
+    val operatorJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled", context)
+    val json =
+        if (operatorJson.isEmpty()) {
             try {
                 val operatorsFile = File(context.getFileStreamPath(operatorFileName).toString())
                 operatorsFile.readText()
             } catch (e: Exception) {
                 printLog("Could not read: $operatorFileName, error: ${e.message}", "error")
-                operatorsJson
+                ""
             }
         } else {
-            writeJsonToStorage(operatorFileName, operatorsJson)
-            operatorsJson
+
+            val sharedPreferences = context?.let {
+                PreferenceManager.getDefaultSharedPreferences(
+                    it
+                )
+            }
+            val timeDifferenceHours =
+                getHoursForPreference(sharedPreferences, "cached_operator_timestamp")
+            if (timeDifferenceHours > 24) {
+                Thread {
+                    writeJsonToStorage(operatorFileName, operatorJson, context)
+                    writeTimeToPreferences(sharedPreferences, "cached_operator_timestamp")
+                }.start()
+            }
+            operatorJson
         }
 
-        return Klaxon().parseArray<Operator>(operatorJson)?.sortedBy { it.displayName.lowercase() }
+    if (json.isEmpty()) {
+        return emptyList()
+    }
+    try {
+        return Klaxon().parseArray<Operator>(json)?.sortedBy { it.displayName.lowercase() }
             ?: emptyList()
+    } catch (e: Exception) {
+        if (BuildConfig.DEBUG) {
+            e.printStackTrace()
+        }
+    }
+    return emptyList()
+}
+
+
+/**
+ * This function retrieves the current list of operators
+ */
+
+
+fun downloadAllCards(operatorList: List<Operator>, context: Context) {
+
+    if (isOffline(context)) {
+        return
     }
 
-    fun downloadAllCards(operatorList: List<Operator>) {
-
-        if (isOffline()) {
-            return
-        }
-
-        var allCardsResponse = listOf<AllCardsResponse>()
-        val t = Thread {
-            try {
-                val operatorIds = operatorList.map { it.identifier }
-                val requestBody =
-                    Klaxon().toJsonString(AllCardsRequest(operatorIds)).toRequestBody(jsonType);
-                val request = Request.Builder()
-                    .url("$apiBaseURL/$apiVersionPath/cards/de")
-                    .post(requestBody)
-                    .header("Authorization", "Bearer $apiToken")
-                    .build()
-                client.newCall(request).execute().use { response ->
-                    if (response.code != 200) {
-                        printLog("Couldn't retrieve all cards: ${response.code}:$response", "error")
-                        return@Thread;
-                    }
-                    allCardsResponse = response.body!!.byteStream().use { body ->
-                        Klaxon().parseArray(body)
-                    } ?: emptyList()
-
-                    allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
-
-
-                }
-            } catch (e: Exception) {
-                printLog("exception retrieve all cards, error: ${e.message}", "error")
-            }
-        }
-        t.start()
-        t.join()
-
-        Thread {
-            for (cards in allCardsResponse) {
-                val fileName = getCardsFileName(cards.operator)
-                printLog("write card for ${cards.operator} ac/dc with filename $fileName to disk");
-                writeJsonToStorage(fileName, Klaxon().toJsonString(cards))
-            }
-        }.start()
-    }
-
-    private fun writeJsonToStorage(
-        fileName: String,
-        json: String
-    ) {
-        if (json.isEmpty()) {
-            return
-        }
+    var allCardsResponse = listOf<AllCardsResponse>()
+    val t = Thread {
         try {
-            val path = context.getFileStreamPath(fileName).toPath()
-            Files.write(path, json.toByteArray())
+            val operatorIds = operatorList.map { it.identifier }
+            printLog("Downloading all charge cards", "network")
+            val requestBody =
+                Klaxon().toJsonString(AllCardsRequest(operatorIds)).toRequestBody(jsonType);
+            val request = Request.Builder()
+                .url("$apiBaseURL/$apiVersionPath/cards/de")
+                .post(requestBody)
+                .header("Authorization", "Bearer $apiToken")
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (response.code != 200) {
+                    printLog("Couldn't retrieve all cards: ${response.code}:$response", "error")
+                    return@Thread;
+                }
+                allCardsResponse = response.body!!.byteStream().use { body ->
+                    Klaxon().parseArray(body)
+                } ?: emptyList()
+
+                allCardsCache = allCardsResponse.associateBy { it.operator }.toMutableMap()
+
+            }
         } catch (e: Exception) {
-            printLog(
-                "An error occurred while writing the file: ${fileName}, error ${e.message}",
-                "error"
-            )
+            allCardsCache = mutableMapOf()
+            printLog("exception retrieve all cards, error: ${e.message}", "error")
+        }
+    }
+    t.start()
+    t.join()
+
+
+    val sharedPreferences = context.let {
+        PreferenceManager.getDefaultSharedPreferences(
+            it
+        )
+    }
+
+    val timeDifferenceHours = getHoursForPreference(sharedPreferences, "cached_card_timestamp")
+
+    // only cache every 8h
+    if (timeDifferenceHours < 10) {
+        printLog("Skip caching all charge cards", "network")
+        return
+    }
+
+    Thread {
+        for (cards in allCardsResponse) {
+            val fileName = getCardsFileName(cards.operator)
+            printLog("write card for ${cards.operator} ac/dc with filename $fileName to disk");
+            writeJsonToStorage(fileName, Klaxon().toJsonString(cards), context)
+        }
+        writeTimeToPreferences(sharedPreferences, "cached_card_timestamp")
+    }.start()
+
+}
+
+private fun writeTimeToPreferences(sharedPreferences: SharedPreferences?, key: String) {
+    val currentTimestamp = System.currentTimeMillis()
+    val editor = sharedPreferences?.edit()
+    editor?.putLong(key, currentTimestamp)
+    editor?.apply()
+}
+
+private fun getHoursForPreference(sharedPreferences: SharedPreferences?, key: String): Long {
+    val cachedCardTimestamp = sharedPreferences?.getLong(key, 0) ?: 0
+    if (cachedCardTimestamp == 0L) {
+        return 25L
+    }
+    val currentTimestamp = System.currentTimeMillis()
+    val timeDifferenceMillis = currentTimestamp - cachedCardTimestamp
+    return TimeUnit.MILLISECONDS.toHours(timeDifferenceMillis)
+}
+
+private fun writeJsonToStorage(
+    fileName: String,
+    json: String,
+    context: Context
+) {
+    if (json.isEmpty()) {
+        return
+    }
+    try {
+        val path = context.getFileStreamPath(fileName).toPath()
+        Files.write(path, json.toByteArray())
+    } catch (e: Exception) {
+        printLog(
+            "An error occurred while writing the file: ${fileName}, error ${e.message}",
+            "error"
+        )
+        if (BuildConfig.DEBUG) {
+            e.printStackTrace()
+        }
+    }
+}
+
+
+/**
+ * This function downloads an image from the API and saves it in local storage
+ */
+fun downloadImageToInternalStorage(
+    imageURL: URL,
+    context: Context,
+    imgPath: File? = null,
+    cpo: Boolean = false
+) {
+
+    if (isOffline(context)) {
+        printLog("Device is offline", "network")
+        return
+    }
+    val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context, cpo)
+    printLog("Downloading image: ${imageURL.path}", "network")
+
+    val t = Thread {
+        printLog("Getting Image Path: $storagePath")
+        try {
+            val request = Request.Builder()
+                .url(imageURL)
+                .get()
+                .header("Authorization", "Bearer $apiToken")
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (response.code == 200) {
+                    response.body!!.byteStream().use { input ->
+                        FileOutputStream(storagePath).use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                } else {
+                    printLog("Couldn't retrieve image: ${response.code}:$response", "error")
+                }
+            }
+        } catch (e: Exception) {
+            printLog("Couldn't open stream $imageURL, error: ${e.message}", "error")
             if (BuildConfig.DEBUG) {
                 e.printStackTrace()
             }
         }
     }
+    t.start()
+    t.join()
+}
+
+private fun getCardsFileName(pocOperatorId: String): String {
+    return "de-$pocOperatorId.json"
+}
 
 
-    /**
-     * This function downloads an image from the API and saves it in local storage
-     */
-    fun downloadImageToInternalStorage(imageURL: URL, imgPath: File? = null, cpo: Boolean = false) {
-
-        if (isOffline()) {
-            printLog("Device is offline", "network")
-            return
-        }
-        val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context, cpo)
-        printLog("Downloading image: ${imageURL.path}", "network")
-
-        Thread {
-            printLog("Getting Image Path: $storagePath")
-            try {
-                val request = Request.Builder()
-                    .url(imageURL)
-                    .get()
-                    .header("Authorization", "Bearer $apiToken")
-                    .build()
-                client.newCall(request).execute().use { response ->
-                    if (response.code == 200) {
-                        response.body!!.byteStream().use { input ->
-                            FileOutputStream(storagePath).use { output ->
-                                input.copyTo(output)
-                            }
-                        }
-                    } else {
-                        printLog("Couldn't retrieve image: ${response.code}:$response", "error")
-                    }
-                }
-            } catch (e: Exception) {
-                printLog("Couldn't open stream $imageURL, error: ${e.message}", "error")
-                if (BuildConfig.DEBUG) {
-                    e.printStackTrace()
-                }
-            }
-        }.start()
+fun retrieveBanners(context: Context): Banner? {
+    if (isOffline(context)) {
+        return null
     }
-
-    private fun getCardsFileName(pocOperatorId: String): String {
-        return "de-$pocOperatorId.json"
-    }
-
-
-    /**
-     * This function retrieves the prices for chargecards-ac/dc
-     */
-    fun retrieveCards(
-        pocOperatorId: String,
-        forceDownload: Boolean = false,
-    ): AllCardsResponse {
-        val found = if (!forceDownload) allCardsCache.getOrDefault(pocOperatorId, null) else null
-        if (found != null) {
-            printLog("Found cards for $pocOperatorId in cache")
-            return found
-        }
-
-        val cardFileName = getCardsFileName(pocOperatorId)
-        var chargeCards = AllCardsResponse(pocOperatorId, emptyList(), emptyList())
-
-        if (forceDownload && !isOffline()) {
-            val url = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId"
-
-            val acJson = downloadJson("$url/${ChargeType.AC}")
-            val dcJson = downloadJson("$url/${ChargeType.DC}")
-            val klaxon = Klaxon()
-            if (acJson.isNotEmpty()) {
-                chargeCards.ac = klaxon.parseArray(acJson) ?: emptyList()
-            }
-            if (dcJson.isNotEmpty()) {
-                chargeCards.dc = klaxon.parseArray(dcJson) ?: emptyList()
-            }
-            allCardsCache[pocOperatorId] = chargeCards
-            printLog("Write ac/dc cards for operator: $pocOperatorId to file: $cardFileName")
-            writeJsonToStorage(klaxon.toJsonString(chargeCards), cardFileName)
-            return chargeCards;
-        }
-        val cardsFile = File(context.getFileStreamPath(cardFileName).toString())
-
+    val probabilities: MutableList<Banner> = mutableListOf()
+    val t = Thread {
+        printLog("Getting Banners")
         try {
-            val json = cardsFile.readText()
-            if (json.isEmpty()) {
-                return chargeCards
-            }
-            val cards = Klaxon().parse<AllCardsResponse>(json);
-            if (cards != null) {
-                chargeCards = cards
-                allCardsCache[pocOperatorId] = cards
+            val request = Request.Builder()
+                .url("$apiBaseURL/banners")
+                .get()
+                .header("Authorization", "Bearer $apiToken")
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (response.code == 200) {
+                    Klaxon().parseArray<Banner>(response.body!!.string())?.forEach { banner ->
+                        if (!File("${context.filesDir}/${banner.filename}").exists()) {
+                            downloadImageToInternalStorage(
+                                URL(banner.image),
+                                context,
+                                File("${context.filesDir}/${banner.filename}"),
+
+                                )
+                        } else if (Files.getLastModifiedTime(Paths.get(context.filesDir.toString() + "/" + banner.filename))
+                                .toInstant().toEpochMilli() < banner.updated
+                        ) {
+                            printLog("Updating img for ${banner.id} to newest version", "debug")
+                            Files.deleteIfExists(Paths.get("${context.filesDir}/$banner.filename"))
+                            downloadImageToInternalStorage(
+                                URL(banner.image),
+                                context,
+                                File("${context.filesDir}/${banner.filename}"),
+
+                                )
+                        }
+                        for (i in 0..banner.frequency) {
+                            probabilities.add(banner)
+                        }
+                    }
+                } else {
+                    printLog("Couldn't retrieve banners,: ${response.code}:$response", "error")
+                }
             }
         } catch (e: Exception) {
-            printLog("Error while reading cards from file $cardsFile, error: ${e.message}")
-            if (BuildConfig.DEBUG) {
-                e.printStackTrace()
-            }
+            printLog("Couldn't retrieve banners, error: ${e.message}", "error")
         }
-
-        return chargeCards
     }
+    t.start()
+    t.join()
 
-    fun retrieveBanners(): Banner? {
-        if (isOffline()) {
-            return null
-        }
-        val probabilities: MutableList<Banner> = mutableListOf()
-        val t = Thread {
-            printLog("Getting Banners")
-            try {
-                val request = Request.Builder()
-                    .url("$apiBaseURL/banners")
-                    .get()
-                    .header("Authorization", "Bearer $apiToken")
-                    .build()
-                client.newCall(request).execute().use { response ->
-                    if (response.code == 200) {
-                        Klaxon().parseArray<Banner>(response.body!!.string())?.forEach { banner ->
-                            if (!File("${context.filesDir}/${banner.filename}").exists()) {
-                                downloadImageToInternalStorage(
-                                    URL(banner.image),
-                                    File("${context.filesDir}/${banner.filename}")
-                                )
-                            } else if (Files.getLastModifiedTime(Paths.get(context.filesDir.toString() + "/" + banner.filename))
-                                    .toInstant().toEpochMilli() < banner.updated
-                            ) {
-                                printLog("Updating img for ${banner.id} to newest version", "debug")
-                                Files.deleteIfExists(Paths.get(context.filesDir.toString() + "/" + banner.filename))
-                                downloadImageToInternalStorage(
-                                    URL(banner.image),
-                                    File("${context.filesDir}/${banner.filename}")
-                                )
-                            }
-                            for (i in 0..banner.frequency) {
-                                probabilities.add(banner)
-                            }
-                        }
-                    } else {
-                        printLog("Couldn't retrieve banners,: ${response.code}:$response", "error")
-                    }
-                }
-            } catch (e: Exception) {
-                printLog("Couldn't retrieve banners, error: ${e.message}", "error")
-            }
-        }
-        t.start()
-        t.join()
-
-        return probabilities.randomOrNull()
-    }
-
+    return probabilities.randomOrNull()
 }

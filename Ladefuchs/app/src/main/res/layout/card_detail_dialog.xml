@@ -60,8 +60,9 @@
         android:id="@+id/card_container"
         android:layout_width="93dp"
         android:layout_height="63dp"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="8dp"
         android:rotation="-20"
+        android:elevation="30dp"
         android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.283"
@@ -74,7 +75,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/card_logo"
-            android:background="@drawable/card_adac"
             android:adjustViewBounds="true" />
 
     </androidx.cardview.widget.CardView>

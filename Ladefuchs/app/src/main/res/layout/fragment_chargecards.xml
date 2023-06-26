@@ -71,6 +71,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/ac"
                     android:textSize="28sp"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/chargeCardsTableHeaderACImage"
                     app:layout_constraintStart_toStartOf="parent"
@@ -78,10 +79,12 @@
 
                 <ImageView
                     android:id="@+id/chargeCardsTableHeaderACImage"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:alpha="0.4"
                     android:padding="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="2dp"
                     android:src="@drawable/ic_typ2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderAC"
@@ -90,6 +93,11 @@
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/chargeCardsTableHeaderDCContainer"
@@ -123,10 +131,12 @@
 
                 <ImageView
                     android:id="@+id/chargeCardsTableHeaderDCImage"
-                    android:layout_width="35dp"
-                    android:layout_height="45dp"
+                    android:layout_width="37dp"
+                    android:layout_height="47dp"
                     android:alpha="0.4"
                     android:padding="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="2dp"
                     android:src="@drawable/ic_ccs"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/chargeCardsTableHeaderDC"
@@ -170,6 +180,11 @@
                     android:layout_weight="0.5"
                     android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/chargeCardsTableHolder" />
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white" />
 
                 <LinearLayout
                     android:id="@+id/chargeCardsTableHolderDC"
@@ -234,7 +249,7 @@
     <com.aigestudio.wheelpicker.WheelPicker
         android:id="@+id/pocSelector"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="140dp"
         android:background="@drawable/border_light_bg_left"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
