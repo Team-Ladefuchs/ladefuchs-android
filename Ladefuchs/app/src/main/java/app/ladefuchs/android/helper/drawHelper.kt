@@ -1,16 +1,26 @@
 package app.ladefuchs.android.helper
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
 import android.text.TextPaint
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsCompat
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.ChargeCards
@@ -18,9 +28,6 @@ import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
 import java.io.File
 import java.net.URL
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
 import kotlin.math.ceil
 
 
@@ -179,7 +186,6 @@ fun fillCards(
             }
             cardView.addView(imageView)
 
-
             if (currentCard.note.isNotEmpty() || currentCard.blockingFee > 0) {
                 addHuedchen(parentView.context, cardView, frameLayout)
             }
@@ -197,8 +203,6 @@ fun fillCards(
                 val cardBitmap = drawChargeCard(
                     textToDraw = cardText,
                     textSize = 29F,
-                    textColor = Color.BLACK,
-                    backgroundColor = Color.WHITE,
                 )
                 imageView.background = BitmapDrawable(parentView.context.resources, cardBitmap)
                 imageView.outlineProvider = OutlineProvider(10, 10)
@@ -232,12 +236,9 @@ fun fillCards(
             cell.addView(textviewPrice)
             column.addView(cell)
         }
-
-
     }
 
     fillEmptyCells(allChargeCards, parentView, columnIsEven)
-
     return cardsDownloaded
 }
 
@@ -344,14 +345,158 @@ private fun createSingleCell(
     return cell
 }
 
+fun createAboutPopup(context: Context, view: View) {
+    currentDialog?.dismiss()
 
-private fun getPriceFormatter(): NumberFormat {
-    val priceNumberFormat = NumberFormat.getCurrencyInstance()
-    val decimalFormatSymbols: DecimalFormatSymbols =
-        (priceNumberFormat as DecimalFormat).decimalFormatSymbols
-    decimalFormatSymbols.currencySymbol = ""
-    priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
-    return priceNumberFormat
+    val popUpView: View = LayoutInflater.from(context).inflate(R.layout.fragment_about, null)
+    currentDialog = createDialog(popUpView, view)
+    currentDialog?.show()
+
+    popUpView.findViewById<ImageButton>(R.id.back_button)
+        .setOnClickListener {
+            currentDialog?.dismiss()
+        }
+
+    aboutPopUpSetUp(popUpView)
+}
+
+@SuppressLint("SetTextI18n")
+fun createCardDetailPopup(
+    view: View,
+    currentCard: ChargeCards,
+    currentCardAc: ChargeCards?,
+    currentCardDc: ChargeCards?,
+    operator: Operator,
+) {
+    currentDialog?.dismiss()
+
+    val overlayView = View(view.context)
+    overlayView.setBackgroundColor(Color.parseColor("#80000000"))
+    val params = view.layoutParams
+    val parentViewGroup = view.parent as ViewGroup
+    parentViewGroup.addView(overlayView, params)
+    val inflater =
+        view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    val popupView: View =
+        inflater.inflate(R.layout.card_detail_dialog, null)
+
+    currentDialog = createDialog(popupView, view)
+    currentDialog?.show()
+    // set onClick Listeners for backButtons
+    popupView.findViewById<ImageButton>(R.id.back_button)
+        .setOnClickListener {
+            currentDialog?.dismiss()
+        }
+
+    // Set card Image
+    val (image, _) = getCardImageDrawable(currentCard, view.context)
+    if (image != null) {
+        val imageView = popupView.findViewById<ImageView>(R.id.card_logo)
+        imageView.setImageDrawable(image)
+        imageView.scaleType = ImageView.ScaleType.FIT_XY;
+    }
+    // Set Card Details
+    popupView.findViewById<TextView>(R.id.detail_header1).text =
+        currentCard.name
+    popupView.findViewById<TextView>(R.id.detail_header2).text =
+        currentCard.provider
+    if (currentCardAc !== null) {
+        popupView.findViewById<TextView>(R.id.priceAC).text =
+            java.text.DecimalFormat("#,##0.00").format(currentCardAc.price)
+        popupView.findViewById<TextView>(R.id.blockFeeAC).text =
+            "> ab Min. ${currentCardAc.blockingFeeStart}\n> ${currentCardAc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardAc.monthlyFee == 0.0f) "keine" else "${currentCardAc.monthlyFee} €"
+        if (currentCardAc.blockingFee == 0.0f)
+            popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.GONE
+        else
+            popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.VISIBLE
+    }
+    if (currentCardDc !== null) {
+        popupView.findViewById<TextView>(R.id.priceDC).text =
+            java.text.DecimalFormat("#,##0.00").format(currentCardDc.price)
+        popupView.findViewById<TextView>(R.id.blockFeeDC).text =
+            "> ab Min. ${currentCardDc.blockingFeeStart}\n> ${currentCardDc.blockingFee} € /Min."
+        popupView.findViewById<TextView>(R.id.monthlyFeeContent).text =
+            if (currentCardDc.monthlyFee == 0.0f) "keine" else "${currentCardDc.monthlyFee} €"
+        if (currentCardDc.blockingFee == 0.0f)
+            popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.GONE
+        else
+            popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
+    }
+
+    if (currentCard.note.isNotEmpty()) {
+        popupView.findViewById<ConstraintLayout>(R.id.notes).visibility = View.VISIBLE
+        popupView.findViewById<ImageView>(R.id.huetchenNotes).visibility = View.VISIBLE
+        popupView.findViewById<TextView>(R.id.notesText).text = currentCard.note;
+    }
+
+    popupView.findViewById<Button>(R.id.getCard).setOnClickListener {
+        val urlIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(currentCard.url.toString())
+        )
+        view.context.startActivity(urlIntent)
+    }
+
+    if (currentCard.url == null) {
+        popupView.findViewById<Button>(R.id.getCard).visibility = View.INVISIBLE
+    }
+
+    // Retrieve Operator Image
+    var operatorImage: Drawable? = null
+    if (!operator.image.isNullOrEmpty()) {
+        val imgPath = getImagePath(URL(operator.image), view.context, true)
+        if (!imgPath.exists())
+            downloadImageToInternalStorage(imageURL = URL(operator.image), view.context, cpo = true)
+        try {
+            operatorImage = Drawable.createFromPath(imgPath.absolutePath)!!
+        } catch (e: Exception) {
+            //Download was to slow or failed no need for error handling because generated image will be used
+            if (BuildConfig.DEBUG) {
+                e.printStackTrace()
+            }
+        }
+    }
+    val operatorImageView = popupView.findViewById<ImageView>(R.id.cpo_logo)
+//     creating an own image
+    if (operatorImage == null) {
+        operatorImage = AppCompatResources.getDrawable(view.context, R.drawable.cpo_generic)
+        operatorImageView.setImageDrawable(operatorImage)
+    }
+}
+
+@SuppressLint("DiscouragedApi")
+private fun createDialog(
+    dialogView: View,
+    anchorView: View,
+): Dialog {
+
+    val statusBarHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val insets = anchorView.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+        insets.top
+    } else {
+        val resourceId =
+            dialogView.context.resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (resourceId != 0) {
+            dialogView.context.resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+    }
+
+    val height =
+        anchorView.context.resources.displayMetrics.heightPixels - if (statusBarHeight > 110) 0 else 110
+    val width = anchorView.context.resources.displayMetrics.widthPixels
+
+    val dialog = Dialog(dialogView.context)
+    (dialogView.parent as? ViewGroup)?.removeView(dialogView) // Remove view from its current parent
+    dialog.setContentView(dialogView)
+    dialog.window?.setLayout(width, height)
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.window?.attributes?.windowAnimations = R.style.popup_window_animation
+
+    return dialog
 }
 
 
