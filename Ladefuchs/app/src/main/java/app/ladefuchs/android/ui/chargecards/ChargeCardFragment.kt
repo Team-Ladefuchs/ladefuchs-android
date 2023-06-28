@@ -79,7 +79,6 @@ class ChargeCardFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         phraseView = view.findViewById(R.id.phraseView) as TextView
-        swipetorefresh = view.findViewById(R.id.swipetorefresh) as SwipeRefreshLayout
         val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
         // check whether onboarding should be shown
         if (onboarding) {
@@ -138,6 +137,8 @@ class ChargeCardFragment : Fragment() {
             refreshCardView(currentPoc!!)
         }
 
+        swipetorefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipetorefresh)
+
         // Loading the pocList into the Picker Library
         wheelPicker.setOnItemSelectedListener { _, data, _ ->
             view.findViewById<ScrollView>(R.id.cardScroller).fullScroll(ScrollView.FOCUS_UP)
@@ -153,13 +154,18 @@ class ChargeCardFragment : Fragment() {
 
         // RefreshListener
         swipetorefresh.setOnRefreshListener {
-            printLog("Swipe to Refresh with $currentPoc")
-            getPricesByOperatorId(
-                currentPoc!!.copy(),
-                requireContext(),
-                view,
-            )
-
+            if (currentPoc != null) {
+                printLog("Swipe to Refresh selected operator ${currentPoc!!.displayName}")
+                cardsNeedRefresh = getPricesByOperatorId(
+                    currentPoc!!.copy(),
+                    requireContext(),
+                    view,
+                    forceDownload = true
+                )
+                if (cardsNeedRefresh) {
+                    refreshCardView(currentPoc!!)
+                }
+            }
             swipetorefresh.isRefreshing = false
         }
         // check whether onboarding should be shown
@@ -195,17 +201,17 @@ class ChargeCardFragment : Fragment() {
     }
 
     private fun handleOperatorSelected(operator: Operator, view: View) {
-        val currentPocCopy = operator.copy()
-        printLog("CPO selected: $currentPocCopy, ${currentPocCopy.identifier}")
+        currentPoc = operator
+        printLog("CPO selected: ${operator.displayName}")
         getPricesByOperatorId(
-            currentPocCopy,
+            operator.copy(),
             requireContext(),
             view,
         )
 
-        printLog("Picker Switched to CPO: $currentPocCopy")
+        printLog("Picker Switched to CPO: $operator")
         if (cardsNeedRefresh) {
-            refreshCardView(currentPocCopy)
+            refreshCardView(operator)
         }
     }
 

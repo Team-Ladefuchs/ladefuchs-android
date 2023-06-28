@@ -88,8 +88,8 @@ fun retrieveCards(
     var chargeCards = AllCardsResponse(pocOperatorId, emptyList(), emptyList())
 
     if (forceDownload && !isOffline(context)) {
+        printLog("$pocOperatorId force download triggered")
         val url = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId"
-
         val acJson = downloadJson("$url/${ChargeType.AC}", context)
         val dcJson = downloadJson("$url/${ChargeType.DC}", context)
         val klaxon = Klaxon()
@@ -180,7 +180,6 @@ fun retrieveOperatorList(context: Context): List<Operator> {
                 ""
             }
         } else {
-
             val sharedPreferences = context?.let {
                 PreferenceManager.getDefaultSharedPreferences(
                     it
@@ -222,7 +221,6 @@ fun downloadAllCards(operatorList: List<Operator>, context: Context) {
     if (isOffline(context)) {
         return
     }
-
     var allCardsResponse = listOf<AllCardsResponse>()
     val t = Thread {
         try {
@@ -264,8 +262,8 @@ fun downloadAllCards(operatorList: List<Operator>, context: Context) {
 
     val timeDifferenceHours = getHoursForPreference(sharedPreferences, "cached_card_timestamp")
 
-    // only cache every 8h
-    if (timeDifferenceHours < 10) {
+    // only cache every 12h
+    if (timeDifferenceHours < 12) {
         printLog("Skip caching all charge cards", "network")
         return
     }
