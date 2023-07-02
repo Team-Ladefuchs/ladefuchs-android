@@ -1,14 +1,12 @@
 package app.ladefuchs.android.ui.chargecards
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -31,8 +29,6 @@ import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.dataClasses.Operator
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
-import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.exists
@@ -272,18 +268,26 @@ class ChargeCardFragment : Fragment() {
             return
         }
 
-        val banner = retrieveBanners(view.context) ?: return
-        val bannerFilePath = Paths.get("${view.context.filesDir}/${banner.filename}")
-        if (!bannerFilePath.exists()) {
-            val phrases =
-                view.context.assets.open("phrases.txt").bufferedReader()
-                    .readLines()
-            printLog("Falling back on your mom", "debug")
-            phraseView.text = phrases.randomOrNull() ?: ""
+        val banner = retrieveBanners(view.context)
+        if (banner == null) {
+            drawPhrasesBanner(view)
             return
         }
 
+        val bannerFilePath = Paths.get("${view.context.filesDir}/${banner.filename}")
+        if (!bannerFilePath.exists()) {
+            drawPhrasesBanner(view)
+            return
+        }
         drawPromoBanner(view, banner, bannerFilePath)
+    }
+
+    private fun drawPhrasesBanner(view: View) {
+        val phrases =
+            view.context.assets.open("phrases.txt").bufferedReader()
+                .readLines()
+        printLog("Falling back on your mom", "debug")
+        phraseView.text = phrases.randomOrNull() ?: ""
     }
 
     /**

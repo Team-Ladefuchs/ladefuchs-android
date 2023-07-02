@@ -187,11 +187,14 @@ fun fillCards(
             cardView.addView(imageView)
 
             if (currentCard.note.isNotEmpty() || currentCard.blockingFee > 0) {
-                addHuedchen(parentView.context, cardView, frameLayout)
+                addHuetchen(parentView.context, cardView, frameLayout)
             }
 
             cell.addView(frameLayout)
-            val (imageDrawable, downloaded) = getCardImageDrawable(currentCard, parentView.context)
+            val (imageDrawable, downloaded) = downloadOrGetImageDrawable(
+                currentCard.image,
+                parentView.context
+            )
             cardsDownloaded = downloaded
             if (imageDrawable != null) {
                 imageView.setImageDrawable(imageDrawable)
@@ -286,7 +289,7 @@ private fun fillEmptyCells(
     }
 }
 
-private fun addHuedchen(
+private fun addHuetchen(
     context: Context,
     cardView: CardView,
     frameLayout: FrameLayout
@@ -389,7 +392,7 @@ fun createCardDetailPopup(
         }
 
     // Set card Image
-    val (image, _) = getCardImageDrawable(currentCard, view.context)
+    val (image, _) = downloadOrGetImageDrawable(currentCard.image, view.context)
     if (image != null) {
         val imageView = popupView.findViewById<ImageView>(R.id.card_logo)
         imageView.setImageDrawable(image)
@@ -443,27 +446,23 @@ fun createCardDetailPopup(
         popupView.findViewById<Button>(R.id.getCard).visibility = View.INVISIBLE
     }
 
-    // Retrieve Operator Image
-    var operatorImage: Drawable? = null
-    if (!operator.image.isNullOrEmpty()) {
-        val imgPath = getImagePath(URL(operator.image), view.context, true)
-        if (!imgPath.exists())
-            downloadImageToInternalStorage(imageURL = URL(operator.image), view.context, cpo = true)
-        try {
-            operatorImage = Drawable.createFromPath(imgPath.absolutePath)!!
-        } catch (e: Exception) {
-            //Download was to slow or failed no need for error handling because generated image will be used
-            if (BuildConfig.DEBUG) {
-                e.printStackTrace()
-            }
-        }
-    }
+    // retrieve operator image
+    val (operatorImage, _) = downloadOrGetImageDrawable(operator.image, view.context)
     val operatorImageView = popupView.findViewById<ImageView>(R.id.cpo_logo)
-//     creating an own image
+
     if (operatorImage == null) {
-        operatorImage = AppCompatResources.getDrawable(view.context, R.drawable.cpo_generic)
+        // set operator placeholder image
+        operatorImageView.setImageDrawable(
+            AppCompatResources.getDrawable(
+                view.context,
+                R.drawable.cpo_generic
+            )
+        )
+    } else {
+        // set operator image
         operatorImageView.setImageDrawable(operatorImage)
     }
+
 }
 
 @SuppressLint("DiscouragedApi")
@@ -500,25 +499,26 @@ private fun createDialog(
 }
 
 
-fun getCardImageDrawable(card: ChargeCards, context: Context): Pair<Drawable?, Boolean> {
+fun downloadOrGetImageDrawable(imageUriStr: String?, context: Context): Pair<Drawable?, Boolean> {
 
-    if (card.image.isNullOrEmpty()) {
+    if (imageUriStr.isNullOrEmpty()) {
         return null to false
     }
-    val cardUri = URL(card.image)
-    var cardImagePath: File? = getImagePath(cardUri, context)
 
-    if (cardImagePath?.exists() == false) {
+    val uri = URL(imageUriStr)
+    var imagePath: File? = getImagePath(uri, context)
+
+    if (imagePath?.exists() == false) {
         downloadImageToInternalStorage(
-            cardUri,
+            uri,
             context
         )
     }
 
-    if (cardImagePath?.exists() == true) {
+    if (imagePath?.exists() == true) {
         try {
-            cardImagePath = getImagePath(cardUri, context)
-            return Drawable.createFromPath(cardImagePath.absolutePath) to false
+            imagePath = getImagePath(uri, context)
+            return Drawable.createFromPath(imagePath.absolutePath) to false
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
                 e.printStackTrace()
