@@ -36,7 +36,7 @@ Happy coding!
 * Start it, on the "Welcome to Android Studio" screen, click "Open" on top right, navigate to the location you cloned the repository to, and select the `Ladefuchs/` (not `Ladefuchs/app/` or `Ladefuchs/ladefuchs/`) subfolder (will take a while for the build to be set up and commence)
 * Connect a USB debugging enabled device
 * Click "Run `app`" on top (will take a while)
-* Should automattically show on the phone
+* Should automatically show on the phone
 
 ## Available at
 * https://play.google.com/store/apps/details?id=app.ladefuchs.android
