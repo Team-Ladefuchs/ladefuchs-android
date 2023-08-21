@@ -1,100 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/rounded_header_card">
 
-    <ImageButton
-        android:id="@+id/back_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginTop="6dp"
-        android:background="@color/PrimaryBackground"
-        android:contentDescription="@string/zurueck"
-        app:layout_constraintBottom_toTopOf="@+id/einstellungen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_cancel_24" />
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/einstellungen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
+        android:background="@color/colorPrimaryDark"
+        android:orientation="horizontal"
         android:paddingTop="0dp"
-        android:paddingRight="16dp"
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/back_button">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignEnd="@+id/einstellungenHeaderText"
+            android:layout_gravity="end"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="-6dp"
+            android:background="@color/colorPrimaryDark"
+            android:contentDescription="@string/zurueck"
+            app:srcCompat="@drawable/ic_baseline_cancel_24" />
 
         <TextView
             android:id="@+id/einstellungenHeaderText"
-            android:layout_width="wrap_content"
+            style="@style/AboutTopHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings"
+            android:gravity="center"
             android:paddingBottom="8dp"
-            android:textAppearance="@style/AboutTopHeader"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </LinearLayout>
+            android:text="@string/settings" />
+    </RelativeLayout>
 
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/PrimaryBackground"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="1.0"
-        android:background="@color/PrimaryBackground"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/einstellungen"
         app:layout_constraintTop_toBottomOf="@+id/einstellungen">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingBottom="100dp"
-            android:paddingRight="16dp">
+            android:paddingBottom="100dp">
+
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/teamfuchs"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:text="@string/teamfuchs_header"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/teamfuchs_header" />
 
             <TextView
                 android:id="@+id/teamfuchsSL"
+                style="@style/AboutSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="3dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginBottom="25dp"
-                android:fontFamily="@font/bitter"
-                android:text="@string/teamfuchs_sl"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/teamfuchs_sl" />
 
 
             <LinearLayout
                 android:id="@+id/team_basti"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_basti"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -111,50 +107,42 @@
 
                     <TextView
                         android:id="@+id/basti"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/basti"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/basti" />
 
                     <TextView
                         android:id="@+id/bastiSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/androidfuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/androidfuchs" />
 
                     <TextView
                         android:id="@+id/bastiSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/mastodon_schlingel"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorBlack" />
+                        android:text="@string/mastodon_schlingel" />
 
                     <TextView
                         android:id="@+id/bastiSL3"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/android_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/android_at_ladefuchs_app" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -163,10 +151,12 @@
                 android:id="@+id/team_malik"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_malik"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -183,50 +173,43 @@
 
                     <TextView
                         android:id="@+id/malik"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/malik"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/malik" />
 
                     <TextView
                         android:id="@+id/malikSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/designfuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/designfuchs" />
 
                     <TextView
                         android:id="@+id/malikSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/mastodon_malik"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorBlack" />
+                        android:text="@string/mastodon_malik" />
 
                     <TextView
                         android:id="@+id/malikSL3"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
+                        android:minHeight="48dp"
                         android:tag="clickableLink"
-                        android:text="@string/malik_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/malik_at_ladefuchs_app" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -234,10 +217,12 @@
                 android:id="@+id/team_flow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_flow"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -254,51 +239,42 @@
 
                     <TextView
                         android:id="@+id/flowinho"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/flowinho"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/flowinho" />
 
                     <TextView
                         android:id="@+id/flowinhoSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/apfelfuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/apfelfuchs" />
 
                     <TextView
                         android:id="@+id/flowinhoSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/twitter_flowinho"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColor="@color/TextColorDark"
-                        android:textColorLink="@color/TextColorBlack" />
+                        android:text="@string/twitter_flowinho" />
 
                     <TextView
                         android:id="@+id/flowinhoSL3"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/ios_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/ios_at_ladefuchs_app" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -307,10 +283,12 @@
                 android:id="@+id/team_thorsten"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_thorsten"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -327,50 +305,42 @@
 
                     <TextView
                         android:id="@+id/thorsten"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/thorsten"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/thorsten" />
 
                     <TextView
                         android:id="@+id/thorstenSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/androidfuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/androidfuchs" />
 
                     <TextView
                         android:id="@+id/thorstenSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/twitter_thorsten"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorBlack" />
+                        android:text="@string/twitter_thorsten" />
 
                     <TextView
                         android:id="@+id/thorstenSL3"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/android_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/android_at_ladefuchs_app" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -379,10 +349,12 @@
                 android:id="@+id/team_roddi"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_roddi"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -400,50 +372,42 @@
 
                     <TextView
                         android:id="@+id/roddi"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/roddi"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/roddi" />
 
                     <TextView
                         android:id="@+id/roddiSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/apfelfuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/apfelfuchs" />
 
                     <TextView
                         android:id="@+id/roddiSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/twitter_roddi"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorBlack" />
+                        android:text="@string/twitter_roddi" />
 
                     <TextView
                         android:id="@+id/roddiSL3"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/ios_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/ios_at_ladefuchs_app" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -452,10 +416,12 @@
                 android:id="@+id/team_dominic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="clip_vertical"
                 android:padding="8dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar_dominic"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
@@ -472,65 +438,57 @@
 
                     <TextView
                         android:id="@+id/dominic"
+                        style="@style/Füchse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/roboto_black"
-                        android:text="@string/dominic"
-                        android:textAllCaps="true"
-                        android:textAppearance="@style/AboutHeader"
-                        android:textStyle="bold" />
+                        android:text="@string/dominic" />
 
                     <TextView
                         android:id="@+id/dominicSL"
+                        style="@style/SubFüchse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
-                        android:fontFamily="@font/bitter"
-                        android:text="@string/apifuchs"
-                        android:textAppearance="@style/AboutSubHeader" />
+                        android:text="@string/apifuchs" />
 
                     <TextView
                         android:id="@+id/dominicSL2"
+                        style="@style/AboutSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
                         android:layout_marginBottom="1.5dp"
                         android:autoLink="email"
-                        android:fontFamily="@font/bitter"
                         android:tag="clickableLink"
-                        android:text="@string/api_at_ladefuchs_app"
-                        android:textAppearance="@style/AboutSubHeaderSans"
-                        android:textColorLink="@color/TextColorDark" />
+                        android:text="@string/api_at_ladefuchs_app" />
                 </LinearLayout>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/teamfuchs2"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
-                android:fontFamily="@font/roboto_black"
-                android:text="@string/podcastfuchs"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/podcastfuchs" />
 
             <TextView
                 android:id="@+id/teamfuchsSL2"
+                style="@style/AboutSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/podcastfuchs_sl"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/podcastfuchs_sl" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="120dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:weightSum="99">
 
 
@@ -569,29 +527,27 @@
 
             <TextView
                 android:id="@+id/datenfuchs"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
-                android:fontFamily="@font/roboto_black"
-                android:text="@string/datenfuchs"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/datenfuchs" />
 
             <TextView
                 android:id="@+id/datenfuchsSL"
+                style="@style/AboutSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
-                android:text="@string/datenfuchs_sl"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/datenfuchs_sl" />
 
             <ImageView
                 android:id="@+id/chargeprice_logo"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="14dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginBottom="0dp"
                 android:adjustViewBounds="true"
                 android:clickable="true"
@@ -602,86 +558,78 @@
 
             <TextView
                 android:id="@+id/illufuchs"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
-                android:fontFamily="@font/roboto_black"
-                android:text="@string/illufuchs"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/illufuchs" />
 
             <TextView
                 android:id="@+id/illufuchsSL"
+                style="@style/AboutSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/bitter"
                 android:layout_marginTop="3dp"
-                android:text="@string/illusfuchs_SL"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/illusfuchs_SL" />
+
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/imprint_header"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
-                android:fontFamily="@font/bitter"
-                android:text="@string/imprint_header"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/imprint_header" />
 
             <TextView
                 android:id="@+id/imprint_text"
+                style="@style/AboutSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:fontFamily="@font/bitter"
-                android:text="@string/imprint_text"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/imprint_text" />
+
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/acknowledgement_header"
+                style="@style/AboutHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
-                android:fontFamily="@font/bitter"
-                android:text="@string/acknowledgement_header"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AboutHeader"
-                android:textStyle="bold" />
+                android:text="@string/acknowledgement_header" />
 
             <TextView
                 android:id="@+id/acknowledgement_text"
+                style="@style/AboutSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:fontFamily="@font/bitter"
                 android:layout_marginBottom="20dp"
+                android:text="@string/acknowledgement_text" />
 
-                android:textColorLink="#000"
-                android:text="@string/acknowledgement_text"
-                android:textAppearance="@style/AboutSubHeader" />
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/handcraftedText"
+                style="@style/AboutSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="5dp"
-                android:fontFamily="@font/bitter"
                 android:layout_marginBottom="20dp"
-                android:text="@string/handcrafted"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:text="@string/handcrafted" />
+
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/version_info"
+                style="@style/AboutSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:layout_marginBottom="48dp"
-                android:fontFamily="@font/bitter"
-                android:textAppearance="@style/AboutSubHeader" />
+                android:gravity="center" />
 
         </LinearLayout>
 
