@@ -60,7 +60,7 @@ Die App ist kostenlos. Der kleine Ladefuchs freut sich allerdings wie ein junger
 * Malik & Flowinho von audiodump.de
 * Bastian ’Schlingel‘ Wölfle von bitsundso.de
 * Dominic Wrege
-* Thorsten Roesler
+* Thorsten Rösler
 * Illu: Aga und Marcel-André
 
 ## Ideen? Bugs?
