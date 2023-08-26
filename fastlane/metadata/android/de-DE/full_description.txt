@@ -24,3 +24,14 @@ Ideen? Bugs?
 Bitte an android@ladefuchs.app
 
 Falls du Vorschläge für Fußnotentexte hast, lass es uns wissen auf https://ladefuchs.app/fussnote
+
+Anti-Features/Unerwünschte Merkmale
+-----------------------------------
+
+* Non-Free Network Services / Proprietäre Netzwerkdienste - Die App greift auf einen eigenen API-Server zu, der wiederum Daten von chargeprice.app bezieht.
+
+Permissions / Berechtigungen
+----------------------------
+
+* INTERNET - Zugriff auf den eigenen API-Server
+* ACCESS_NETWORK_STATE - ?
