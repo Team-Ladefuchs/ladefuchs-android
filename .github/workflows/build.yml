@@ -6,9 +6,9 @@ name: Build APK
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,13 +23,13 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
+      - uses: actions/checkout@v3
+
       # install jdk
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
 
       # Write API key into build config
       - name: Write API key into build config
@@ -37,18 +37,17 @@ jobs:
           API_TOKEN: ${{ secrets.API_KEY }}
         run: echo apiKey=$API_TOKEN > Ladefuchs/secrets.properties
 
-      # Build the android apk 
+      # Build the android apk
       - name: Build fw
         working-directory: Ladefuchs
         run: |
           ./gradlew build
-    
+
       # Upload apk to artifact
       - name: Upload apk
         uses: actions/upload-artifact@v2
         with:
           name: APKs
           path: |
-              Ladefuchs/app/build/outputs/apk/debug/app-debug.apk
-              Ladefuchs/app/build/outputs/apk/release/app-release-unsigned.apk
-              
+            Ladefuchs/app/build/outputs/apk/debug/app-debug.apk
+            Ladefuchs/app/build/outputs/apk/release/app-release-unsigned.apk

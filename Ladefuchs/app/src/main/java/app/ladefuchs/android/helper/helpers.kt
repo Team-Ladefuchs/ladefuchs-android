@@ -1,24 +1,56 @@
 package app.ladefuchs.android.helper
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import androidx.preference.PreferenceManager
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.renderscript.Allocation
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
+import app.ladefuchs.android.R
 import app.ladefuchs.android.dataClasses.CardMetaData
 import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.dataClasses.ChargeType
+import app.ladefuchs.android.dataClasses.Operator
 import com.beust.klaxon.Klaxon
 import java.io.File
-import java.io.InputStream
 import java.net.URL
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 
+private val pricesSemaphore = Semaphore(1)
+
+var currentDialog: Dialog? = null
+
 /**
- * Function to log while in Debug mode
+Function to log while in Debug mode
  */
 fun printLog(message: String, type: String = "info") {
     if (BuildConfig.DEBUG) {
@@ -28,12 +60,15 @@ fun printLog(message: String, type: String = "info") {
             "error" -> {
                 typeIcon = "🛑"
             }
+
             "warning" -> {
                 typeIcon = "⚠️"
             }
+
             "heart" -> {
                 typeIcon = "❤️"
             }
+
             "network" -> {
                 typeIcon = "⏬️"
             }
@@ -42,26 +77,6 @@ fun printLog(message: String, type: String = "info") {
     }
 }
 
-/**
- * Stores a file in internal storage
- */
-fun storeFileInInternalStorage(
-    inputStream: InputStream,
-    internalStorageFileName: String,
-    context: Context
-) {
-    val outputStream = context.openFileOutput(internalStorageFileName, Context.MODE_PRIVATE)
-    val buffer = ByteArray(1024)
-    inputStream.use {
-        while (true) {
-            val byeCount = it.read(buffer)
-            if (byeCount < 0) break
-            outputStream?.write(buffer, 0, byeCount)
-        }
-        outputStream?.close()
-        printLog("Writing File: " + internalStorageFileName + " to " + context.filesDir.toString())
-    }
-}
 
 /**
  * Returns the screens width
@@ -87,72 +102,6 @@ fun manipulateColor(color: Int, factor: Float): Int {
 }
 
 /**
- * Returns Maingau prices depending whether the charger is from ionity and whether ac or dc prices are requested
- */
-fun getMaingauPrices(type: String, pocOperator: String, context: Context): ChargeCards {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    //Load Pricetoggle from prefs
-    val hasMaingauCustomerPrices = prefs.getBoolean("specialMaingauCustomer", false)
-
-    val maingauIonityPrice = 0.75F
-    val maingauAcPrice = 0.49F
-    val maingauDcPrice = 0.59F
-
-    var maingauPrice = ChargeCards(
-        identifier = "",
-        name = "",
-        provider = "",
-        price = 0.0f,
-        updated = System.currentTimeMillis() / 1000L,
-        "",
-        blockingFeeStart = 0,
-        monthlyFee = 0f
-    )
-    if (hasMaingauCustomerPrices) {
-        when {
-            pocOperator.lowercase() == "ionity" && type == "dc" -> {
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauIonityPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-            type == "ac" && pocOperator.lowercase() != "ionity" -> {
-
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauAcPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-            type == "dc" && pocOperator.lowercase() != "ionity" -> {
-                maingauPrice = ChargeCards(
-                    identifier = "maingau_personalized",
-                    name = "Einfach Strom Laden",
-                    provider = "Maingau",
-                    price = maingauDcPrice,
-                    updated = System.currentTimeMillis() / 1000L,
-                    image = "",
-                    blockingFeeStart = 0,
-                    monthlyFee = 0f
-                )
-            }
-        }
-    }
-    return maingauPrice
-}
-
-/**
  * A function to safely open other pages
  */
 fun NavController.safeNavigate(actionId: Int) {
@@ -162,52 +111,140 @@ fun NavController.safeNavigate(actionId: Int) {
 /**
  * This function retrieves the prices for a specific operator
  */
-fun getPrices(
-    pocOperator: String,
-    forceDownload: Boolean = false,
+fun getPricesByOperatorId(
+    pocOperator: Operator,
     context: Context,
-    api: API,
     view: View,
-    resources: Resources,
-    skipDownload: Boolean = false
+    forceDownload: Boolean = false,
 ): Boolean {
     //Load Prices JSON from File
+    pricesSemaphore.acquire();
     printLog("Getting prices for $pocOperator")
-    val imageDownloadedAC: Boolean
-    val imageDownloadedDC: Boolean
-    val chargeCardsAC = api.readPrices(
-        pocOperator,
-        "ac",
-        forceDownload,
-        skipDownload
-    ).sortedBy { it.price }
-    val chargeCardsDC = api.readPrices(
-        pocOperator,
-        "dc",
-        forceDownload,
-        skipDownload
-    ).sortedBy { it.price }
+    val (_, acCards, dcCards) = retrieveCards(
+        pocOperator.identifier,
+        context,
+        forceDownload
+    )
     printLog("Re-Filling Cards for $pocOperator")
-    val maxListLength = maxOf(chargeCardsAC.size, chargeCardsDC.size)
-    imageDownloadedAC = fillCards("ac", chargeCardsAC, maxListLength, context, view, api, resources)
-    imageDownloadedDC = fillCards("dc", chargeCardsDC, maxListLength, context, view, api, resources)
 
-
-    return imageDownloadedAC || imageDownloadedDC
+    val allCards = mapOf(
+        ChargeType.AC to acCards,
+        ChargeType.DC to dcCards
+    )
+    val needsRefresh = fillCards(
+        pocOperator,
+        allCards,
+        view,
+    )
+    pricesSemaphore.release()
+    return needsRefresh
 }
 
-fun readCardMetadata(context: Context): List<CardMetaData>? {
-    //Load Metadata JSON from File
-    printLog("Reading de-card_metadata.json")
-    val cardMetadata = context.assets?.open("de-card_metadata.json")?.let {
-        Klaxon().parseArray<CardMetaData>(
-            it
-        )
-    }
-    return cardMetadata
-}
-
-fun getImagePath(cardUri: URL, context: Context): File {
+fun getImagePath(cardUri: URL, context: Context, cpo: Boolean = false): File {
     val cardChecksum = cardUri.path.substring(cardUri.path.lastIndexOf('/') + 1)
-    return File("${context.filesDir}/card_${cardChecksum}.jpg")
+    return File("${context.filesDir}/${if (cpo) "card" else "cpo"}_${cardChecksum}.jpg")
 }
+
+private fun TextView.removeLinksUnderline() {
+    val spannable = SpannableString(text)
+    for (u in spannable.getSpans(0, spannable.length, URLSpan::class.java)) {
+        spannable.setSpan(object : URLSpan(u.url) {
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = false
+            }
+        }, spannable.getSpanStart(u), spannable.getSpanEnd(u), 0)
+    }
+    text = spannable
+}
+
+
+@SuppressLint("SetTextI18n")
+fun aboutPopUpSetUp(view: View) {
+
+    val acknowledgementText = view.findViewById(R.id.acknowledgement_text) as TextView
+    acknowledgementText.movementMethod = LinkMovementMethod.getInstance()
+
+    val versionName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        view.context.packageManager
+            .getPackageInfo(
+                view.context.packageName,
+                PackageManager.PackageInfoFlags.of(0)
+            ).versionName
+    } else {
+        view.context.packageManager
+            .getPackageInfo(view.context.packageName, 0).versionName
+    }
+    val versionHolder: TextView = view.findViewById(R.id.version_info)
+    versionHolder.text = "Ladefuchs Version $versionName"
+
+    // Making Links in Textviews Clickable... well... really...
+    val schlingelSL2 = view.findViewById(R.id.bastiSL2) as TextView
+    schlingelSL2.movementMethod = LinkMovementMethod.getInstance()
+    schlingelSL2.removeLinksUnderline()
+    val schlingelSL3 = view.findViewById(R.id.bastiSL3) as TextView
+    schlingelSL3.removeLinksUnderline()
+
+    val malikSL2 = view.findViewById(R.id.malikSL2) as TextView
+    malikSL2.movementMethod = LinkMovementMethod.getInstance()
+    malikSL2.removeLinksUnderline()
+    val malikSL3 = view.findViewById(R.id.malikSL3) as TextView
+    malikSL3.removeLinksUnderline()
+
+    val flowinhoSL2 = view.findViewById(R.id.flowinhoSL2) as TextView
+    flowinhoSL2.movementMethod = LinkMovementMethod.getInstance()
+    flowinhoSL2.removeLinksUnderline()
+    val flowinhoSL3 = view.findViewById(R.id.flowinhoSL3) as TextView
+    flowinhoSL3.removeLinksUnderline()
+
+    val thorstenSL2 = view.findViewById(R.id.thorstenSL2) as TextView
+    thorstenSL2.movementMethod = LinkMovementMethod.getInstance()
+    thorstenSL2.removeLinksUnderline()
+    val thorstenSL3 = view.findViewById(R.id.thorstenSL3) as TextView
+    thorstenSL3.removeLinksUnderline()
+
+    val dominicSL2 = view.findViewById(R.id.dominicSL2) as TextView
+    dominicSL2.movementMethod = LinkMovementMethod.getInstance()
+    dominicSL2.removeLinksUnderline()
+
+    val roddiSL2 = view.findViewById(R.id.roddiSL2) as TextView
+    roddiSL2.movementMethod = LinkMovementMethod.getInstance()
+    roddiSL2.removeLinksUnderline()
+    val roddiSL3 = view.findViewById(R.id.roddiSL3) as TextView
+    roddiSL3.removeLinksUnderline()
+
+    val illuSL2 = view.findViewById(R.id.illufuchsSL) as TextView
+    illuSL2.movementMethod = LinkMovementMethod.getInstance()
+    illuSL2.removeLinksUnderline()
+
+    // On Click Listeners for Images
+    val chargePriceLogo = view.findViewById(R.id.chargeprice_logo) as ImageView
+    chargePriceLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), view.context)
+    }
+
+    val audiodDumpLogo = view.findViewById(R.id.podcast_audiodump) as ImageView
+    audiodDumpLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), view.context)
+    }
+
+    val bitsundsoLogo = view.findViewById(R.id.podcast_bitsundso) as ImageView
+    bitsundsoLogo.setOnClickListener {
+        opeLinkInBrowser(it.tag.toString(), view.context)
+    }
+}
+
+fun opeLinkInBrowser(url: String, context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
+
+fun getPriceFormatter(): NumberFormat {
+    val priceNumberFormat = NumberFormat.getCurrencyInstance()
+    val decimalFormatSymbols: DecimalFormatSymbols =
+        (priceNumberFormat as DecimalFormat).decimalFormatSymbols
+    decimalFormatSymbols.currencySymbol = ""
+    priceNumberFormat.decimalFormatSymbols = decimalFormatSymbols
+    return priceNumberFormat
+}
+
