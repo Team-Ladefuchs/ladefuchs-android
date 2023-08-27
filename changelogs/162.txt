@@ -1,2 +1,0 @@
-* fix force download if V1 or older charge cards where found
-* Refreshing Card View if Card image was downloaded

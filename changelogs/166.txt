@@ -1,2 +1,0 @@
-* Bump API Version to 33
-* Fix bug where app crashes when no banner is present (race condition)

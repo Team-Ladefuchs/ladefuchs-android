@@ -1,3 +1,0 @@
-* Banner sind jetzt wunderschön
-* Twitter Banner wird auch angezeigt
-* Code weiterhin aus der Hölle

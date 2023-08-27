@@ -1,3 +1,0 @@
-* bugfix: App no longer crashes in if WIFI or cellular is off
-* check if device is online for before calling downloadImageToInternalStorage and downloadJSONToInternalStorage
-* remove feature to hide or show cards
