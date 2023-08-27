@@ -1,3 +1,0 @@
-* Bug fixes Card Images
-* sort operators
-* Bugfix: Cards Matching selected CPOs are now always loaded

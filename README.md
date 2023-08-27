@@ -76,4 +76,4 @@ Falls du Vorschläge für Fußnotentexte hast, lass es uns wissen auf https://la
 ## Permissions / Berechtigungen
 
 * INTERNET - Zugriff auf den eigenen API-Server
-* ACCESS_NETWORK_STATE - ?
+* ACCESS_NETWORK_STATE - Überprüfen, ob eine Internetverbindung besteht, bevor versucht wird auf, den API-Server zuzugreifen

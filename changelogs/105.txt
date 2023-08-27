@@ -1,4 +1,0 @@
-* Switch to a more 3D, iOS-style Look
-* Update picker colors to match iOS
-* Add Thorsten to about page
-* Maingau Customer Prices are now Hard Coded. Prefs only show Toggle

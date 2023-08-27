@@ -1,5 +1,0 @@
-* Twitter Banner ist jetzt besser
-* Image URLs aus API v2 werden genutzt
-* CPOs kommen auch aus der v2
-* Optik weitestgehend an iOS angepasst
-* Titelleisten werfen jetzt auch Schatten

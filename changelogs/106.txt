@@ -1,3 +1,0 @@
-* Add all current Chargecard Providers
-* Onboarding + switch
-* Final Design

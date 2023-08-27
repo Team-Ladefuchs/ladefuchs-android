@@ -1,3 +1,0 @@
-* Add Third Party Notice
-* Fix flos mail
-* Some reformatting
