@@ -77,3 +77,7 @@ Falls du Vorschläge für Fußnotentexte hast, lass es uns wissen auf https://la
 
 * INTERNET - Zugriff auf den eigenen API-Server
 * ACCESS_NETWORK_STATE - Überprüfen, ob eine Internetverbindung besteht, bevor versucht wird auf, den API-Server zuzugreifen
+
+## Privacy / Data Protection / Datenschutz
+
+Die App kann absolut anonym genutzt werden, es werden weder in der App, noch beim Zugriff auf die API im Server personenbezogene Daten erhoben, verarbeitet oder gespeichert. Für die Erstellung einer Nutzungs-Statistik werden lediglich HTTP-Header für 30 Tage in einer Log-Datei gehalten. Keine IP-Adresse oder sonstiges personalisiertes Token wird jemals in einer Log-Datei gespeichert.
