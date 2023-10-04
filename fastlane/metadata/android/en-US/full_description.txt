@@ -11,6 +11,8 @@ The app is free. However, the little Ladefuchs (Chargefox) is always happy like 
 
 He always cheeps a bit then.
 
+The app is targeted to the German EV charging market and in German language only currently.
+
 Who is actually to blame?
 -------------------------
 * Malik & Flowinho of audiodump.de
