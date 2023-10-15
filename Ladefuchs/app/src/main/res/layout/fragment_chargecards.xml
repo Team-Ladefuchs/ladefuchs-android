@@ -318,7 +318,7 @@
         android:visibility="invisible" />
 
     <ImageButton
-        android:id="@+id/aboutButton"
+        android:id="@+id/settingsButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="40dp"

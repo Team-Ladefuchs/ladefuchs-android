@@ -33,7 +33,7 @@
 
         <TextView
             android:id="@+id/einstellungenHeaderText"
-            style="@style/AboutTopHeader"
+            style="@style/SettingsTopHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -63,7 +63,7 @@
 
             <TextView
                 android:id="@+id/teamfuchs"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
@@ -71,7 +71,7 @@
 
             <TextView
                 android:id="@+id/teamfuchsSL"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
@@ -125,7 +125,7 @@
 
                     <TextView
                         android:id="@+id/bastiSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -135,7 +135,7 @@
 
                     <TextView
                         android:id="@+id/bastiSL3"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -191,7 +191,7 @@
 
                     <TextView
                         android:id="@+id/malikSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -201,7 +201,7 @@
 
                     <TextView
                         android:id="@+id/malikSL3"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -257,7 +257,7 @@
 
                     <TextView
                         android:id="@+id/flowinhoSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -267,7 +267,7 @@
 
                     <TextView
                         android:id="@+id/flowinhoSL3"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -323,7 +323,7 @@
 
                     <TextView
                         android:id="@+id/thorstenSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -333,7 +333,7 @@
 
                     <TextView
                         android:id="@+id/thorstenSL3"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -390,7 +390,7 @@
 
                     <TextView
                         android:id="@+id/roddiSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -400,7 +400,7 @@
 
                     <TextView
                         android:id="@+id/roddiSL3"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -456,7 +456,7 @@
 
                     <TextView
                         android:id="@+id/dominicSL2"
-                        style="@style/AboutSubHeaderSans"
+                        style="@style/SettingsSubHeaderSans"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="1.5dp"
@@ -469,7 +469,7 @@
 
             <TextView
                 android:id="@+id/teamfuchs2"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
@@ -477,7 +477,7 @@
 
             <TextView
                 android:id="@+id/teamfuchsSL2"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -527,7 +527,7 @@
 
             <TextView
                 android:id="@+id/datenfuchs"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
@@ -535,7 +535,7 @@
 
             <TextView
                 android:id="@+id/datenfuchsSL"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -558,7 +558,7 @@
 
             <TextView
                 android:id="@+id/illufuchs"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
@@ -566,7 +566,7 @@
 
             <TextView
                 android:id="@+id/illufuchsSL"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -576,7 +576,7 @@
 
             <TextView
                 android:id="@+id/imprint_header"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
@@ -584,7 +584,7 @@
 
             <TextView
                 android:id="@+id/imprint_text"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -594,7 +594,7 @@
 
             <TextView
                 android:id="@+id/acknowledgement_header"
-                style="@style/AboutHeading"
+                style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="42dp"
@@ -602,7 +602,7 @@
 
             <TextView
                 android:id="@+id/acknowledgement_text"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -613,7 +613,7 @@
 
             <TextView
                 android:id="@+id/handcraftedText"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -624,7 +624,7 @@
 
             <TextView
                 android:id="@+id/version_info"
-                style="@style/AboutSubHeader"
+                style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"

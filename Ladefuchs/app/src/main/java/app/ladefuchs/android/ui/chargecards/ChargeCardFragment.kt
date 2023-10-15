@@ -89,10 +89,10 @@ class ChargeCardFragment : Fragment() {
             nerdGlasses.visibility = VISIBLE
         }
 
-        val aboutButton = view.findViewById<ImageButton>(R.id.aboutButton)
+        val settingsButton = view.findViewById<ImageButton>(R.id.settingsButton)
 
-        aboutButton.setOnClickListener {
-            context?.let { createAboutPopup(it, view) }
+        settingsButton.setOnClickListener {
+            context?.let { createSettingsPopup(it, view) }
         }
 
         // retrieve what shall be shown in the footer
