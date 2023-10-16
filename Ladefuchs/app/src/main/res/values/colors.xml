@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#CEC0AC</color>
     <color name="colorAccent">#F45A30</color>
     <color name="colorAccentIntense">#D23D26</color>
+    <color name="coloraddBtn">#00B500</color>
     <color name="colorCardDetails">#C6BBA4</color>
     <color name="colorCardDetailsPrice">#DDD9C6</color>
     <color name="PrimaryBackground">#EDE6D8</color>

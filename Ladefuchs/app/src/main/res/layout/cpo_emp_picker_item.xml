@@ -1,0 +1,50 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_item_height"
+    android:layout_marginLeft="@dimen/margin_medium"
+    android:layout_marginRight="@dimen/margin_medium"
+    android:background="@color/TableColorDark"
+    android:gravity="center_vertical">
+
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="transparent"
+        android:contentDescription="@string/settings_button"
+        android:scaleType="fitCenter"
+        android:layout_gravity="start|center"
+        android:src="@drawable/add_circle"
+        />
+    <ImageView
+        android:id="@+id/cpo_logo"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="18dp"
+        android:layout_gravity="start|center"
+        android:src="@drawable/cpo_generic" />
+    <TextView
+        android:id="@+id/textViewHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/element_text"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="5dp"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textColor="@color/TextColorBlack"
+        android:layout_gravity="start|top"
+        />
+
+    <TextView
+        android:id="@+id/textViewSubHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/element_text"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="6dp"
+        android:textSize="8sp"
+        android:textColor="@color/TextColorDisabled"
+        android:layout_gravity="start|center"
+        />
+</FrameLayout>
