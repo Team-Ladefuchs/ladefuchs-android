@@ -21,15 +21,18 @@ class OperatorListAdapter(private val dataSet: Array<Operator>) :
     RecyclerView.Adapter<OperatorListAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        //val textView: TextView
+        val textViewHeading: TextView
+        val textViewSubHeading: TextView
 
         init {
             // Define click listener for the ViewHolder's View
-            textView = view.findViewById(R.id.textView)
+            textViewHeading = view.findViewById(R.id.textViewHeading)
+            textViewSubHeading = view.findViewById(R.id.textViewSubHeading)
         }
     }
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textView.text = dataSet[position].toString()
+        viewHolder.textViewHeading.text = dataSet[position].toString()
+        viewHolder.textViewHeading.text = dataSet[position].identifier
     }
 
     // Create new views (invoked by the layout manager)
