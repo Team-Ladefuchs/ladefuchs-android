@@ -466,13 +466,14 @@
                         android:text="@string/api_at_ladefuchs_app" />
                 </LinearLayout>
             </LinearLayout>
+            <View style="@style/Divider" />
 
             <TextView
                 android:id="@+id/teamfuchs2"
                 style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="42dp"
+                android:layout_marginTop="15dp"
                 android:text="@string/podcastfuchs" />
 
             <TextView
@@ -579,7 +580,7 @@
                 style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="42dp"
+                android:layout_marginTop="15dp"
                 android:text="@string/imprint_header" />
 
             <TextView
@@ -597,7 +598,7 @@
                 style="@style/SettingsHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="42dp"
+                android:layout_marginTop="15dp"
                 android:text="@string/acknowledgement_header" />
 
             <TextView
@@ -606,7 +607,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:layout_marginBottom="20dp"
                 android:text="@string/acknowledgement_text" />
 
             <View style="@style/Divider" />
@@ -616,8 +616,7 @@
                 style="@style/SettingsSubHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="15dp"
                 android:text="@string/handcrafted" />
 
             <View style="@style/Divider" />
@@ -628,7 +627,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:layout_marginBottom="48dp"
+                android:layout_marginBottom="32dp"
                 android:gravity="center" />
 
         </LinearLayout>
