@@ -20,7 +20,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 
@@ -60,7 +61,7 @@ fun useBeta() {
     apiVersionPath = apiVersionBetaPath
 }
 
-private fun isOffline(context: Context): Boolean {
+public fun isOffline(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val networkCapabilities = connectivityManager.activeNetwork ?: return true
@@ -333,7 +334,7 @@ fun downloadImageToInternalStorage(
         printLog("Device is offline", "network")
         return
     }
-    val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context, cpo)
+    val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context)
     printLog("Downloading image: ${imageURL.path}", "network")
 
     val t = Thread {
@@ -375,6 +376,7 @@ fun retrieveBanners(context: Context): Banner? {
     if (isOffline(context)) {
         return null
     }
+
     val probabilities: MutableList<Banner> = mutableListOf()
     val t = Thread {
         printLog("Getting Banners")
@@ -387,24 +389,17 @@ fun retrieveBanners(context: Context): Banner? {
             client.newCall(request).execute().use { response ->
                 if (response.code == 200) {
                     Klaxon().parseArray<Banner>(response.body!!.string())?.forEach { banner ->
-                        if (!File("${context.filesDir}/${banner.filename}").exists()) {
+                        val file = getImagePath(URL(banner.image), context)
+                        printLog(
+                            "Downloading img new banner: ${banner.id}, file: ${file.canonicalFile}",
+                            "debug"
+                        )
+                        if (!file.exists()) {
                             downloadImageToInternalStorage(
                                 URL(banner.image),
                                 context,
-                                File("${context.filesDir}/${banner.filename}"),
-
-                                )
-                        } else if (Files.getLastModifiedTime(Paths.get(context.filesDir.toString() + "/" + banner.filename))
-                                .toInstant().toEpochMilli() < banner.updated
-                        ) {
-                            printLog("Updating img for ${banner.id} to newest version", "debug")
-                            Files.deleteIfExists(Paths.get("${context.filesDir}/$banner.filename"))
-                            downloadImageToInternalStorage(
-                                URL(banner.image),
-                                context,
-                                File("${context.filesDir}/${banner.filename}"),
-
-                                )
+                                file
+                            )
                         }
                         for (i in 0..banner.frequency) {
                             probabilities.add(banner)

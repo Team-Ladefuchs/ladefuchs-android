@@ -1,5 +1,9 @@
 package app.ladefuchs.android.dataClasses
 
+import android.content.Context
+import java.nio.file.Path
+import java.nio.file.Paths
+
 data class Banner(
     val id: String,
     val link: String,
@@ -9,3 +13,4 @@ data class Banner(
     val isAffiliate: Boolean,
     val filename: String
 )
+
