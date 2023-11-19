@@ -40,6 +40,8 @@ import java.net.URL
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.Semaphore
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -140,10 +142,49 @@ fun getPricesByOperatorId(
     return needsRefresh
 }
 
-fun getImagePath(cardUri: URL, context: Context, cpo: Boolean = false): File {
-    val cardChecksum = cardUri.path.substring(cardUri.path.lastIndexOf('/') + 1)
-    return File("${context.filesDir}/${if (cpo) "card" else "cpo"}_${cardChecksum}.jpg")
+fun getImagePath(imageUrl: URL, context: Context): File {
+    val cardChecksum = imageUrl.path.substring(imageUrl.path.lastIndexOf('/') + 1)
+    return File("${context.filesDir}/image_$cardChecksum")
 }
+
+fun cleanupOldImageFiles(context: Context) {
+    if (isOffline(context)) {
+        return
+    }
+
+    printLog("Execute cleanupOldImageFiles")
+
+    val folder = context.filesDir
+    if (folder.exists() && folder.isDirectory) {
+        val files = folder.listFiles()
+        try {
+            val currentTime = Instant.now()
+
+            files?.filter { file ->
+                file != null &&
+                        file.isFile &&
+                        file.name.startsWith("image_")
+            }?.forEach { file ->
+                val lastModifiedTime = Instant.ofEpochMilli(file.lastModified())
+                val daysDifference = ChronoUnit.DAYS.between(lastModifiedTime, currentTime)
+
+                if (daysDifference > 100) {
+                    if (file.delete()) {
+                        printLog("Deleted file: ${file.name}", "error")
+                    } else {
+                        printLog("Failed to delete file: ${file.name}", "error")
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            printLog("Couldn't cleanup old PNG files: ${e.message}", "error")
+        }
+    } else {
+        println("Folder does not exist or is not a directory.")
+    }
+}
+
 
 private fun TextView.removeLinksUnderline() {
     val spannable = SpannableString(text)
