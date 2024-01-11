@@ -29,12 +29,12 @@ import app.ladefuchs.android.dataClasses.Banner
 import app.ladefuchs.android.dataClasses.Operator
 import app.ladefuchs.android.helper.*
 import com.aigestudio.wheelpicker.WheelPicker
-import java.nio.file.Paths
-import kotlin.io.path.exists
+import kotlinx.coroutines.delay
+import java.net.URL
+import kotlin.concurrent.thread
 
 class ChargeCardFragment : Fragment() {
     private var onboarding: Boolean = true
-    private var showBanner: Boolean = true
     private var pocOperatorList: List<Operator> = listOf()
     private var currentPoc: Operator? = null
     private var prefs: SharedPreferences? = null
@@ -63,7 +63,7 @@ class ChargeCardFragment : Fragment() {
     ): View? {
         prefs = PreferenceManager.getDefaultSharedPreferences(inflater.context)
         onboarding = prefs?.getBoolean("firstStart", true) ?: true
-        showBanner = prefs?.getBoolean("showBanner", true) ?: true
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chargecards, container, false)
     }
@@ -73,14 +73,10 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         phraseView = view.findViewById(R.id.phraseView) as TextView
         val nerdGlasses = view.findViewById<ImageView>(R.id.nerd_glasses)
         // check whether onboarding should be shown
-        if (onboarding) {
-            // deactivate the banner while in onboarding
-            showBanner = false
-        }
-
         // check whether the beta API is used
         if (prefs?.getBoolean("useBetaAPI", false) == true) {
             useBeta()
@@ -96,7 +92,10 @@ class ChargeCardFragment : Fragment() {
         }
 
         // retrieve what shall be shown in the footer
-        retrieveFooterContent(view)
+        Thread {
+            retrieveFooterContent(view)
+        }.start()
+
         // retrieve all operators
         pocOperatorList = retrieveOperatorList(view.context)
 
@@ -167,6 +166,12 @@ class ChargeCardFragment : Fragment() {
         if (onboarding) {
             onboarding()
         }
+
+        Thread {
+            Thread.sleep(10_000)
+            cleanupOldImageFiles(view.context)
+        }.start()
+
         legacyCardsNotice()
     }
 
@@ -262,18 +267,7 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
-        if (!showBanner) {
-            return
-        }
         drawBanner(view, retrieveBanners(view.context))
-    }
-
-    private fun drawPhrasesBanner(view: View) {
-        val phrases =
-            view.context.assets.open("phrases.txt").bufferedReader()
-                .readLines()
-        printLog("Falling back on your mom", "debug")
-        phraseView.text = phrases.randomOrNull() ?: ""
     }
 
     /**
@@ -284,9 +278,12 @@ class ChargeCardFragment : Fragment() {
         view: View,
         banner: Banner?,
     ) {
-        val bannerFilePath = Paths.get("${view.context.filesDir}/${banner?.filename ?: "banner"}")
-        if (!bannerFilePath.exists() || banner == null) {
-            drawPhrasesBanner(view)
+        if (banner == null || banner.image.isEmpty()) {
+            return
+        }
+
+        val bannerFilePath = getImagePath(URL(banner.image), view.context);
+        if (!bannerFilePath.exists()) {
             return
         }
 
