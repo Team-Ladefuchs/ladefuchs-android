@@ -348,10 +348,10 @@ private fun createSingleCell(
     return cell
 }
 
-fun createAboutPopup(context: Context, view: View) {
+fun createSettingsPopup(context: Context, view: View) {
     currentDialog?.dismiss()
 
-    val popUpView: View = LayoutInflater.from(context).inflate(R.layout.fragment_about, null)
+    val popUpView: View = LayoutInflater.from(context).inflate(R.layout.fragment_settings, null)
     currentDialog = createDialog(popUpView, view)
     currentDialog?.show()
 
@@ -360,7 +360,7 @@ fun createAboutPopup(context: Context, view: View) {
             currentDialog?.dismiss()
         }
 
-    aboutPopUpSetUp(popUpView)
+    settingsPopUpSetUp(popUpView)
 }
 
 @SuppressLint("SetTextI18n")
