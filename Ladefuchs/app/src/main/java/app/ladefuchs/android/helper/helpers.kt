@@ -6,35 +6,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.renderscript.Allocation
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
 import android.text.SpannableString
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.URLSpan
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import app.ladefuchs.android.BuildConfig
 import app.ladefuchs.android.R
-import app.ladefuchs.android.dataClasses.CardMetaData
-import app.ladefuchs.android.dataClasses.ChargeCards
 import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.dataClasses.Operator
-import com.beust.klaxon.Klaxon
 import java.io.File
 import java.net.URL
 import java.text.DecimalFormat
@@ -201,7 +186,7 @@ private fun TextView.removeLinksUnderline() {
 
 
 @SuppressLint("SetTextI18n")
-fun aboutPopUpSetUp(view: View) {
+fun settingsPopUpSetUp(view: View) {
 
     val acknowledgementText = view.findViewById(R.id.acknowledgement_text) as TextView
     acknowledgementText.movementMethod = LinkMovementMethod.getInstance()

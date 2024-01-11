@@ -6,22 +6,13 @@
     app:startDestination="@id/navigation_chargecards">
 
     <fragment
-        android:id="@+id/navigation_about"
-        android:name="app.ladefuchs.android.ui.about.AboutFragment"
+        android:id="@+id/navigation_settings"
+        android:name="app.ladefuchs.android.ui.settings.SettingsFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_about" >
+        tools:layout="@layout/fragment_settings" >
         <action
-            android:id="@+id/action_navigation_about_to_navigation_chargecards"
+            android:id="@+id/action_navigation_settings_to_navigation_chargecards"
             app:destination="@id/navigation_chargecards" />
-        <action
-            android:id="@+id/action_navigation_about_to_feedbackfuchs"
-            app:destination="@id/feedbackfuchs" />
-        <action
-            android:id="@+id/action_navigation_about_to_imprint"
-            app:destination="@id/imprint" />
-        <action
-            android:id="@+id/action_navigation_about_to_acknowledgement"
-            app:destination="@id/acknowledgement" />
     </fragment>
 
     <fragment
@@ -30,50 +21,11 @@
         android:label="@string/title_chargecards"
         tools:layout="@layout/fragment_chargecards">
         <action
-            android:id="@+id/action_navigation_chargecards_to_navigation_about"
-            app:destination="@id/navigation_about" />
-        <action
-            android:id="@+id/action_navigation_chargecards_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            android:id="@+id/action_navigation_chargecards_to_navigation_settings"
+            app:destination="@id/navigation_settings" />
         <action
             android:id="@+id/action_card_to_detail"
             app:destination="@id/card_detail" />
-    </fragment>
-    <fragment
-        android:id="@+id/feedbackfuchs"
-        android:name="app.ladefuchs.android.ui.feedbackfuchs.Feedbackfuchs"
-        android:label="feedbackfuchs_fragment"
-        tools:layout="@layout/fragment_feedbackfuchs" >
-        <action
-            android:id="@+id/action_feedbackfuchs_to_navigation_about"
-            app:destination="@id/navigation_about" />
-    </fragment>
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="app.ladefuchs.android.ui.settings.SettingsFragment"
-        android:label="SettingsFragment" >
-        <action
-            android:id="@+id/action_settingsFragment_to_navigation_about"
-            app:destination="@id/navigation_about" />
-        <action
-            android:id="@+id/action_settingsFragment_to_feedbackfuchs"
-            app:destination="@id/feedbackfuchs" />
-    </fragment>
-    <fragment
-        android:id="@+id/imprint"
-        android:name="app.ladefuchs.android.ui.imprint.Imprint"
-        android:label="Imprint" >
-        <action
-            android:id="@+id/action_imprint_to_navigation_about"
-            app:destination="@id/navigation_about" />
-    </fragment>
-    <fragment
-        android:id="@+id/acknowledgement"
-        android:name="app.ladefuchs.android.ui.acknowledgement.Acknowledgement"
-        android:label="Acknowledgement">
-        <action
-            android:id="@+id/action_acknowledgement_to_navigation_about"
-            app:destination="@id/navigation_about" />
     </fragment>
 
     <fragment

@@ -181,7 +181,7 @@ fun retrieveOperatorList(context: Context): List<Operator> {
                 ""
             }
         } else {
-            val sharedPreferences = context?.let {
+            val sharedPreferences = context.let {
                 PreferenceManager.getDefaultSharedPreferences(
                     it
                 )
