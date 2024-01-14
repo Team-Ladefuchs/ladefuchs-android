@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.ladefuchs.android.R
 
+/**
+ * Charging type in uppercase letters next to its most-known connector as icon
+ */
 @Composable
 fun PlugView(
     modifier: Modifier = Modifier,
@@ -32,7 +35,7 @@ fun PlugView(
 ) {
     Row(
         modifier = modifier
-            .heightIn(60.dp)
+            .fillMaxWidth()
             .background(colorResource(id = R.color.UIColorDark))
             .height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,

@@ -17,15 +17,16 @@ import java.util.Locale
 
 @Composable
 fun PoCHeader(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: String = stringResource(id = R.string.pocHeader)
 ) {
     Text(
-        textAlign = TextAlign.Center,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(colorResource(id = R.color.UIColorDark))
             .padding(top = 10.dp, bottom = 12.dp),
-        text = stringResource(id = R.string.pocHeader).uppercase(Locale.US),
+        textAlign = TextAlign.Center,
+        text = content.uppercase(Locale.US),
         fontWeight = FontWeight.Bold,
     )
 }
