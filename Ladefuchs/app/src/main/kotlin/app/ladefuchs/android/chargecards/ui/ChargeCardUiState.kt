@@ -1,6 +1,7 @@
-package app.ladefuchs.android.ui.chargecards
+package app.ladefuchs.android.chargecards.ui
 
-import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.chargecards.data.model.Card
+import app.ladefuchs.android.chargecards.data.model.Operator
 
 /**
  * Single Source of Truth (SSOT) for the charging card screen.
@@ -13,6 +14,7 @@ data class ChargeCardUiState(
     val onboardingFinished: Boolean = false,
     val easterEggCount: Int = 0,
     val isEasterEggEnabled: Boolean = true,
-    val acItems: List<ChargeCards> = emptyList(),
-    val dcItems: List<ChargeCards> = emptyList(),
+    val pocOperators: List<Operator> = emptyList(),
+    val acItems: List<Card> = emptyList(),
+    val dcItems: List<Card> = emptyList(),
 )

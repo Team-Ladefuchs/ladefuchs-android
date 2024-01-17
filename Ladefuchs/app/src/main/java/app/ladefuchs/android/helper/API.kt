@@ -91,8 +91,14 @@ fun retrieveCards(
     if (forceDownload && !isOffline(context)) {
         printLog("$pocOperatorId force download triggered")
         val url = "$apiBaseURL/$apiVersionPath/cards/de/$pocOperatorId"
-        val acJson = downloadJson("$url/${ChargeType.AC}", context)
-        val dcJson = downloadJson("$url/${ChargeType.DC}", context)
+        val acJson = downloadJson(
+            "$url/${ChargeType.AC}",
+            context
+        )
+        val dcJson = downloadJson(
+            "$url/${ChargeType.DC}",
+            context
+        )
         val klaxon = Klaxon()
         if (acJson.isNotEmpty()) {
             chargeCards.ac = klaxon.parseArray(acJson) ?: emptyList()
@@ -127,7 +133,10 @@ fun retrieveCards(
     return chargeCards
 }
 
-private fun downloadJson(JSONUrl: String, context: Context): String {
+private fun downloadJson(
+    JSONUrl: String,
+                         context: Context
+): String {
     if (isOffline(context)) {
         printLog("Device is offline", "network")
         return ""
@@ -168,9 +177,14 @@ private fun downloadJson(JSONUrl: String, context: Context): String {
     return jsonResponse;
 }
 
-fun retrieveOperatorList(context: Context): List<Operator> {
+fun retrieveOperatorList(
+    context: Context
+): List<Operator> {
     val operatorFileName = "operators.json"
-    val operatorJson = downloadJson("$apiBaseURL/$apiVersionPath/operators/enabled", context)
+    val operatorJson = downloadJson(
+        "$apiBaseURL/$apiVersionPath/operators/enabled",
+        context
+    )
     val json =
         if (operatorJson.isEmpty()) {
             try {

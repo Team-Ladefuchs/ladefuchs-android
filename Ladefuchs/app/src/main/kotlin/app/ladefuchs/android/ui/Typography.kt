@@ -8,5 +8,5 @@ import app.ladefuchs.android.R
 
 val bitterFontFamily = FontFamily(
     Font(R.font.bitter, FontWeight.Normal),
-    Font(R.font.bitter_italic, FontWeight.Normal, FontStyle.Italic)
+    Font(R.font.bitter, FontWeight.Normal, FontStyle.Italic)
 )

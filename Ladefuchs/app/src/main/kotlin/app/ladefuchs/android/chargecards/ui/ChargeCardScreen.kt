@@ -1,4 +1,4 @@
-package app.ladefuchs.android.ui.chargecards
+package app.ladefuchs.android.chargecards.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -21,15 +21,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import app.ladefuchs.android.R
+import app.ladefuchs.android.chargecards.data.model.Operator
 import app.ladefuchs.android.ui.composables.Banner
 import app.ladefuchs.android.ui.composables.ChargingCardTable
 import app.ladefuchs.android.ui.composables.LadefuchsLogo
 import app.ladefuchs.android.ui.composables.Phrase
 import app.ladefuchs.android.ui.composables.PoCHeader
+import org.koin.androidx.compose.getViewModel
 
 
 /**
@@ -40,14 +41,15 @@ fun ChargeCardScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
-    val viewModel: ChargeCardViewModel = viewModel()
-    val uiState = viewModel.uiState.collectAsState().value
+    val viewModel: ChargeCardViewModel = getViewModel()
+    val uiState = viewModel.uiState.collectAsState()
 
     ChargeCardScreen(
         modifier = modifier,
-        uiState = uiState,
+        uiState = uiState.value,
         onLogoClick = { viewModel.handleEvent(ChargeCardEvent.LogoClicked) },
-        onSettingsClick = { navController.navigate(R.id.navigation_settings) }
+        onSettingsClick = { navController.navigate("settings") },
+        onOperatorSelected = { viewModel.handleEvent(ChargeCardEvent.SelectOperator(it)) }
     )
 }
 
@@ -60,6 +62,7 @@ fun ChargeCardScreen(
     uiState: ChargeCardUiState,
     onLogoClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onOperatorSelected: (operator: Operator) -> Unit,
 ) {
     // TODO: onboarding
     Column(
@@ -83,12 +86,12 @@ fun ChargeCardScreen(
         PoCHeader()
 
         WheelPicker(
-            onItemSelected = { index ->
-                // TODO: handle selection
-            }
+            pocOperators = uiState.pocOperators,
+            onOperatorSelected = onOperatorSelected
         )
 
-        Box(contentAlignment = Alignment.BottomCenter) {
+        Box(
+            contentAlignment = Alignment.BottomCenter) {
             Phrase(phrase = "Hier könnte Ihre Werbung stehen!")
             Banner()
         }
@@ -106,16 +109,14 @@ private fun Header(
         contentAlignment = Alignment.TopCenter
     ) {
         LadefuchsLogo(
-            Modifier.clickable {
-                onLogoClick()
-            },
+            Modifier.clickable { onLogoClick() },
             showNerdGlasses = isEasterEggEnabled
         )
         Image(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(10.dp)
-                .size(50.dp)
+                .align(Alignment.CenterEnd)
+                .padding(end = 10.dp)
+                .size(30.dp)
                 .clickable {
                     onSettingsClick()
                 },
@@ -127,7 +128,8 @@ private fun Header(
 
 @Composable
 private fun WheelPicker(
-    onItemSelected: (index: Int) -> Unit,
+    pocOperators: List<Operator>,
+    onOperatorSelected: (operator: Operator) -> Unit,
 ) {
     val density = LocalDensity.current
     AndroidView(
@@ -140,15 +142,17 @@ private fun WheelPicker(
                 curtainColor = R.color.WheelCurtainColor
                 isCurved = true
                 isCyclic = false
-                itemTextColor = R.color.TextColorDisabled
                 itemTextSize = with(density) { 22.dp.toPx().toInt() }
                 selectedItemTextColor = R.color.TextColorDark
+                itemTextColor = R.color.TextColorDisabled
                 visibleItemCount = 5
-                setOnClickListener {
-                    // TODO: update list
-                    onItemSelected(it.id)
+                setOnItemSelectedListener { picker, data, position ->
+                    onOperatorSelected(data as Operator)
                 }
             }
+        },
+        update = {
+            it.data = pocOperators
         }
     )
 }
@@ -159,6 +163,7 @@ private fun ChargeCard() {
     ChargeCardScreen(
         uiState = ChargeCardUiState(isEasterEggEnabled = true),
         onLogoClick = {},
-        onSettingsClick = {}
+        onSettingsClick = {},
+        onOperatorSelected = {}
     )
 }

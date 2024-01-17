@@ -89,13 +89,6 @@ fun manipulateColor(color: Int, factor: Float): Int {
 }
 
 /**
- * A function to safely open other pages
- */
-fun NavController.safeNavigate(actionId: Int) {
-    currentDestination?.getAction(actionId)?.run { navigate(actionId) }
-}
-
-/**
  * This function retrieves the prices for a specific operator
  */
 fun getPricesByOperatorId(

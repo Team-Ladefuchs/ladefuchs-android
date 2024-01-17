@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,13 +17,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.ladefuchs.android.R
-import app.ladefuchs.android.dataClasses.ChargeCards
+import app.ladefuchs.android.chargecards.data.model.Card
 import app.ladefuchs.android.dataClasses.ChargeType
 import app.ladefuchs.android.helper.getPriceFormatter
 
@@ -33,18 +35,18 @@ import app.ladefuchs.android.helper.getPriceFormatter
 @Composable
 fun ChargingCardTable(
     modifier: Modifier = Modifier,
-    acItems: List<ChargeCards> = emptyList(),
-    dcItems: List<ChargeCards> = emptyList(),
+    acItems: List<Card> = emptyList(),
+    dcItems: List<Card> = emptyList(),
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.background(Color.White),
         horizontalArrangement = Arrangement.Center
     ) {
         // AC column
         ChargingColumn(ChargeType.AC, acItems)
 
         // divider
-        Spacer(modifier = Modifier.width(0.5.dp))
+        Spacer(modifier = Modifier.width(1.0.dp))
 
         // DC column
         ChargingColumn(ChargeType.DC, dcItems)
@@ -61,11 +63,15 @@ fun ChargingCardTable(
 @Composable
 private fun RowScope.ChargingColumn(
     type: ChargeType,
-    items: List<ChargeCards>
+    items: List<Card>
 ) {
     val priceFormat = getPriceFormatter()
 
-    Column(modifier = Modifier.weight(0.5f)) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight(0.6f)
+            .weight(0.5f)
+    ) {
         // Column title
         PlugView(
             modifier = Modifier.fillMaxWidth(),
@@ -84,9 +90,14 @@ private fun RowScope.ChargingColumn(
         )
 
         // List
-        Row(modifier = Modifier.weight(0.5f)) {
+        Row(
+            modifier = Modifier
+                .fillMaxHeight(0.4f)
+                .weight(0.5f)
+                .background(colorResource(id = R.color.TableColorLight))
+        ) {
             LazyColumn(
-                contentPadding = PaddingValues(), // margin to the whole layout
+                contentPadding = PaddingValues(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 itemsIndexed(
@@ -109,7 +120,7 @@ private fun RowScope.ChargingColumn(
 
 @Preview
 @Composable
-private fun TableHeaderPreview() {
+private fun ChargingCardTable() {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,30 +128,31 @@ private fun TableHeaderPreview() {
     ) {
         ChargingCardTable(
             acItems = (1..3).map {
-                ChargeCards(
+                Card(
                     identifier = it.toString(),
                     name = "",
-                    provider = "fo",
+//                    provider = "fo",
                     price = 0.1f,
-                    updated = 1L,
-                    image = "",
-                    url = "",
+//                    updated = 1L,
+//                    image = "",
+//                    url = "",
                     blockingFeeStart = 0,
                     blockingFee = 0.1f,
                     monthlyFee = 0f,
                     note = "",
-                    msp = "",
+                    image = "",
                 )
             },
             dcItems = (1..10).map {
-                ChargeCards(
+                Card(
                     identifier = it.toString(),
                     blockingFee = 0.0f,
                     blockingFeeStart = 0,
                     name = "",
                     price = 0.1f,
-                    provider = "fo",
-                    updated = 1L
+                    monthlyFee = 0f,
+                    note = "",
+                    image = "",
                 )
             },
         )

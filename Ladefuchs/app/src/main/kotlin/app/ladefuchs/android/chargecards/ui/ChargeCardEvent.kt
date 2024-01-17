@@ -1,4 +1,7 @@
-package app.ladefuchs.android.ui.chargecards
+package app.ladefuchs.android.chargecards.ui
+
+import app.ladefuchs.android.chargecards.data.model.Operator
+
 
 /**
  * Define how the UI interacts with our viewModel rather than passing many references.
@@ -6,4 +9,5 @@ package app.ladefuchs.android.ui.chargecards
  */
 sealed interface ChargeCardEvent {
     data object LogoClicked: ChargeCardEvent
+    data class SelectOperator(val operator: Operator) : ChargeCardEvent
 }

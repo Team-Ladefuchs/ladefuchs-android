@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id 'kotlinx-serialization'
 }
 
 android {
@@ -69,6 +70,22 @@ dependencies {
 
     // theming
     implementation("androidx.compose.material3:material3")
+
+    // dependency injection
+    implementation("io.insert-koin:koin-core:3.1.6")
+    implementation("io.insert-koin:koin-android:3.1.6")
+    implementation("io.insert-koin:koin-androidx-navigation:3.1.6")
+    implementation("io.insert-koin:koin-androidx-compose:3.1.6")
+
+    // http client
+    implementation("io.ktor:ktor-client-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.7")
+    implementation("io.ktor:ktor-client-auth:2.3.7")
+    implementation("io.ktor:ktor-client-serialization:2.3.7")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation("io.ktor:ktor-client-logging-jvm:2.3.7")
+    implementation("io.ktor:ktor-client-mock-jvm:2.3.7")
 
 
     implementation 'androidx.core:core-ktx:1.10.1'

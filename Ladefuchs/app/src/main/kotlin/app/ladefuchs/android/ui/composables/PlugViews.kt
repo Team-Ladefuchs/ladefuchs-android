@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +44,8 @@ fun PlugView(
     ) {
         Text(
             text = label,
-            fontSize = 28.sp
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Medium
         )
         Spacer(modifier = Modifier.width(8.dp))
         Image(
