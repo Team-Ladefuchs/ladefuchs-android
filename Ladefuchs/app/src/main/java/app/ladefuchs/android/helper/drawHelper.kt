@@ -414,6 +414,10 @@ fun createCardDetailPopup(
             popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.GONE
         else
             popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.VISIBLE
+    } else {
+        popupView.findViewById<TextView>(R.id.priceAC).text = "—";
+        popupView.findViewById<TextView>(R.id.blockFeeAC).text = "AC Ladung nicht verfügbar\n";
+        popupView.findViewById<ImageView>(R.id.huetchen_ac).visibility = View.GONE
     }
     if (currentCardDc !== null) {
         popupView.findViewById<TextView>(R.id.priceDC).text =
@@ -426,6 +430,10 @@ fun createCardDetailPopup(
             popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.GONE
         else
             popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.VISIBLE
+    } else {
+        popupView.findViewById<TextView>(R.id.priceDC).text = "—";
+        popupView.findViewById<TextView>(R.id.blockFeeDC).text = "DC Ladung nicht verfügbar\n";
+        popupView.findViewById<ImageView>(R.id.huetchen_dc).visibility = View.GONE
     }
 
     if (currentCard.note.isNotEmpty()) {
