@@ -97,7 +97,6 @@ obj/
 .idea/shelf/
 .idea/workspace.xml
 .idea/tasks.xml
-.idea/.name
 .idea/compiler.xml
 .idea/copyright/profiles_settings.xml
 .idea/encodings.xml
@@ -157,3 +156,9 @@ secrets.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,androidstudio
+
+## Do not ignore project settings
+!.idea/codeStyles/
+!.idea/copyright/
+!.idea/detekt.xml
+!.idea/icon.png
