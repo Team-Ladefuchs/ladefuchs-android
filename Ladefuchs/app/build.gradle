@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id 'io.gitlab.arturbosch.detekt' version '1.22.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.7.6'
 }
 
 android {
@@ -47,8 +49,12 @@ android {
     namespace 'app.ladefuchs.android'
 }
 
+// https://detekt.dev/gradle.html
+detekt {
+    config = files("../detekt.yml")
+}
+
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlin_version"))
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
