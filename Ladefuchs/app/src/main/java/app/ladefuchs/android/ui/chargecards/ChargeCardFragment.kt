@@ -91,6 +91,15 @@ class ChargeCardFragment : Fragment() {
             context?.let { createSettingsPopup(it, view) }
         }
 
+        val chargePriceButton = view.findViewById<ImageButton>(R.id.chargePriceButton)
+
+        chargePriceButton.setOnClickListener {
+            val url = "http://www.chargeprice.app"
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setData(Uri.parse(url))
+            startActivity(intent)
+        }
+
         // retrieve what shall be shown in the footer
         Thread {
             retrieveFooterContent(view)
