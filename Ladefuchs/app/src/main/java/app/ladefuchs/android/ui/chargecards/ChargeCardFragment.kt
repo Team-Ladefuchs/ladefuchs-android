@@ -1,6 +1,7 @@
 package app.ladefuchs.android.ui.chargecards
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -267,7 +268,15 @@ class ChargeCardFragment : Fragment() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     private fun retrieveFooterContent(view: View) {
-        drawBanner(view, retrieveBanners(view.context))
+        val sharedPref = view.context.getSharedPreferences("ladefuchs", Context.MODE_PRIVATE)
+        val nextAssertiveBanner = sharedPref.getBoolean("next_assertive_banner", false)
+        sharedPref.edit().putBoolean("next_assertive_banner", !nextAssertiveBanner).apply()
+
+        // set the next displayed banner to charge price
+        drawBanner(view, retrieveBanners(
+            context = view.context,
+            nextAssertiveBanner = nextAssertiveBanner
+        ))
     }
 
     /**
@@ -301,6 +310,11 @@ class ChargeCardFragment : Fragment() {
         val bitmapImage = BitmapFactory.decodeFile(bannerFilePath.toString())
         val drawable = BitmapDrawable(resources, bitmapImage)
         bannerButton.setImageDrawable(drawable)
+        val targetHeight = if (viewHeight + 55 <= bitmapImage.height) {
+            viewHeight + 55
+        } else {
+            bitmapImage.height
+        }
         val drawableImage = BitmapDrawable(
             resources,
             Bitmap.createBitmap(
@@ -308,7 +322,7 @@ class ChargeCardFragment : Fragment() {
                 70,
                 0,
                 bitmapImage.width - 130,
-                viewHeight + 55
+                targetHeight
             )
         )
         val bannerView = view.findViewById(R.id.bannerView) as LinearLayout

@@ -20,8 +20,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import java.nio.file.Files
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 
@@ -335,7 +333,7 @@ fun downloadImageToInternalStorage(
         return
     }
     val storagePath = if (imgPath !== null) imgPath else getImagePath(imageURL, context)
-    printLog("Downloading image: ${imageURL.path}", "network")
+    printLog("Downloading image: $imageURL", "network")
 
     val t = Thread {
         printLog("Getting Image Path: $storagePath")
@@ -372,39 +370,72 @@ private fun getCardsFileName(pocOperatorId: String): String {
 }
 
 
-fun retrieveBanners(context: Context): Banner? {
+/**
+ * fetch the banner image from our servers
+ * if nextAssertiveBanner is true, force to display a charge price banner
+ */
+fun retrieveBanners(context: Context, nextAssertiveBanner: Boolean): Banner? {
     if (isOffline(context)) {
         return null
     }
 
     val probabilities: MutableList<Banner> = mutableListOf()
+
+    val bannerUrl = if (nextAssertiveBanner) {
+        "$apiBaseURL/v3/banners/chargeprice/advertisement"
+    } else {
+        "$apiBaseURL/v3/banners"
+    }
     val t = Thread {
         printLog("Getting Banners")
         try {
             val request = Request.Builder()
-                .url("$apiBaseURL/banners")
+                .url(bannerUrl)
                 .get()
                 .header("Authorization", "Bearer $apiToken")
                 .build()
             client.newCall(request).execute().use { response ->
+                printLog(
+                    "Downloading banner: $response",
+                    "debug"
+                )
+
                 if (response.code == 200) {
-                    Klaxon().parseArray<Banner>(response.body!!.string())?.forEach { banner ->
-                        val file = getImagePath(URL(banner.image), context)
-                        printLog(
-                            "Downloading img new banner: ${banner.id}, file: ${file.canonicalFile}",
-                            "debug"
-                        )
-                        if (!file.exists()) {
-                            downloadImageToInternalStorage(
-                                URL(banner.image),
-                                context,
-                                file
+                    if (nextAssertiveBanner) {
+                        val banner = Klaxon().parse<Banner.ChargePriceBanner>(response.body!!.string())
+                        banner?.let {
+                            val file = getImagePath(URL(banner.image), context)
+                            printLog(
+                                "Downloading img new banner: ${banner.image}, file: ${file.canonicalFile}",
+                                "debug"
                             )
+                            if (!file.exists()) {
+                                downloadImageToInternalStorage(
+                                    URL(banner.image),
+                                    context,
+                                    file
+                                )
+                            }
+                            probabilities.add(banner)
                         }
-                        for (i in 0..banner.frequency) {
+                    } else {
+                        Klaxon().parseArray<Banner.FuchsBanner>(response.body!!.string())?.forEach { banner ->
+                            val file = getImagePath(URL(banner.image), context)
+                            printLog(
+                                "Downloading img new banner: ${banner.image}, file: ${file.canonicalFile}",
+                                "debug"
+                            )
+                            if (!file.exists()) {
+                                downloadImageToInternalStorage(
+                                    URL(banner.image),
+                                    context,
+                                    file
+                                )
+                            }
                             probabilities.add(banner)
                         }
                     }
+
                 } else {
                     printLog("Couldn't retrieve banners,: ${response.code}:$response", "error")
                 }
