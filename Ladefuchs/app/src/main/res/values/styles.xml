@@ -32,6 +32,13 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    -- Picker
+
+    <style name="PickerTopHeader" parent="SettingsTopHeader">
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
 
     <style name="Füchse" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">26sp</item>

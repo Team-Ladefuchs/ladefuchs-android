@@ -29,6 +29,7 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="settings">Einstellungen</string>
+    <string name="picker">Anbieter hinzufügen</string>
     <string name="illusfuchs_SL">Der kleine Fuchs wurde mit ♥️ illustriert von Aga und Marcel-André</string>
     <string name="teamfuchs_header">Teamfuchs</string>
     <string name="teamfuchs_sl">Wir sind schuld. Wirklich!\nTrotzdem alle Angaben ohne Gewähr.</string>
@@ -98,4 +99,5 @@
     <string name="blockFeeHeader">Blockiergebühr</string>
     <string name="monthlyFeeHeader">Monatliche Gebühr</string>
     <string name="NotesHeader">Notizen</string>
+    <string name="element_text">Here will be the CPO/EMP</string>
 </resources>
